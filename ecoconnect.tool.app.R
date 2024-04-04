@@ -1,8 +1,6 @@
-# ecoconnect.viewer.app
-# Stopgap ecoConnect website
-# We'll replace this with the full version in spring 2024
-# B. Compton, 11 Sep 2023 (from ecoconnect.gallery.R)
-# 20 Nov 2023: lighten basemap up a bit
+# ecoconnect.tool.app
+# ecoConnect site-scoring website
+# B. Compton, 4 Apr 2024 (from ecoconnect.viewer.R)
 
 
 
@@ -32,14 +30,12 @@ ui <- fluidPage(
    tags$head(tags$script(src = 'matomo_heartbeat.js')),     # turn on heartbeat timer
    tags$script(src = 'matomo_events.js'),                   # track popups and help text
    
-   titlePanel('ecoConnect: Ecosystem-based Regional Connectivity'),
+   titlePanel('ecoConnect site-scoring tool'),
    
    br(),
    fluidRow(
       column(5, 
-             helpText(HTML('<i>Coming soon</i>: a full-featured web viewer and site-scoring tool for ecoConnect and the 
-                 Index of Ecological Integrity. This stopgap viewer shows ecoConnect for four ecosystems. It will be 
-                 replaced by the new viewer in Spring 2024.')),
+             helpText(HTML('Dev version.')),
       ),
       column(2,
              br(),
