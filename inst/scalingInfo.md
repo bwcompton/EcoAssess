@@ -1,0 +1,1 @@
+This lets you scale symbology of ecoConnect

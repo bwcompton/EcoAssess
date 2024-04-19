@@ -11,7 +11,7 @@ ecoConnect can be used to assess the level of connectivity among existing conser
 
 Funded by USGS Northeast Climate Adaptation Science Center and the intramural research program of the U.S. Department of Agriculture, National Institute of Food and Agriculture, McIntire-Stennis and Renewable Resources Extension Act (RREA) programs.
 
-<a href="https://landeco.umass.edu/web/lcc/dsl/ecoconnect/dsl_documentation_ecoConnect.pdf">How ecoConnect works</a>
+<a href="https://landeco.umass.edu/web/lcc/dsl/ecoconnect/dsl_documentation_ecoConnect.pdf" target="_blank" rel="noopener noreferrer">How ecoConnect works</a>
 
 <a href="https://umassdsl.org/data/ecoConnect" target="_blank" rel="noopener noreferrer">ecoConnect home page</a>
 
