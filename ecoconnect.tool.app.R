@@ -6,18 +6,19 @@
 library(shiny)
 library(bslib)
 library(bsicons)
+library(shinyjs)
+library(htmltools)
+library(markdown)
 library(leaflet)
 # remotes::install_github('https://github.com/trafficonese/leaflet.extras.git')   # need until >= v. 1.0.1 is released
 library(leaflet.extras)
 library(leaflet.lagniappe)
 library(terra)
 library(sf)
-library(shinyjs)
-library(htmltools)
-library(markdown)
-
+library(ows4R)
 
 source('modalHelp.R')
+
 
 
 home <- c(-75, 42)            # center of NER (approx)
@@ -77,7 +78,7 @@ ui <- page_sidebar(
                  
                  span(actionButton('startOver', HTML('Restart')),
                       tooltip(bs_icon('info-circle', title = 'About Start over'), restartInfo))),
-   
+            
             span(actionButton('getReport', HTML('Get report')),
                  tooltip(bs_icon('info-circle', title = 'About Get report'), downloadInfo))
          ),
@@ -171,11 +172,27 @@ shinyApp(ui, function(input, output, session) {
    
    observeEvent(input$getReport, {
       if(session$userData$drawn) {
-         print('drawn')    # drawn polygon
+         # drawn polygon
+         data <- input$map_draw_all_features
+         data <- jsonlite::toJSON(data, auto_unbox = TRUE)  # string
+         data <- geojsonio::geojson_sf(data)                # sf
+         viewport <<- data
+         plot(data[-2])
+         WCS <- WCSClient$new("https://umassdsl.webgis1.com/geoserver/ecoConnect/ows", "2.0.1", logger = "INFO")
+         caps <- WCS$getCapabilities()
+         fo <- caps$findCoverageSummaryById("ecoConnect__Forest_fowet", exact = TRUE)
+         box <- st_bbox(v <- st_transform(viewport, 'epsg:3857', 'epsg:3857', type = 'proj'))
+         x <- fo$getCoverage(bbox = OWSUtils$toBBOX(box$xmin, box$xmax, box$ymin, box$ymax))
+         plot(x)
+         lines(v)
+        # dim(as.array(x))
+        # as.array(x)
+         modalHelp(mean(as.array(x), na.rm = TRUE), 'Mean forest ecoConnect')
       }
       else
       {
-         print('uploaded')      # uploaded shapefile
+         # uploaded shapefile
+         print('uploaded')      
       }
    })
 })
