@@ -64,15 +64,6 @@ ui <- page_sidebar(
          ),
          
          card(
-            # span(span(actionButton('drawPolys', HTML('Draw polygons')),
-            #           tooltip(bs_icon('info-circle', title = 'About Draw polys'), drawInfo)),
-            #      
-            #      span(actionButton('uploadShapefile', HTML('Upload shapefile')),
-            #           tooltip(bs_icon('info-circle', title = 'About Upload shapefile'), uploadInfo))),
-            # 
-            # span(actionButton('startOver', HTML('Start over')),
-            #      tooltip(bs_icon('info-circle', title = 'About Start over'), restartInfo)),
-            
             span(('Target area report'),
                  tooltip(bs_icon('info-circle', title = 'About target area'), targetInfo)),
             
@@ -86,11 +77,7 @@ ui <- page_sidebar(
                  
                  span(actionButton('startOver', HTML('Restart')),
                       tooltip(bs_icon('info-circle', title = 'About Start over'), restartInfo))),
-            
-            #tags$br(),
-            #tags$hr(),
-            #tags$hr(style="border-color: black;"),
-            
+   
             span(actionButton('getReport', HTML('Get report')),
                  tooltip(bs_icon('info-circle', title = 'About Get report'), downloadInfo))
          ),
