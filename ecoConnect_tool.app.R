@@ -1,4 +1,6 @@
 # ecoConnect.tool.app.R - ecoConnect and IEI viewing and reporting tool
+# Before initial deployment on shinyapps.io, need to restart R and:
+#    library(remotes); install_github('https://github.com/trafficonese/leaflet.extras.git'); install_github('bwcompton/leaflet.lagniappe')
 # B. Compton, 19 Apr 2024
 
 
@@ -7,6 +9,7 @@ library(shiny)
 library(bslib)
 library(bsicons)
 library(shinyjs)
+library(shinybusy)
 library(htmltools)
 library(markdown)
 library(leaflet)
@@ -15,6 +18,7 @@ library(leaflet.extras)
 library(leaflet.lagniappe)
 library(terra)
 library(sf)
+library(lwgeom)
 library(ows4R)
 
 source('modalHelp.R')
@@ -55,13 +59,15 @@ ui <- page_sidebar(
    
    sidebar = 
       sidebar(
+         
+         add_busy_spinner(spin = 'fading-circle', position = 'top-right', onstart = FALSE),
+         
          card(
             span(('Scaling'),
                  tooltip(bs_icon('info-circle', title = 'About Scaling'), scalingInfo)),
             
             sliderInput('scaling', 'ecoConnect scale', 1, 4, 1, step = 1, ticks = FALSE),
             checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
-            
          ),
          
          card(
@@ -141,12 +147,17 @@ shinyApp(ui, function(input, output, session) {
    observeEvent(input$drawPolys, {
       shinyjs::disable('uploadShapefile')
       shinyjs::enable('startOver')
-      shinyjs::enable('getReport')
+      #  shinyjs::enable('getReport')
       
       session$userData$drawn <- TRUE
       proxy <- leafletProxy('map')
       addDrawToolbar(proxy, polylineOptions = FALSE, circleOptions = FALSE, rectangleOptions = FALSE, 
                      markerOptions = FALSE, circleMarkerOptions = FALSE, editOptions = editToolbarOptions()) 
+   })
+   
+   observeEvent(input$map_draw_all_features, {        # when the first poly is finished, get report becomes available
+      if(!is.null(input$map_draw_all_features))
+         shinyjs::enable('getReport')
    })
    
    observeEvent(input$uploadShapefile, {
@@ -173,21 +184,28 @@ shinyApp(ui, function(input, output, session) {
    observeEvent(input$getReport, {
       if(session$userData$drawn) {
          # drawn polygon
-         data <- input$map_draw_all_features
-         data <- jsonlite::toJSON(data, auto_unbox = TRUE)  # string
-         data <- geojsonio::geojson_sf(data)                # sf
-         viewport <<- data
-         plot(data[-2])
-         WCS <- WCSClient$new("https://umassdsl.webgis1.com/geoserver/ecoConnect/ows", "2.0.1", logger = "INFO")
-         caps <- WCS$getCapabilities()
-         fo <- caps$findCoverageSummaryById("ecoConnect__Forest_fowet", exact = TRUE)
-         box <- st_bbox(v <- st_transform(viewport, 'epsg:3857', 'epsg:3857', type = 'proj'))
-         x <- fo$getCoverage(bbox = OWSUtils$toBBOX(box$xmin, box$xmax, box$ymin, box$ymax))
-         plot(x)
+         
+         if(is.null(session$caps)) {                        # if we haven't gotten WCS capabilities yet,
+            # for production, drop logger = 'INFO'
+            caps <- WCSClient$new('https://umassdsl.webgis1.com/geoserver/ecoConnect/ows', '2.0.1', logger = 'INFO')$getCapabilities()
+            
+            # here, we'll want to iterate through all of the layer's we'll be summarizing
+            session$userData$fo <- caps$findCoverageSummaryById('ecoConnect__Forest_fowet', exact = TRUE)
+            session$userData$wet <- caps$findCoverageSummaryById('ecoConnect__Nonfo_wet', exact = TRUE)
+         }
+         
+         poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))     # drawn poly as sf
+         
+         polyxx <<-poly;fo<<-session$userData$fo;wet<<-session$userData$wet   # for testing
+         
+         box <- st_bbox(v <- st_transform(poly, 'epsg:3857', 'epsg:3857', type = 'proj'))
+         session$userData$forest.data <- fo$getCoverage(bbox = OWSUtils$toBBOX(box$xmin, box$xmax, box$ymin, box$ymax)) # download data
+         plot(session$userData$forest.data)
          lines(v)
-        # dim(as.array(x))
-        # as.array(x)
-         modalHelp(mean(as.array(x), na.rm = TRUE), 'Mean forest ecoConnect')
+         # dim(as.array(x))
+         # as.array(x)
+         print(as.vector(st_area(poly)) * 247.105e-6)
+         modalHelp(mean(as.array(session$userData$forest.data), na.rm = TRUE), 'Mean forest ecoConnect')
       }
       else
       {
