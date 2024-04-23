@@ -31,7 +31,7 @@ home <- c(-75, 42)            # center of NER (approx)
 zoom <- 6 
 
 workspace <- 'ecoConnect'
-layers <- c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'lr_floodplain_forest')
+layers <- c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest')
 WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'               # our WMS server for drawing maps
 WCSserver <- 'https://umassdsl.webgis1.com/geoserver/ecoConnect/ows'    # our WCS server for downloading data
 
@@ -54,21 +54,11 @@ aboutIEI <- includeMarkdown('inst/aboutIEI.md')
 ui <- page_sidebar(
    theme = bs_theme(bootswatch = 'cerulean'),
    
-   tags$style(HTML("
-                 .shiny-input-container {
-                   margin-bottom: 0px;
-                 }
-                 .form-group {
-                   margin-bottom: 0px;
-                 }
-                 ")),
-   
    title = 'ecoConnect tool',
    
    sidebar = 
       sidebar(
-         
-         add_busy_spinner(spin = 'fading-circle', position = 'top-right', onstart = FALSE),
+         add_busy_spinner(spin = 'fading-circle', position = 'top-right', onstart = FALSE, timeout = 500),
          
          card(
             span(('Scaling'),
@@ -161,7 +151,7 @@ shinyApp(ui, function(input, output, session) {
       addDrawToolbar(proxy, polylineOptions = FALSE, circleOptions = FALSE, rectangleOptions = FALSE, 
                      markerOptions = FALSE, circleMarkerOptions = FALSE, editOptions = editToolbarOptions()) 
       
-      if(is.null(session$caps))                       # Get WCS capabilities if we haven't
+      if(is.null(session$userData$layer.info))        # Get WCS capabilities if we haven't
          session$userData$layer.info <- get.WCS.info(WCSserver, workspace, layers)
    })
    
@@ -180,7 +170,7 @@ shinyApp(ui, function(input, output, session) {
       session$userData$drawn <- FALSE
       shinyjs::enable('getReport')
       
-      if(is.null(session$caps))                       # Get WCS capabilities if we haven't
+      if(is.null(session$userData$layer.info))        # Get WCS capabilities if we haven't
          session$userData$layer.info <- get.WCS.info(WCSserver, workspace, layers)
    })
    
@@ -195,27 +185,25 @@ shinyApp(ui, function(input, output, session) {
    })
    
    observeEvent(input$getReport, {                    # --- Report button
-      if(session$userData$drawn) {                    #     If drawn polygon,
-         poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))     # drawn poly as sf
-
-         #    session$userData$forest.data <- fo$getCoverage(bbox = OWSUtils$toBBOX(box$xmin, box$xmax, box$ymin, box$ymax)) # download data
-         
-         
-      } 
+      if(session$userData$drawn)                      #     If drawn polygon,
+         poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))     #    drawn poly as sf
       else {                                          #    Else uploaded shapefile,
-         print('uploaded')      
+         print('uploaded')
+         # poly <- ....                               #    uploaded poly as sf
       }                                               # Now produce report
-      bbox <- st_bbox(v <- st_transform(poly, 'epsg:3857', 'epsg:3857', type = 'proj'))
-      qqq <<- get.WCS.data(session$userData$layer.info, bbox)
-      print(length(qqq))   
-      #session$userData$layer.data <- get.WCS.data(session$userData$layer.info, bbox)
       
+      # ask for project name and info paragraph here, so we can download data while the user types
+      
+      bbox <- st_bbox(v <- st_transform(poly, 'epsg:3857', 'epsg:3857', type = 'proj'))   # bounding box
+      session$userData$layer.data <- get.WCS.data(session$userData$layer.info, bbox)      # download data
+      
+      # silly temporary stuff
       plot(session$userData$layer.data[[1]])
       lines(v)
       # dim(as.array(x))
       # as.array(x)
       print(as.vector(st_area(poly)) * 247.105e-6)
-      modalHelp(mean(as.array(session$userData$layer.data), na.rm = TRUE), 'Mean forest ecoConnect')
+      modalHelp(mean(as.array(session$userData$layer.data[[1]]), na.rm = TRUE), 'Mean forest ecoConnect')
       
       #make.report()
    })

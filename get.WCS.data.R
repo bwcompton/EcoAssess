@@ -14,11 +14,7 @@
    layers <- names(layer.info)
    z <- list()
    
-   for(i in 1:length(layers)) {
-      
-      # bbox<<-bbox;layers<<-layers;layer.info<<-layer.info;stop()
-      
-      z[[layers[i]]] <- layer.info[[i]]$getCoverage(bbox = OWSUtils$toBBOX(bbox$xmin, bbox$xmax, bbox$ymin, bbox$ymax))
-   }
-   z  
+   for(i in 1:length(layers)) 
+       z[[layers[i]]] <- layer.info[[i]]$getCoverage(bbox = OWSUtils$toBBOX(bbox$xmin, bbox$xmax, bbox$ymin, bbox$ymax))
+    z  
 }
