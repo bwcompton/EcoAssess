@@ -22,7 +22,8 @@ library(lwgeom)
 library(ows4R)
 
 source('modalHelp.R')
-source('get.layer.info.R')
+source('get.WCS.info.R')
+source('get.WCS.data.R')
 
 
 
@@ -161,7 +162,7 @@ shinyApp(ui, function(input, output, session) {
                      markerOptions = FALSE, circleMarkerOptions = FALSE, editOptions = editToolbarOptions()) 
       
       if(is.null(session$caps))                       # Get WCS capabilities if we haven't
-         session$userData$layers <- get.layer.info(WCSserver, workspace, layers)
+         session$userData$layer.info <- get.WCS.info(WCSserver, workspace, layers)
    })
    
    observeEvent(input$map_draw_all_features, {        # when the first poly is finished, get report becomes available
@@ -180,7 +181,7 @@ shinyApp(ui, function(input, output, session) {
       shinyjs::enable('getReport')
       
       if(is.null(session$caps))                       # Get WCS capabilities if we haven't
-         session$userData$layers <- get.layer.info(WCSserver, workspace, layers)
+         session$userData$layer.info <- get.WCS.info(WCSserver, workspace, layers)
    })
    
    observeEvent(input$startOver, {                    # --- Restart button
@@ -194,26 +195,28 @@ shinyApp(ui, function(input, output, session) {
    })
    
    observeEvent(input$getReport, {                    # --- Report button
-      if(session$userData$drawn) {
-         # drawn polygon
-         
-         
+      if(session$userData$drawn) {                    #     If drawn polygon,
          poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))     # drawn poly as sf
-         
-         box <- st_bbox(v <- st_transform(poly, 'epsg:3857', 'epsg:3857', type = 'proj'))
+
          #    session$userData$forest.data <- fo$getCoverage(bbox = OWSUtils$toBBOX(box$xmin, box$xmax, box$ymin, box$ymax)) # download data
-         session$userData$forest.data <- session$userData$layers[[layers[1]]]$getCoverage(bbox = OWSUtils$toBBOX(box$xmin, box$xmax, box$ymin, box$ymax)) # download data
-         plot(session$userData$forest.data)
-         lines(v)
-         # dim(as.array(x))
-         # as.array(x)
-         print(as.vector(st_area(poly)) * 247.105e-6)
-         modalHelp(mean(as.array(session$userData$forest.data), na.rm = TRUE), 'Mean forest ecoConnect')
-      }
-      else
-      {
-         # uploaded shapefile
+         
+         
+      } 
+      else {                                          #    Else uploaded shapefile,
          print('uploaded')      
-      }
+      }                                               # Now produce report
+      bbox <- st_bbox(v <- st_transform(poly, 'epsg:3857', 'epsg:3857', type = 'proj'))
+      qqq <<- get.WCS.data(session$userData$layer.info, bbox)
+      print(length(qqq))   
+      #session$userData$layer.data <- get.WCS.data(session$userData$layer.info, bbox)
+      
+      plot(session$userData$layer.data[[1]])
+      lines(v)
+      # dim(as.array(x))
+      # as.array(x)
+      print(as.vector(st_area(poly)) * 247.105e-6)
+      modalHelp(mean(as.array(session$userData$layer.data), na.rm = TRUE), 'Mean forest ecoConnect')
+      
+      #make.report()
    })
 })
