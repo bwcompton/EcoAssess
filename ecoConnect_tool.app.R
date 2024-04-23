@@ -22,11 +22,17 @@ library(lwgeom)
 library(ows4R)
 
 source('modalHelp.R')
+source('get.layer.info.R')
 
 
 
 home <- c(-75, 42)            # center of NER (approx)
 zoom <- 6 
+
+workspace <- 'ecoConnect'
+layers <- c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'lr_floodplain_forest')
+WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'               # our WMS server for drawing maps
+WCSserver <- 'https://umassdsl.webgis1.com/geoserver/ecoConnect/ows'    # our WCS server for downloading data
 
 # tool tips
 scalingInfo <- includeMarkdown('inst/scalingInfo.md')
@@ -40,6 +46,7 @@ downloadInfo <- includeMarkdown('inst/downloadInfo.md')
 aboutTool <- includeMarkdown('inst/aboutTool.md')
 aboutecoConnect <- includeMarkdown('inst/shortdoc.md')
 aboutIEI <- includeMarkdown('inst/aboutIEI.md')
+
 
 
 # User interface ---------------------
@@ -125,8 +132,7 @@ shinyApp(ui, function(input, output, session) {
       output$map <- renderLeaflet({
          leaflet() |>
             addProviderTiles(provider = 'Stadia.StamenTonerLite') |>
-            addWMSTiles('https://umassdsl.webgis1.com/geoserver/wms', 
-                        layers = 'ecoConnect:Forest_fowet',        
+            addWMSTiles(WMSserver, layers = paste0(workspace, ':', layers[1]),        
                         options = WMSTileOptions(opacity = 0.5)) |>
             addFullscreenControl(position = "topleft", pseudoFullscreen = FALSE) |>
             # addDrawToolbar(polylineOptions = FALSE, circleOptions = FALSE, rectangleOptions = FALSE, 
@@ -144,7 +150,7 @@ shinyApp(ui, function(input, output, session) {
          shinyjs::enable('scaling')
    })
    
-   observeEvent(input$drawPolys, {
+   observeEvent(input$drawPolys, {                    # --- Draw button
       shinyjs::disable('uploadShapefile')
       shinyjs::enable('startOver')
       #  shinyjs::enable('getReport')
@@ -153,6 +159,9 @@ shinyApp(ui, function(input, output, session) {
       proxy <- leafletProxy('map')
       addDrawToolbar(proxy, polylineOptions = FALSE, circleOptions = FALSE, rectangleOptions = FALSE, 
                      markerOptions = FALSE, circleMarkerOptions = FALSE, editOptions = editToolbarOptions()) 
+      
+      if(is.null(session$caps))                       # Get WCS capabilities if we haven't
+         session$userData$layers <- get.layer.info(WCSserver, workspace, layers)
    })
    
    observeEvent(input$map_draw_all_features, {        # when the first poly is finished, get report becomes available
@@ -160,7 +169,7 @@ shinyApp(ui, function(input, output, session) {
          shinyjs::enable('getReport')
    })
    
-   observeEvent(input$uploadShapefile, {
+   observeEvent(input$uploadShapefile, {              # --- Upload button
       shinyjs::disable('drawPolys')
       shinyjs::enable('startOver')
       shinyjs::enable('uploadShapefile')
@@ -169,9 +178,12 @@ shinyApp(ui, function(input, output, session) {
       
       session$userData$drawn <- FALSE
       shinyjs::enable('getReport')
+      
+      if(is.null(session$caps))                       # Get WCS capabilities if we haven't
+         session$userData$layers <- get.layer.info(WCSserver, workspace, layers)
    })
    
-   observeEvent(input$startOver, {
+   observeEvent(input$startOver, {                    # --- Restart button
       shinyjs::enable('drawPolys')
       shinyjs::enable('uploadShapefile')
       shinyjs::disable('startOver')
@@ -181,25 +193,16 @@ shinyApp(ui, function(input, output, session) {
       removeDrawToolbar(proxy, clearFeatures = TRUE)
    })
    
-   observeEvent(input$getReport, {
+   observeEvent(input$getReport, {                    # --- Report button
       if(session$userData$drawn) {
          # drawn polygon
          
-         if(is.null(session$caps)) {                        # if we haven't gotten WCS capabilities yet,
-            # for production, drop logger = 'INFO'
-            caps <- WCSClient$new('https://umassdsl.webgis1.com/geoserver/ecoConnect/ows', '2.0.1', logger = 'INFO')$getCapabilities()
-            
-            # here, we'll want to iterate through all of the layer's we'll be summarizing
-            session$userData$fo <- caps$findCoverageSummaryById('ecoConnect__Forest_fowet', exact = TRUE)
-            session$userData$wet <- caps$findCoverageSummaryById('ecoConnect__Nonfo_wet', exact = TRUE)
-         }
          
          poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))     # drawn poly as sf
          
-         polyxx <<-poly;fo<<-session$userData$fo;wet<<-session$userData$wet   # for testing
-         
          box <- st_bbox(v <- st_transform(poly, 'epsg:3857', 'epsg:3857', type = 'proj'))
-         session$userData$forest.data <- fo$getCoverage(bbox = OWSUtils$toBBOX(box$xmin, box$xmax, box$ymin, box$ymax)) # download data
+         #    session$userData$forest.data <- fo$getCoverage(bbox = OWSUtils$toBBOX(box$xmin, box$xmax, box$ymin, box$ymax)) # download data
+         session$userData$forest.data <- session$userData$layers[[layers[1]]]$getCoverage(bbox = OWSUtils$toBBOX(box$xmin, box$xmax, box$ymin, box$ymax)) # download data
          plot(session$userData$forest.data)
          lines(v)
          # dim(as.array(x))
