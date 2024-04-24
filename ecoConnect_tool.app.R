@@ -24,6 +24,7 @@ library(ows4R)
 source('modalHelp.R')
 source('get.WCS.info.R')
 source('get.WCS.data.R')
+source('make.report.R')
 
 
 
@@ -194,17 +195,12 @@ shinyApp(ui, function(input, output, session) {
       
       # ask for project name and info paragraph here, so we can download data while the user types
       
-      bbox <- st_bbox(v <- st_transform(poly, 'epsg:3857', 'epsg:3857', type = 'proj'))   # bounding box
-      session$userData$layer.data <- get.WCS.data(session$userData$layer.info, bbox)      # download data
+      poly <- st_transform(poly, 'epsg:3857', 'epsg:3857', type = 'proj')                          # project to EPSG:3857
+      session$userData$layer.data <- get.WCS.data(session$userData$layer.info, st_bbox(poly))      # download data
       
-      # silly temporary stuff
-      plot(session$userData$layer.data[[1]])
-      lines(v)
-      # dim(as.array(x))
-      # as.array(x)
-      print(as.vector(st_area(poly)) * 247.105e-6)
-      modalHelp(mean(as.array(session$userData$layer.data[[1]]), na.rm = TRUE), 'Mean forest ecoConnect')
+      proj.name <- 'Big fat conservation project'
+      proj.info <- 'This is a target area we\'ve been looking at, wondering if it has high conseravtion value.'
       
-      #make.report()
+      make.report(poly, session$userData$layer.data, proj.name, proj.info)
    })
 })
