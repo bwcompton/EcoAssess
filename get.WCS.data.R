@@ -10,11 +10,14 @@
    # B. Compton, 23 Apr 2024
    
    
-   
+   bbox <- OWSUtils$toBBOX(bbox$xmin, bbox$xmax, bbox$ymin, bbox$ymax)
    layers <- names(layer.info)
    z <- list()
    
    for(i in 1:length(layers)) 
-       z[[layers[i]]] <- layer.info[[i]]$getCoverage(bbox = OWSUtils$toBBOX(bbox$xmin, bbox$xmax, bbox$ymin, bbox$ymax))
-    z  
+   {
+      cat('\n\n--- getting layer ',layers[i], '\n')
+      z[[layers[i]]] <- layer.info[[i]]$getCoverage(bbox = bbox)
+   }
+   z  
 }

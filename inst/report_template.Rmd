@@ -1,0 +1,28 @@
+---
+title: "Dynamic report"
+output: pdf_document
+params:
+  acres: NA
+  fo_mean: NA
+  wet_mean: NA
+---
+
+```{r eval = FALSE, echo = FALSE}
+# For PDF output, change the header to have "output: pdf_document".
+#
+# Note that due to an issue in rmarkdown, the default value of a parameter in
+# the header cannot be `NULL`, so I used a default of `NA` for the default value
+# of `n`.
+```
+
+
+```{r}
+# The `params` object is available in the document.
+cat('Target area is ', params$acres, '\n', sep = '')
+```
+
+A plot of `params$n` random points.
+
+```{r}
+plot(rnorm(params$n), rnorm(params$n))
+```

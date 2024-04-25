@@ -106,7 +106,7 @@ ui <- page_sidebar(
 
 
 # Server -----------------------------
-shinyApp(ui, function(input, output, session) {
+server <- function(input, output, session) {
    shinyjs::disable('startOver')
    shinyjs::disable('getReport')
    
@@ -143,6 +143,7 @@ shinyApp(ui, function(input, output, session) {
    })
    
    observeEvent(input$drawPolys, {                    # --- Draw button
+      shinyjs::disable('drawPolys')
       shinyjs::disable('uploadShapefile')
       shinyjs::enable('startOver')
       #  shinyjs::enable('getReport')
@@ -187,20 +188,76 @@ shinyApp(ui, function(input, output, session) {
    
    observeEvent(input$getReport, {                    # --- Report button
       if(session$userData$drawn)                      #     If drawn polygon,
-         poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))     #    drawn poly as sf
+         session$userData$poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))     #    drawn poly as sf
       else {                                          #    Else uploaded shapefile,
          print('uploaded')
-         # poly <- ....                               #    uploaded poly as sf
+         # session$userData$poly <- ....                               #    uploaded poly as sf
       }                                               # Now produce report
       
-      # ask for project name and info paragraph here, so we can download data while the user types
       
-      poly <- st_transform(poly, 'epsg:3857', 'epsg:3857', type = 'proj')                          # project to EPSG:3857
-      session$userData$layer.data <- get.WCS.data(session$userData$layer.info, st_bbox(poly))      # download data
+      cat('\n\n\nReady to do modal...\n')
       
-      proj.name <- 'Big fat conservation project'
-      proj.info <- 'This is a target area we\'ve been looking at, wondering if it has high conseravtion value.'
+      # Show modal when button is clicked.
       
-      make.report(poly, session$userData$layer.data, proj.name, proj.info)
+      showModal(modalDialog(
+         textInput('proj.name', 'Project name', value = session$userData$proj.name, width = '100%',
+                   placeholder = 'Project name for report'),
+         textAreaInput('proj.info', 'Project description', value = session$userData$proj.info, 
+                       width = '100%', rows = 6,
+                       placeholder = 'Optional project description'),
+         
+         footer = tagList(
+            actionButton('do.report', 'OK'),            
+            modalButton('Cancel'),
+         )
+      ))
+      cat('Modal should have been done. Now downloading data...\n\n')
+      
+      session$userData$poly <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj')                          # project to EPSG:3857
+      session$userData$layer.data <- get.WCS.data(session$userData$layer.info, st_bbox(session$userData$poly))      # download data
+      
+      cat('\n\nData are downloaded\n')
    })
-})
+   
+   
+   observeEvent(input$do.report, {
+      session$userData$proj.name <- input$proj.name   # save these from OK
+      session$userData$proj.info <- input$proj.info
+      removeModal()
+      print('now producing report')
+      
+      demo <- TRUE
+      if(demo) {                                      # *** Temp code for show and tell
+         data <- session$userData$layer.data
+         
+         plot(session$userData$layer.data[[1]])
+         lines(session$userData$poly)
+         
+         acres <- round(as.vector(sum(st_area(session$userData$poly))) * 247.105e-6, 2)
+         fo.mean <- round(mean(as.array(data[['Forest_fowet']]), na.rm = TRUE), 2)
+         wet.mean <- round(mean(as.array(data[['Nonfo_wet']]), na.rm = TRUE), 2)
+         ridge.mean <- round(mean(as.array(data[['Ridgetop']]), na.rm = TRUE), 2)
+         floodplain.mean <- round(mean(as.array(data[['LR_floodplain_forest']]), na.rm = TRUE), 2)
+         x <- HTML(paste0('<b>Project name</b>: ', input$proj.name,
+                          '</br><p><b>Project description</b>: ', input$proj.info, '</p>',
+                          'Total acres: ', acres, '</br>Mean forest ecoConnect = ', fo.mean,
+                          '</br>Mean wetland ecoConnect = ', wet.mean,
+                          '</br>Mean ridgetop ecoConnect = ', ridge.mean,
+                          '</br>Mean floodplain forest ecoConnect = ', floodplain.mean))
+         
+         modalHelp(x, 'Conservation target report')
+      }
+      
+      else 
+         
+      {
+         cat('Name = ', input$proj.name, '\n')
+         cat('Info = ', input$proj.info, '\n')
+         print('making report')
+         #    output$report <- downloadHandler( make.report(poly, session$userData$layer.data, proj.name, proj.info))
+         print('report should have downloaded')
+      }
+   })
+}
+
+shinyApp(ui, server)
