@@ -1,5 +1,5 @@
 ---
-title: "Dynamic report"
+title: "ecoConnect Report"
 output: pdf_document
 params:
   acres: NA
@@ -19,10 +19,6 @@ params:
 ```{r}
 # The `params` object is available in the document.
 cat('Target area is ', params$acres, '\n', sep = '')
-```
-
-A plot of `params$n` random points.
-
-```{r}
-plot(rnorm(params$n), rnorm(params$n))
+cat('Forest ecoConnect = ', params$fo_mean, sep = '')
+cat('Wetland ecoConnect = ', params$wet_mean, sep = '')
 ```

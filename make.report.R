@@ -1,54 +1,47 @@
-'make.report' <- function(poly, data, proj.name, proj.info) {
+'make.report' <- function(input, output, session) {
    
    # make.report
    # Produce report for target area
    # Arguments:
    #     poly        user's target area as sf polygon
    #     data        list of terra objects for target area
-   #     proj.name   user's project name
-   #     proj.info   user's project info
+   #     session$userData$proj.name   user's project name
+   #     session$userData$proj.info   user's project info
    # Result:
    #     PDF report
    # B. Compton, 24 Apr 2024
    
-   print('make.report')
    
    
-   # plot(data[[1]])
-   # lines(poly)
-   # # dim(as.array(x))
-   # # as.array(x)
-   # print(as.vector(st_area(poly)) * 247.105e-6)
-   # modalHelp(mean(as.array(data[[1]]), na.rm = TRUE), 'Mean forest ecoConnect')
-   
-   
-   acres <- as.vector(st_area(poly)) * 247.105e-6
-   fo_mean <- mean(as.array(data[[1]]), na.rm = TRUE)
-   wet_mean <- mean(as.array(data[[2]]), na.rm = TRUE)
-   
-   
-   
-   source = 'report.Rmd'        # markdown template
+   source = 'report_template.Rmd'        # markdown template
    result = 'fancy_report.pdf'        # result filename
-
-   print('trying now...')
-   #   output$report <- downloadHandler(
-      
-  # z <- downloadHandler(
-   z <- list(   file = result,   
+   
+   downloadHandler(
+      file = result,   
       content = function(result) {
          
-         tempReport <- file.path(tempdir(), source)   # copy to temp directory so it'll work on the server
-         file.copy(source, tempReport, overwrite = TRUE)
+         session$userData$session$userData$proj.name <- input$proj.name   # save these from OK
+         session$userData$session$userData$proj.info <- input$proj.info
+         removeModal()
          
-         params <- list(acres = acres, fo_mean = fo_mean, wet_mean = wet_mean
-         )                   # Set up parameters to pass to Rmd document
+         acres <- as.vector(st_area(session$userData$poly)) * 247.105e-6
+         fo_mean <- mean(as.array(session$userData$layer.data[[1]]), na.rm = TRUE)
+         wet_mean <- mean(as.array(session$userData$layer.data[[2]]), na.rm = TRUE)
+         
+         
+         tempReport <- file.path(tempdir(), source)   # copy to temp directory so it'll work on the server
+         cat('\n\n*** Copying from ', source, ', to ', tempReport, '\n', sep = '')
+         cat('\n*** Final result will be in ', result, '\n', sep = '')
+         
+         file.copy(paste0('inst/', source), tempReport, overwrite = TRUE)
+         
+         params <- list(acres = acres, fo_mean = fo_mean, wet_mean = wet_mean)          # Set up parameters to pass to Rmd document
+         
+         cat('\n*** Producing report ', result, '\n')
+         
          rmarkdown::render(tempReport, output_file = result,  # knit in child environment
                            params = params,
                            envir = new.env(parent = globalenv()))
       }
    )
-   print('report produced')
-   print(length(z))
-   z
 }

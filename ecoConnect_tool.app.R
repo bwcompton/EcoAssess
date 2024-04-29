@@ -202,54 +202,20 @@ server <- function(input, output, session) {
                        width = '100%', rows = 6,
                        placeholder = 'Optional project description'),
          footer = tagList(
-            actionButton('do.report', 'OK'),            
+            downloadButton('do.report', 'Generate report'),            
             modalButton('Cancel'),
          )
       ))
       
-                                                      # -- Download data while user is typing project info
+      # -- Download data while user is typing project info
+      id <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
       session$userData$poly <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj')       # project to EPSG:3857
       session$userData$layer.data <- get.WCS.data(session$userData$layer.info, st_bbox(session$userData$poly))    # download data
+      removeNotification(id)
    })
    
    
-   observeEvent(input$do.report, {
-      session$userData$proj.name <- input$proj.name   # save these from OK
-      session$userData$proj.info <- input$proj.info
-      removeModal()
-      print('now producing report')
-      
-      demo <- TRUE
-      if(demo) {                                      # *** Temp code for show and tell
-         demo.modal(session$userData$poly, session$userData$layer.data, input$proj.name, input$proj.info)
-         # plot(session$userData$layer.data[[1]])
-         # lines(session$userData$poly)
-         # 
-         # acres <- round(as.vector(sum(st_area(session$userData$poly))) * 247.105e-6, 2)
-         # fo.mean <- round(mean(as.array(data[['Forest_fowet']]), na.rm = TRUE), 2)
-         # wet.mean <- round(mean(as.array(data[['Nonfo_wet']]), na.rm = TRUE), 2)
-         # ridge.mean <- round(mean(as.array(data[['Ridgetop']]), na.rm = TRUE), 2)
-         # floodplain.mean <- round(mean(as.array(data[['LR_floodplain_forest']]), na.rm = TRUE), 2)
-         # x <- HTML(paste0('<b>Project name</b>: ', input$proj.name,
-         #                  '</br><p><b>Project description</b>: ', input$proj.info, '</p>',
-         #                  'Total acres: ', acres, '</br>Mean forest ecoConnect = ', fo.mean,
-         #                  '</br>Mean wetland ecoConnect = ', wet.mean,
-         #                  '</br>Mean ridgetop ecoConnect = ', ridge.mean,
-         #                  '</br>Mean floodplain forest ecoConnect = ', floodplain.mean))
-         # 
-         # modalHelp(x, 'Conservation target report')
-      }
-      
-      else 
-         
-      {
-         cat('Name = ', input$proj.name, '\n')
-         cat('Info = ', input$proj.info, '\n')
-         print('making report')
-         #    output$report <- downloadHandler( make.report(poly, session$userData$layer.data, proj.name, proj.info))
-         print('report should have downloaded')
-      }
-   })
+   output$do.report <- make.report(input, output, session)
 }
 
 shinyApp(ui, server)
