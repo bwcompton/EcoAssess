@@ -195,15 +195,17 @@ server <- function(input, output, session) {
          # session$userData$poly <- ....              #    uploaded poly as sf
       }                                               # Now produce report
       
+      session$userData$saved <- list(input$proj.name, input$proj.info)
+      
       showModal(modalDialog(                          # -- Modal input to get project name and description
-         textInput('proj.name', 'Project name', value = session$userData$proj.name, width = '100%',
+         textInput('proj.name', 'Project name', value = input$proj.name, width = '100%',
                    placeholder = 'Project name for report'),
-         textAreaInput('proj.info', 'Project description', value = session$userData$proj.info, 
+         textAreaInput('proj.info', 'Project description', value = input$proj.info, 
                        width = '100%', rows = 6,
                        placeholder = 'Optional project description'),
          footer = tagList(
-            downloadButton('do.report', 'Generate report'),            
-            modalButton('Cancel'),
+            downloadButton('do.report', 'Generate report'),
+            actionButton('cancel', 'Cancel')
          )
       ))
       
@@ -214,8 +216,15 @@ server <- function(input, output, session) {
       removeNotification(id)
    })
    
+   observeEvent(input$cancel, {                       # --- Cancel button from report dialog. Go back to previous values
+      removeModal()
+      cat('\n\n*************** ', session$userData$saved[[1]], '**************\n\n')
+      updateTextInput(inputId = 'proj.name', value = session$userData$saved[[1]])
+      updateTextInput(inputId = 'proj.info', value = session$userData$saved[[2]])
+   })
    
-   output$do.report <- make.report(input, output, session)
+   # --- Generate report button from report dialog
+   output$do.report <- make.report(session$userData$poly, session$userData$layer.data, input$proj.name, input$proj.info)
 }
 
 shinyApp(ui, server)
