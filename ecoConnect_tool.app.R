@@ -1,6 +1,6 @@
 # ecoConnect.tool.app.R - ecoConnect and IEI viewing and reporting tool
 # Before initial deployment on shinyapps.io, need to restart R and:
-#    library(remotes); install_github('https://github.com/trafficonese/leaflet.extras.git'); install_github('bwcompton/leaflet.lagniappe')
+#    1
 # B. Compton, 19 Apr 2024
 
 
@@ -20,6 +20,7 @@ library(terra)
 library(sf)
 library(lwgeom)
 library(ows4R)
+library(future)
 
 source('modalHelp.R')
 source('get.WCS.info.R')
@@ -143,7 +144,7 @@ server <- function(input, output, session) {
          shinyjs::enable('scaling')
    })
    
-   observeEvent(input$drawPolys, {                    # --- Draw button
+   observeEvent(input$drawPolys, {                    # ----- Draw button
       shinyjs::disable('drawPolys')
       shinyjs::disable('uploadShapefile')
       shinyjs::enable('startOver')
@@ -163,7 +164,7 @@ server <- function(input, output, session) {
          shinyjs::enable('getReport')
    })
    
-   observeEvent(input$uploadShapefile, {              # --- Upload button
+   observeEvent(input$uploadShapefile, {              # ----- Upload button
       shinyjs::disable('drawPolys')
       shinyjs::enable('startOver')
       shinyjs::enable('uploadShapefile')
@@ -177,7 +178,7 @@ server <- function(input, output, session) {
          session$userData$layer.info <- get.WCS.info(WCSserver, workspace, layers)
    })
    
-   observeEvent(input$startOver, {                    # --- Restart button
+   observeEvent(input$startOver, {                    # ----- Restart button
       shinyjs::enable('drawPolys')
       shinyjs::enable('uploadShapefile')
       shinyjs::disable('startOver')
@@ -187,7 +188,7 @@ server <- function(input, output, session) {
       removeDrawToolbar(proxy, clearFeatures = TRUE)
    })
    
-   observeEvent(input$getReport, {                    # --- Report button
+   observeEvent(input$getReport, {                    # ----- Report button
       if(session$userData$drawn)                      #     If drawn polygon,
          session$userData$poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))  #    drawn poly as sf
       else {                                          #    Else uploaded shapefile,
@@ -197,7 +198,7 @@ server <- function(input, output, session) {
       
       session$userData$saved <- list(input$proj.name, input$proj.info)
       
-      showModal(modalDialog(                          # -- Modal input to get project name and description
+      showModal(modalDialog(                          # --- Modal input to get project name and description
          textInput('proj.name', 'Project name', value = input$proj.name, width = '100%',
                    placeholder = 'Project name for report'),
          textAreaInput('proj.info', 'Project description', value = input$proj.info, 
@@ -210,10 +211,18 @@ server <- function(input, output, session) {
       ))
       
       # -- Download data while user is typing project info
+      cat('\n\n**************** downloading data with future ****************\n')
+      cat('\nCalling PID = ', Sys.getpid(), '\n')
       id <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
       session$userData$poly <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj')       # project to EPSG:3857
-      session$userData$layer.data <- get.WCS.data(session$userData$layer.info, st_bbox(session$userData$poly))    # download data
+      plan('multisession')
+      session$userData$layer.data <- future({
+         get.WCS.data(session$userData$layer.info, st_bbox(session$userData$poly))    # download data
+      })
       removeNotification(id)
+      cat('\n\n**************** done with future call - not blocked yet ****************\n')
+    #  zzzz <<- session$userData$layer.data
+    #  cat(value(session$userData$layer.data)[['pid']])
    })
    
    observeEvent(input$cancel, {                       # --- Cancel button from report dialog. Go back to previous values

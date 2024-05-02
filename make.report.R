@@ -21,10 +21,16 @@
       removeModal()
       id <- showNotification('Generating report...', duration = NULL, closeButton = FALSE)
       
+      cat('\n\n----> we haven\'t asked for value() yet, so we shouldn\'t be blocked...\n')
+      data <- value(layer.data)
+      cat('\n\n----> ...now we\'re blocked!\n')
+      
+      cat('\n\n\n===== layer data downloaded, length = ', length(data), '=====\n')
+      qqqq <<- data
       
       acres <- as.vector(st_area(poly)) * 247.105e-6
-      fo_mean <- mean(as.array(layer.data[[1]]), na.rm = TRUE)
-      wet_mean <- mean(as.array(layer.data[[2]]), na.rm = TRUE)
+      fo_mean <- mean(as.array(data[[1]]), na.rm = TRUE)
+      wet_mean <- mean(as.array(data[[2]]), na.rm = TRUE)
       params <- list(acres = acres, fo_mean = fo_mean, wet_mean = wet_mean)         # Set up parameters to pass to Rmd document
       
       
