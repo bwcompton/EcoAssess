@@ -209,9 +209,29 @@ server <- function(input, output, session) {
       
       
       cat(dsn <- paste(uploaddirectory, shpdf$name[grep(pattern="*.shp$", shpdf$name)], sep="/"))
-      map <- st_read(dsn)
+      session$userData$poly <- st_read(dsn)
+      
+      # Trap errors here if the shapefile is bad
+      
+       
+    #  leafletProxy('map', data = session$userData$poly)
+      
+      shapefile <<- session$userData$poly   #### for testing
+      
+      shapefile2 <- st_transform(shapefile, '+proj=longlat +datum=WGS84')
+      
+      box <- as.list(st_bbox(shapefile2))
+      # leaflet(shapefile2) |>
+      #    addProviderTiles(provider = 'Stadia.StamenTonerLite') |>
+      leafletProxy('map', data = shapefile2) |>
+         addPolygons(color = 'green') |>
+         #setView(lng = home[1], lat = home[2], zoom = zoom)
+         
+      flyToBounds(lat1 = box$ymin, lat2 = box$ymax, lng1 = box$xmin, lng2 = box$xmax)
+      
+      
       print('DONE WITH SHAPEFILE - WE\'VE GOT IT')
-      plot(map)
+      plot(session$userData$poly)
    })
    
    observeEvent(input$cancel.shapefile, {                       # --- Cancel button from upload shapefile dialog. Go back to previous values
@@ -262,6 +282,8 @@ server <- function(input, output, session) {
       ###  session$userData$poly <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj')       # project to EPSG:3857
       ###   zzzzzz <<- session$userData$poly
       plot(session$userData$poly)
+      
+      shapefile2 <- st_transform(shapefile, 'epsg:3857', 'epsg:3857', type = 'proj')
       
       ###   
       
