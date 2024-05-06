@@ -21,6 +21,7 @@ library(sf)
 library(lwgeom)
 library(ows4R)
 library(future)
+library(promises)
 
 source('modalHelp.R')
 source('get.WCS.info.R')
@@ -110,7 +111,7 @@ ui <- page_sidebar(
 # Server -----------------------------
 server <- function(input, output, session) {
    shinyjs::disable('startOver')
-   shinyjs::disable('getReport')
+   #### shinyjs::disable('getReport')          #### disabled for testing
    
    #bs_themer()
    
@@ -170,6 +171,18 @@ server <- function(input, output, session) {
       shinyjs::enable('uploadShapefile')
       
       # now do modal dialog to get shapefile
+      showModal(modalDialog(
+         title = 'Select shapefile to upload',
+         fileInput('filemap', '', accept = c('.shp','.dbf','.sbn','.sbx','.shx','.prj'), multiple = TRUE, 
+                   placeholder = 'must include .shp, .shx, and .prj', width = '100%'),
+         footer = tagList(
+            modalButton('OK'),
+         actionButton('cancel.shapefile', 'Cancel'))
+      ))
+      
+      print('asked for shapefile; moving on...')
+      
+
       
       session$userData$drawn <- FALSE
       shinyjs::enable('getReport')
@@ -177,6 +190,37 @@ server <- function(input, output, session) {
       if(is.null(session$userData$layer.info))        # Get WCS capabilities if we haven't
          session$userData$layer.info <- get.WCS.info(WCSserver, workspace, layers)
    })
+   
+   observeEvent(input$filemap, {                   # --- Have uploaded shapefile
+      
+      print('UPLOADED SHAPEFILE.......................')
+      shpdf <- input$filemap
+      if(is.null(shpdf)){
+         return()
+      }
+      previouswd <- getwd()
+      uploaddirectory <- dirname(shpdf$datapath[1])
+      setwd(uploaddirectory)
+      for(i in 1:nrow(shpdf)){
+         cat(shpdf$datapath[i], '->\n   ', shpdf$name[i], '\n')
+         file.rename(shpdf$datapath[i], shpdf$name[i])
+      }
+      setwd(previouswd)
+      
+      
+      cat(dsn <- paste(uploaddirectory, shpdf$name[grep(pattern="*.shp$", shpdf$name)], sep="/"))
+      map <- st_read(dsn)
+      print('DONE WITH SHAPEFILE - WE\'VE GOT IT')
+      plot(map)
+   })
+   
+   observeEvent(input$cancel.shapefile, {                       # --- Cancel button from upload shapefile dialog. Go back to previous values
+      removeModal()
+      cat('\n\n*************** Cancel from upload shapefile **************\n\n')
+      
+      
+   })
+   
    
    observeEvent(input$startOver, {                    # ----- Restart button
       shinyjs::enable('drawPolys')
@@ -206,7 +250,7 @@ server <- function(input, output, session) {
                        placeholder = 'Optional project description'),
          footer = tagList(
             downloadButton('do.report', 'Generate report'),
-            actionButton('cancel', 'Cancel')
+            actionButton('cancel.report', 'Cancel')
          )
       ))
       
@@ -214,18 +258,24 @@ server <- function(input, output, session) {
       cat('\n\n**************** downloading data with future ****************\n')
       cat('\nCalling PID = ', Sys.getpid(), '\n')
       id <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
-      session$userData$poly <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj')       # project to EPSG:3857
+      session$userData$poly <- zzzzzz         ###### REUSE SAME POLY FOR TESTING
+      ###  session$userData$poly <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj')       # project to EPSG:3857
+      ###   zzzzzz <<- session$userData$poly
+      plot(session$userData$poly)
+      
+      ###   
+      
       plan('multisession')
-      session$userData$layer.data <- future({
+      session$userData$layer.data <- future_promise({                                                  ####################### FUTURE CALL ####################
          get.WCS.data(session$userData$layer.info, st_bbox(session$userData$poly))    # download data
       })
       removeNotification(id)
       cat('\n\n**************** done with future call - not blocked yet ****************\n')
-    #  zzzz <<- session$userData$layer.data
-    #  cat(value(session$userData$layer.data)[['pid']])
+      #  zzzz <<- session$userData$layer.data
+      #  cat(value(session$userData$layer.data)[['pid']])
    })
    
-   observeEvent(input$cancel, {                       # --- Cancel button from report dialog. Go back to previous values
+   observeEvent(input$cancel.report, {                       # --- Cancel button from report dialog. Go back to previous values
       removeModal()
       cat('\n\n*************** ', session$userData$saved[[1]], '**************\n\n')
       updateTextInput(inputId = 'proj.name', value = session$userData$saved[[1]])
@@ -233,7 +283,9 @@ server <- function(input, output, session) {
    })
    
    # --- Generate report button from report dialog
-   output$do.report <- make.report(session$userData$poly, session$userData$layer.data, input$proj.name, input$proj.info)
+   ###output$do.report <- make.report(session$userData$poly, future_promise(session$userData$layer.data), input$proj.name, input$proj.info)     ###### PROMISE ######
+   
+   output$do.report <- make.report(session$userData$poly, session$userData$layer.data, input$proj.name, input$proj.info)     ###### PROMISE ######
 }
 
 shinyApp(ui, server)

@@ -18,6 +18,9 @@
    
    downloadHandler(file = result, content = function(result) {
       
+      cat('Generating PDF...')
+      t <- Sys.time()
+      
       removeModal()
       id <- showNotification('Generating report...', duration = NULL, closeButton = FALSE)
       
@@ -41,5 +44,7 @@
                         params = params,
                         envir = new.env(parent = globalenv()))
       removeNotification(id)
+      cat(Sys.time() - t, 'sec\n', sep = '')
+      
    })
 }

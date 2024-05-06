@@ -19,8 +19,10 @@
    
    for(i in 1:length(layers)) 
    {
-      cat('\n\n--- getting layer ',layers[i], '\n')
+      cat('\n\n--- getting layer ',layers[i], '...')
+      t <- Sys.time()
       z[[layers[i]]] <- layer.info[[i]]$getCoverage(bbox = bbox)
+      cat(Sys.time() - t, 'sec\n', sep = '')
    }
    cat('\n\n------------done with future call--------------\n')
    

@@ -10,9 +10,15 @@
    # Result:
    #     list of layer capabilities
    # B. Compton, 23 Apr 2024
+    
    
    
-   cat('\n\n--- getting layer info\n')
+   #cat('\n\n--- getting layer info\n')
+   
+   log <- NULL
+   cat('\n\nGetting WCS info...')
+   t <- Sys.time()
+   
    
    caps <- WCSClient$new(WCSserver, '2.0.1', logger = log)$getCapabilities()
    z <- list()
@@ -20,6 +26,8 @@
    
    for(i in layers)
       z[[i]] <- caps$findCoverageSummaryById(paste0(workspace, '__', i), exact = TRUE)
+   
+   cat(Sys.time() - t, 'sec\n', sep = '')
    
    z
 }
