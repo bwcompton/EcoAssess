@@ -24,6 +24,8 @@
       removeModal()
       id <- showNotification('Generating report...', duration = NULL, closeButton = FALSE)
       
+      plot(poly)
+      
       cat('\n\n----> we haven\'t asked for value() yet, so we shouldn\'t be blocked...\n')
       data <- value(layer.data)
       cat('\n\n----> ...now we\'re blocked!\n')
