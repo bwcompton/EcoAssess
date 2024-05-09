@@ -30,6 +30,7 @@ source('make.report.R')
 source('demo.modal.R')
 source('get.shapefile.R')
 source('draw.poly.R')
+source('layer.stats.R')
 
 
 
@@ -175,7 +176,7 @@ server <- function(input, output, session) {
       # do modal dialog to get shapefile
       showModal(modalDialog(
          title = 'Select shapefile to upload',
-         fileInput('shapefile', '', accept = c('.shp','.dbf','.sbn','.sbx','.shx','.prj'), multiple = TRUE, 
+         fileInput('shapefile', '', accept = c('.shp', '.shx', '.prj'), multiple = TRUE, 
                    placeholder = 'must include .shp, .shx, and .prj', width = '100%'),
          footer = tagList(
             modalButton('OK'),
@@ -223,24 +224,17 @@ server <- function(input, output, session) {
       ))
       
       # -- Download data while user is typing project info
-      #  cat('\n\n**************** downloading data with future ****************\n')
-      #  cat('\nCalling PID = ', Sys.getpid(), '\n')
-      id <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
-      #  session$userData$poly <- zzzzzz         ###### REUSE SAME POLY FOR TESTING
+      id <- showNotification('Gathering data...', duration = NULL, closeButton = FALSE)
+      session$userData$acres <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
       session$userData$poly <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj') # project to match downloaded rasters
-      ###   zzzzzz <<- session$userData$poly
- 
+      
       # plan('multisession')
-      #    session$userData$layer.data <- future_promise({                                                  ####################### FUTURE CALL ####################
-      #       get.WCS.data(session$userData$layer.info, st_bbox(session$userData$poly))    # download data
-      #    })
+      # promisexx <- future({                                                  ####################### FUTURE CALL ####################
+      # get.WCS.data(session$userData$layer.info, st_bbox(session$userData$poly))    # download data
+      # })
       
       session$userData$layer.data <- get.WCS.data(session$userData$layer.info, st_bbox(session$userData$poly))    # download data    
-      
       removeNotification(id)
-      #  cat('\n\n**************** done with future call - not blocked yet ****************\n')
-      #  zzzz <<- session$userData$layer.data
-      #  cat(value(session$userData$layer.data)[['pid']])
    })
    
    observeEvent(input$cancel.report, {                       # --- Cancel button from report dialog. Go back to previous values
@@ -250,9 +244,17 @@ server <- function(input, output, session) {
    })
    
    # --- Generate report button from report dialog
-   ###output$do.report <- make.report(session$userData$poly, future_promise(session$userData$layer.data), input$proj.name, input$proj.info)     ###### PROMISE ######
+   # output$do.report <- 
+   ### make.report(session$userData$poly, future_promise(session$userData$layer.data), input$proj.name, input$proj.info)     ###### PROMISE ######
    
-   output$do.report <- make.report(session$userData$poly, session$userData$layer.data, input$proj.name, input$proj.info)   
+   
+   output$do.report <- make.report(session$userData$poly, session$userData$layer.data, input$proj.name, input$proj.info,
+                                   session$userData$acres)   
+   
+   
+   # output$do.report <- make.report(session$userData$poly, session$userData$layer.data, input$proj.name, input$proj.info,
+   #                                 session$userData$acres)   
+   
 }
 
 shinyApp(ui, server)

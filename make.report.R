@@ -1,4 +1,4 @@
-'make.report' <- function(poly, layer.data, proj.name, proj.info) {
+'make.report' <- function(poly, data, proj.name, proj.info, acres) {
    
    # make.report
    # Produce PDF report for target area
@@ -7,6 +7,7 @@
    #     data        list of terra objects for target area
    #     proj.name   user's project name
    #     proj.info   user's project info
+   #     acres       area of polygon in acres, before projection messes it up
    # Result:
    #     PDF report
    # B. Compton, 24 Apr 2024
@@ -18,26 +19,18 @@
    
    downloadHandler(file = result, content = function(result) {
       
-      cat('Generating PDF...')
+      cat('\n\nGenerating PDF...\n\n')
       t <- Sys.time()
       
       removeModal()
       id <- showNotification('Generating report...', duration = NULL, closeButton = FALSE)
+      # 
+      # fo_mean <- mean(as.array(layer.data[[1]]), na.rm = TRUE)
+      # wet_mean <- mean(as.array(layer.data[[2]]), na.rm = TRUE)
+      # params <- list(acres = acres, fo_mean = fo_mean, wet_mean = wet_mean)         # Set up parameters to pass to Rmd document
       
-      plot(poly)
-      
-      cat('\n\n----> we haven\'t asked for value() yet, so we shouldn\'t be blocked...\n')
-      data <- value(layer.data)
-      cat('\n\n----> ...now we\'re blocked!\n')
-      
-      cat('\n\n\n===== layer data downloaded, length = ', length(data), '=====\n')
-      qqqq <<- data
-      
-      acres <- as.vector(st_area(poly)) * 247.105e-6
-      fo_mean <- mean(as.array(data[[1]]), na.rm = TRUE)
-      wet_mean <- mean(as.array(data[[2]]), na.rm = TRUE)
-      params <- list(acres = acres, fo_mean = fo_mean, wet_mean = wet_mean)         # Set up parameters to pass to Rmd document
-      
+      params <- c(layer.stats(data), acres = acres)
+      xxx <<- params
       
       tempReport <- file.path(tempdir(), source)                                    # copy to temp directory so it'll work on the server
       file.copy(paste0('inst/', source), tempReport, overwrite = TRUE)
@@ -47,6 +40,5 @@
                         envir = new.env(parent = globalenv()))
       removeNotification(id)
       cat(Sys.time() - t, 'sec\n', sep = '')
-      
    })
 }

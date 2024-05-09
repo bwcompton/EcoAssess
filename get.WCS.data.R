@@ -10,8 +10,6 @@
    # B. Compton, 23 Apr 2024
    
    
-   cat('\n\n------------getting data within future call--------------\n')
-   cat('\nFuture PID = ', Sys.getpid(), '\n')
    
    bbox <- OWSUtils$toBBOX(bbox$xmin, bbox$xmax, bbox$ymin, bbox$ymax)
    layers <- names(layer.info)
@@ -24,9 +22,5 @@
       z[[layers[i]]] <- layer.info[[i]]$getCoverage(bbox = bbox)
       cat(Sys.time() - t, 'sec\n', sep = '')
    }
-   cat('\n\n------------done with future call--------------\n')
-   
-   z[['pid']] <- paste0('\nFuture PID = ', Sys.getpid(), '\n')
-   
    z  
 }

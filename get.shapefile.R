@@ -25,6 +25,5 @@
    
    ###### >>>> Trap errors here if the shapefile is bad. We'll check for it being too big later
    
-   
    st_transform(poly, '+proj=longlat +datum=WGS84')
 }

@@ -1,4 +1,4 @@
-'get.WCS.info' <- function(WCSserver, workspace, layers, log = 'INFO') {
+'get.WCS.info' <- function(WCSserver, workspace, layers, log = NULL) {
    
    # get.WCS.info
    # Get capabilities of several layers on WCS server
@@ -10,15 +10,10 @@
    # Result:
    #     list of layer capabilities
    # B. Compton, 23 Apr 2024
-    
    
    
-   #cat('\n\n--- getting layer info\n')
    
-   log <- NULL
-   cat('\n\nGetting WCS info...')
    t <- Sys.time()
-   
    
    caps <- WCSClient$new(WCSserver, '2.0.1', logger = log)$getCapabilities()
    z <- list()
