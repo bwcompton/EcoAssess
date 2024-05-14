@@ -15,9 +15,10 @@
    }
    previouswd <- getwd()
    setwd(uploaddir <- dirname(shapefile$datapath[1]))
+   on.exit(setwd(previouswd))
+   
    for(i in 1:nrow(shapefile))
       file.rename(shapefile$datapath[i], shapefile$name[i])
-   setwd(previouswd)
    
    dsn <- paste(uploaddir, shapefile$name[grep(pattern="*.shp$", shapefile$name)], sep="/")
    poly <- st_read(dsn)

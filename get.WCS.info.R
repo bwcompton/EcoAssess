@@ -22,7 +22,7 @@
    for(i in layers)
       z[[i]] <- caps$findCoverageSummaryById(paste0(workspace, '__', i), exact = TRUE)
    
-   cat(Sys.time() - t, 'sec\n', sep = '')
+   cat('Getting WCS info = ', Sys.time() - t, 'sec\n', sep = '')
    
    z
 }
