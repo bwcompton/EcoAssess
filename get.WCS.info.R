@@ -11,7 +11,7 @@
    #     list of layer capabilities
    # B. Compton, 23 Apr 2024
    
-   
+   return(NULL)    #  not using this now, I think
    
    t <- Sys.time()
    
@@ -23,6 +23,9 @@
       z[[i]] <- caps$findCoverageSummaryById(paste0(workspace, '__', i), exact = TRUE)
    
    cat('Getting WCS info = ', Sys.time() - t, 'sec\n', sep = '')
+   
+   xxxcaps <<- caps
+   xxxinfo <<- z
    
    z
 }

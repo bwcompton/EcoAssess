@@ -1,4 +1,4 @@
-'make.report' <- function(wrapped.data, result, poly, proj.name, proj.info, acres) {
+'make.report' <- function(layers, result, poly, proj.name, proj.info, acres) {
    
    # make.report
    # Produce PDF report for target area
@@ -25,7 +25,7 @@
  #     stop()
       
  #     print(wrapped.data)
-      data <- lapply(wrapped.data, unwrap)
+     # data <- lapply(wrapped.data, unwrap)
   #    print(data)
       
       # cat('Result = ', result, '\n')
@@ -41,6 +41,10 @@
       # 
       # 
       
+      yyyy <<- layers
+      layer.data <- lapply(layers, rast)
+      xxxx <<- layer.data
+      # plot(layer.data[[1]])
       
       removeModal()
       id <- showNotification('Generating report...', duration = NULL, closeButton = FALSE)
@@ -49,8 +53,8 @@
       # wet_mean <- mean(as.array(layer.data[[2]]), na.rm = TRUE)
       # params <- list(acres = acres, fo_mean = fo_mean, wet_mean = wet_mean)         # Set up parameters to pass to Rmd document
       
-      params <- c(layer.stats(data), acres = acres)
-      xxx <<- params
+      params <- c(layer.stats(layer.data), acres = acres)
+    #  xxx <<- params
       
       tempReport <- file.path(tempdir(), source)                                    # copy to temp directory so it'll work on the server
       file.copy(paste0('inst/', source), tempReport, overwrite = TRUE)
