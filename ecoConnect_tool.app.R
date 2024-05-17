@@ -1,10 +1,7 @@
 # ecoConnect.tool.app.R - ecoConnect and IEI viewing and reporting tool
 # Before initial deployment on shinyapps.io, need to restart R and:
-#    1
-# B. Compton, 19 Apr 2024
-
-
-###synch <<- FALSE            # ******************** SYNCH OR ASYNCH?
+#    library(remotes); install_github('https://github.com/trafficonese/leaflet.extras.git'); install_github('bwcompton/leaflet.lagniappe')
+# B. Compton, 19 Apr-17 May 2024
 
 
 
@@ -22,7 +19,6 @@ library(leaflet.lagniappe)
 library(terra)
 library(sf)
 library(lwgeom)
-#####library(ows4R)
 library(future)
 library(promises)
 plan('multisession')
@@ -30,7 +26,6 @@ plan('multisession')
 
 source('modalHelp.R')
 source('get.WCS.info.R')
-source('get.WCS.data.R')
 source('get.WCS.data.quick.R')  #########
 source('make.report.R')
 source('demo.modal.R')
@@ -84,8 +79,7 @@ ui <- page_sidebar(
          ),
          
          card(
-            radioButtons('synch', label = NULL, choiceNames = list('Synch', 'Asynch'), choiceValues = list(TRUE, FALSE)),
-            checkboxInput('quick', label = 'Quick download', value = FALSE),
+            radioButtons('synch', label = NULL, choiceNames = list('Synch', 'Asynch'), choiceValues = list(TRUE, FALSE), selected = FALSE),
             textOutput('time')
          ),
          
@@ -168,10 +162,7 @@ server <- function(input, output, session) {
       session$userData$synch <- input$synch
    })
    
-   observeEvent(input$quick, {
-      session$userData$quick <- input$quick  
-   })
-   
+
    observeEvent(input$drawPolys, {                    # ----- Draw button
       shinyjs::disable('drawPolys')
       shinyjs::disable('uploadShapefile')
@@ -182,9 +173,6 @@ server <- function(input, output, session) {
       proxy <- leafletProxy('map')
       addDrawToolbar(proxy, polylineOptions = FALSE, circleOptions = FALSE, rectangleOptions = FALSE, 
                      markerOptions = FALSE, circleMarkerOptions = FALSE, editOptions = editToolbarOptions()) 
-      
-      if(is.null(session$userData$layer.info))        # Get WCS capabilities if we haven't
-         session$userData$layer.info <- get.WCS.info(WCSserver, workspace, layers)
    })
    
    observeEvent(input$map_draw_all_features, {        # when the first poly is finished, get report becomes available
@@ -211,9 +199,6 @@ server <- function(input, output, session) {
       
       session$userData$drawn <- FALSE
       shinyjs::enable('getReport')
-      
-      if(is.null(session$userData$layer.info))        # Get WCS capabilities if we haven't
-         session$userData$layer.info <- get.WCS.info(WCSserver, workspace, layers)
    })
    
    observeEvent(input$shapefile, {                    # --- Have uploaded shapefile
@@ -254,95 +239,28 @@ server <- function(input, output, session) {
       ))
       
       # -- Download data while user is typing project info
-      #   id <- showNotification('Gathering data...', duration = NULL, closeButton = FALSE)
       session$userData$acres <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
       session$userData$poly <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj') # project to match downloaded rasters
-      #  bbox <- st_bbox(session$userData$poly)
-      #  session$userData$bbox <- bbox <- OWSUtils$toBBOX(bbox$xmin, bbox$xmax, bbox$ymin, bbox$ymax)
       session$userData$bbox <- as.list(st_bbox(session$userData$poly))
       
-      # cat('---+---\n')
-      # print(session$userData$bbox)
-      # cat('---+---\n')
-      # 
-      
-      xxbbox <<- session$userData$bbox  ########################## testing
-      
-      #  id <- showNotification('Gathering data...', duration = NULL, closeButton = FALSE)
-      #  removeNotification(id)
-      
-      xxinfo <<- session$userData$layer.info
-      xxbbox <<- session$userData$bbox
-      xxserver <<- WCSserver
-      xxlayers <<- layers
-      
-      
       if(session$userData$synch) {  
-         
          cat('Downloading data synchronously...\n')                                   # SYNCH
          t <- Sys.time()
-         #        session$userData$data <- get.WCS.data(session$userData$layer.info, session$userData$bbox)    # download data  
-         cat('\nasking for data via SYNCH...\n')
-         
-         # print(WCSserver)
-         # print(layers)
-         # print(session$userData$bbox)
-         # print('now asking')
-         if(session$userData$quick)
-            session$userData$data <- get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
-         ##***##        else
-         ##***##       session$userData$data <- get.WCS.data(session$userData$layer.info, session$userData$bbox)    # download data 
-         cat('\n...all done. That took ', Sys.time() - t, 'sec\n', sep = '') 
+         session$userData$data <- get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
          session$userData$time <- Sys.time() - t
-         
-         #the.data <<- session$userData$data   # FOR DEBUGGING
-         
       } else {
-         
-         
-         cat('---|---\n')
-         print(session$userData$bbox)
-         cat('---|---\n')
-         
-         
          plan('multisession')                                           # ASYNCH
          cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n')
          t <- Sys.time()
          session$userData$the.promise <- future_promise({
             cat('*** PID ', Sys.getpid(), ' is working in the future...\n')
-            # cat('------\n')
-            # print(session$userData$bbox)
-            # cat('------\n')
-            # qqbbox <<- session$userData$bbox 
-            
             get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
          }) 
-         
-         
-         #Sys.sleep(20)
-         #        session$userData$data <- get.WCS.data(session$userData$layer.info, session$userData$bbox)    # download data  
-         #session$userData$data <- get.WCS.data(WCSserver, layers, session$userData$bbox)    # download data  
-         #session$userData$the.promise <- future_promise({funct()})
-         #  if(session$userData$quick)
-         ##***##           else
-         ##***##            session$userData$data <- get.WCS.data(session$userData$layer.info, session$userData$bbox)    # download data 
-         
-         
-         # NULL
-         cat('Future overhead = ', Sys.time() - t, 'sec\n', sep = '')
          session$userData$time <- Sys.time() - t
          return()
       }
-      
-      
-      # plan('multisession')
-      # promisexx <- future({                                                  ####################### FUTURE CALL ####################
-      # get.WCS.data(session$userData$layer.info, st_bbox(session$userData$poly))    # download data
-      # })
-      
-      # session$userData$layer.data <- get.WCS.data(session$userData$layer.info, st_bbox(session$userData$poly))    # download data    
-      #  removeNotification(id)
    })
+   
    
    observeEvent(input$cancel.report, {                       # --- Cancel button from report dialog. Go back to previous values
       removeModal()
@@ -351,45 +269,20 @@ server <- function(input, output, session) {
    })
    
    
-   # if(session$userData$synch) {  
-   #    # --- Generate report button from report dialog                # SYNCH
-   #    output$do.report <- downloadHandler(
-   #       file = 'report.pdf',
-   #       content = function(f) {
-   #          cat('------------ doing SYNCH report ------------\n')
-   #          make.report(session$userData$data, f, session$userData$poly, input$proj.name, input$proj.info, session$userData$acres)
-   #       }
-   #    )
-   #    
-   # } else {
-   
    # --- Generate report button from report dialog                # ASYNCH
    output$do.report <- downloadHandler(
       file = 'report.pdf',
       content = function(f) {
          if(session$userData$synch) {  
             cat('------------ doing SYNCH report ------------\n')
-            make.report(session$userData$data, f, session$userData$poly, input$proj.name, input$proj.info, session$userData$acres, session$userData$quick)
+            make.report(session$userData$data, f, input$proj.name, input$proj.info, session$userData$acres)
          } else {
             cat('------------ doing ASYNCH report ------------\n')
             # Content needs to receive promise as return value, so including resolution
-            session$userData$the.promise %...>% make.report(., f, session$userData$poly, input$proj.name, input$proj.info, session$userData$acres, session$userData$quick)
+            session$userData$the.promise %...>% make.report(., f, input$proj.name, input$proj.info, session$userData$acres)
          }
       }
    )
-   #  }
-   
-   
-   ### make.report(session$userData$poly, future_promise(session$userData$layer.data), input$proj.name, input$proj.info)     ###### PROMISE ######
-   
-   
-   # output$do.report <- make.report(session$userData$poly, session$userData$layer.data, input$proj.name, input$proj.info,
-   #                                 session$userData$acres)   
-   
-   
-   # output$do.report <- make.report(session$userData$poly, session$userData$layer.data, input$proj.name, input$proj.info,
-   #                                 session$userData$acres)   
-   
 }
 
 shinyApp(ui, server)
