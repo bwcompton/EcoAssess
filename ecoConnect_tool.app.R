@@ -22,7 +22,7 @@ library(leaflet.lagniappe)
 library(terra)
 library(sf)
 library(lwgeom)
-#library(ows4R)
+#####library(ows4R)
 library(future)
 library(promises)
 plan('multisession')
@@ -31,6 +31,7 @@ plan('multisession')
 source('modalHelp.R')
 source('get.WCS.info.R')
 source('get.WCS.data.R')
+source('get.WCS.data.quick.R')  #########
 source('make.report.R')
 source('demo.modal.R')
 source('get.shapefile.R')
@@ -84,6 +85,7 @@ ui <- page_sidebar(
          
          card(
             radioButtons('synch', label = NULL, choiceNames = list('Synch', 'Asynch'), choiceValues = list(TRUE, FALSE)),
+            checkboxInput('quick', label = 'Quick download', value = FALSE),
             textOutput('time')
          ),
          
@@ -166,6 +168,9 @@ server <- function(input, output, session) {
       session$userData$synch <- input$synch
    })
    
+   observeEvent(input$quick, {
+      session$userData$quick <- input$quick  
+   })
    
    observeEvent(input$drawPolys, {                    # ----- Draw button
       shinyjs::disable('drawPolys')
@@ -254,14 +259,22 @@ server <- function(input, output, session) {
       session$userData$poly <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj') # project to match downloaded rasters
       #  bbox <- st_bbox(session$userData$poly)
       #  session$userData$bbox <- bbox <- OWSUtils$toBBOX(bbox$xmin, bbox$xmax, bbox$ymin, bbox$ymax)
-      session$userData$bbox <- st_bbox(session$userData$poly)
+      session$userData$bbox <- as.list(st_bbox(session$userData$poly))
       
+      # cat('---+---\n')
+      # print(session$userData$bbox)
+      # cat('---+---\n')
+      # 
       
       xxbbox <<- session$userData$bbox  ########################## testing
       
       #  id <- showNotification('Gathering data...', duration = NULL, closeButton = FALSE)
       #  removeNotification(id)
       
+      xxinfo <<- session$userData$layer.info
+      xxbbox <<- session$userData$bbox
+      xxserver <<- WCSserver
+      xxlayers <<- layers
       
       
       if(session$userData$synch) {  
@@ -271,12 +284,14 @@ server <- function(input, output, session) {
          #        session$userData$data <- get.WCS.data(session$userData$layer.info, session$userData$bbox)    # download data  
          cat('\nasking for data via SYNCH...\n')
          
-         print(WCSserver)
-         print(layers)
-         print(session$userData$bbox)
-         print('now asking')
-         
-         session$userData$data <- get.WCS.data(WCSserver, layers, session$userData$bbox)    # download data  
+         # print(WCSserver)
+         # print(layers)
+         # print(session$userData$bbox)
+         # print('now asking')
+         if(session$userData$quick)
+            session$userData$data <- get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
+         ##***##        else
+         ##***##       session$userData$data <- get.WCS.data(session$userData$layer.info, session$userData$bbox)    # download data 
          cat('\n...all done. That took ', Sys.time() - t, 'sec\n', sep = '') 
          session$userData$time <- Sys.time() - t
          
@@ -284,16 +299,35 @@ server <- function(input, output, session) {
          
       } else {
          
+         
+         cat('---|---\n')
+         print(session$userData$bbox)
+         cat('---|---\n')
+         
+         
          plan('multisession')                                           # ASYNCH
          cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n')
          t <- Sys.time()
          session$userData$the.promise <- future_promise({
             cat('*** PID ', Sys.getpid(), ' is working in the future...\n')
-            #Sys.sleep(20)
-            #        session$userData$data <- get.WCS.data(session$userData$layer.info, session$userData$bbox)    # download data  
-            session$userData$data <- get.WCS.data(WCSserver, layers, session$userData$bbox)    # download data  
-            #session$userData$the.promise <- future_promise({funct()})
+            # cat('------\n')
+            # print(session$userData$bbox)
+            # cat('------\n')
+            # qqbbox <<- session$userData$bbox 
+            
+            get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
          }) 
+         
+         
+         #Sys.sleep(20)
+         #        session$userData$data <- get.WCS.data(session$userData$layer.info, session$userData$bbox)    # download data  
+         #session$userData$data <- get.WCS.data(WCSserver, layers, session$userData$bbox)    # download data  
+         #session$userData$the.promise <- future_promise({funct()})
+         #  if(session$userData$quick)
+         ##***##           else
+         ##***##            session$userData$data <- get.WCS.data(session$userData$layer.info, session$userData$bbox)    # download data 
+         
+         
          # NULL
          cat('Future overhead = ', Sys.time() - t, 'sec\n', sep = '')
          session$userData$time <- Sys.time() - t
@@ -335,11 +369,11 @@ server <- function(input, output, session) {
       content = function(f) {
          if(session$userData$synch) {  
             cat('------------ doing SYNCH report ------------\n')
-            make.report(session$userData$data, f, session$userData$poly, input$proj.name, input$proj.info, session$userData$acres)
+            make.report(session$userData$data, f, session$userData$poly, input$proj.name, input$proj.info, session$userData$acres, session$userData$quick)
          } else {
             cat('------------ doing ASYNCH report ------------\n')
             # Content needs to receive promise as return value, so including resolution
-            session$userData$the.promise %...>% make.report(., f, session$userData$poly, input$proj.name, input$proj.info, session$userData$acres)
+            session$userData$the.promise %...>% make.report(., f, session$userData$poly, input$proj.name, input$proj.info, session$userData$acres, session$userData$quick)
          }
       }
    )
