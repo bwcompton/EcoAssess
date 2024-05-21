@@ -87,7 +87,6 @@ ui <- page_sidebar(
          
          card(
             radioButtons('synch', label = NULL, choiceNames = list('Synch', 'Asynch'), choiceValues = list(TRUE, FALSE), selected = FALSE),
-            textOutput('tempdir'),
             textOutput('time')
          ),
          
@@ -166,10 +165,6 @@ server <- function(input, output, session) {
    
    observeEvent(input$synch, {
       session$userData$synch <- input$synch
-      output$tempdir <- renderText({
-         paste('Temp dir = ', tempdir(), sep = '')
-      })
-      
    })
    
    
@@ -248,14 +243,10 @@ server <- function(input, output, session) {
                        width = '100%', rows = 6, placeholder = 'Optional project description'),
          footer = tagList(
             downloadButton('do.report', 'Generate report'),
-            #shinyjs::useShiny(),
-            #disabled(downloadButton("do.report", "Download the thang")),
             actionButton('cancel.report', 'Cancel')
          )
       ))
       
-      
-      cat('\n\nHere 1\n')
       
       # -- Download data while user is typing project info
       session$userData$acres <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
@@ -278,25 +269,6 @@ server <- function(input, output, session) {
          session$userData$time <- Sys.time() - t
          NULL
       }
-      
-      cat('\n\nHere 2\n')
-      
-      
-      cat('\n\n---- Resolved: ', resolved(session$userData$the.promise), '----\n')
-      
-      # if(!resolved(session$userData$the.promise)) 
-      # {shinyjs::disable('do.report')}
-      # else
-      # {shinyjs::enable('do.report')}
-       
-      cat('\n\nHere 3\n')
-      
-      for(i in 1:25) {
-         print(resolved(session$userData$the.promise))
-         Sys.sleep(0.2)
-      }
-      
-      
    })
    
    
@@ -317,8 +289,6 @@ server <- function(input, output, session) {
          } else {
             cat('------------ doing ASYNCH report ------------\n')
             # Content needs to receive promise as return value, so including resolution
-            cat('\n\n---- In downloadHandler, resolved: ', resolved(session$userData$the.promise), '----\n')
-            
             session$userData$the.promise %...>% make.report(., f, input$proj.name, input$proj.info, session$userData$acres)
          }
       }
