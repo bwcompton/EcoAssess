@@ -20,7 +20,7 @@
    cat('\n\nGenerating PDF...\n\n')
    t <- Sys.time()
    layer.data <- lapply(layers, rast)
-   plot(layer.data[[1]])                  # for testing
+   # plot(layer.data[[1]])                  # for testing
    
    
    id <- showNotification('Generating report...', duration = NULL, closeButton = FALSE)
@@ -33,7 +33,9 @@
                           params = params,
                           envir = new.env(parent = globalenv()))
    removeNotification(id)
-   cat(Sys.time() - t, 'sec\n', sep = '')
+
+
+   cat('Time to create report: ', round(Sys.time() - t, 2), ' sec', sep = '')
    
    z
 }

@@ -4,7 +4,6 @@
 # B. Compton, 19 Apr-17 May 2024
 
 
-xxpoly <<- NULL
 
 
 library(shiny)
@@ -34,12 +33,7 @@ source('draw.poly.R')
 source('layer.stats.R')
 
 
-# 'resolution' <- function(prom) {
-#    # if(is.null(prom))
-#    #    FALSE
-#    # else
-#       resolved(prom)
-# }
+
 
 
 home <- c(-75, 42)            # center of NER (approx)
@@ -87,8 +81,8 @@ ui <- page_sidebar(
          
          card(
             radioButtons('synch', label = NULL, choiceNames = list('Synch', 'Asynch'), choiceValues = list(TRUE, FALSE), selected = FALSE),
-            textOutput('time')
-         ),
+            textOutput('time'),
+        ),
          
          card(
             span(('Target area report'),
@@ -134,6 +128,7 @@ server <- function(input, output, session) {
    #bs_themer()                                 # uncomment to select a new theme
    
    session$userData$synch <- FALSE
+   session$userData$report.time <- NULL
    
    observeEvent(input$aboutTool, {
       modalHelp(aboutTool, 'About this tool')})
@@ -223,12 +218,13 @@ server <- function(input, output, session) {
          clearShapes()
    })
    
+
    observeEvent(input$getReport, {                    # ----- Get report button
       output$time <- renderText({
          paste('Wait time ', round(session$userData$time, 2), ' sec', sep = '')
       })
       
-      
+
       if(session$userData$drawn)                      #     If drawn polygon,
          session$userData$poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))  #    drawn poly as sf
       
@@ -242,7 +238,8 @@ server <- function(input, output, session) {
          textAreaInput('proj.info', 'Project description', value = input$proj.info, 
                        width = '100%', rows = 6, placeholder = 'Optional project description'),
          footer = tagList(
-            downloadButton('do.report', 'Generate report'),
+            #downloadButton('do.report', 'Generate report'),
+            disabled(downloadButton('do.report', 'Generate report')),
             actionButton('cancel.report', 'Cancel')
          )
       ))
@@ -266,6 +263,11 @@ server <- function(input, output, session) {
             cat('*** PID ', Sys.getpid(), ' is working in the future...\n')
             get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
          }) 
+         then(session$userData$the.promise, onFulfilled = function(x) {
+            print('***** Yay! The promise has been fulfilled!')
+            enable('do.report')
+         }
+         ) 
          session$userData$time <- Sys.time() - t
          NULL
       }
@@ -296,3 +298,5 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
+
+
