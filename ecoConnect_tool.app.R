@@ -4,6 +4,8 @@
 # B. Compton, 19 Apr-17 May 2024
 
 
+xxpoly <<- NULL
+
 
 library(shiny)
 library(bslib)
@@ -25,14 +27,19 @@ plan('multisession')
 
 
 source('modalHelp.R')
-source('get.WCS.info.R')
 source('get.WCS.data.quick.R')  #########
 source('make.report.R')
-source('demo.modal.R')
 source('get.shapefile.R')
 source('draw.poly.R')
 source('layer.stats.R')
 
+
+# 'resolution' <- function(prom) {
+#    # if(is.null(prom))
+#    #    FALSE
+#    # else
+#       resolved(prom)
+# }
 
 
 home <- c(-75, 42)            # center of NER (approx)
@@ -80,6 +87,7 @@ ui <- page_sidebar(
          
          card(
             radioButtons('synch', label = NULL, choiceNames = list('Synch', 'Asynch'), choiceValues = list(TRUE, FALSE), selected = FALSE),
+            textOutput('tempdir'),
             textOutput('time')
          ),
          
@@ -143,8 +151,6 @@ server <- function(input, output, session) {
             addWMSTiles(WMSserver, layers = paste0(workspace, ':', layers[1]),        
                         options = WMSTileOptions(opacity = 0.5)) |>
             addFullscreenControl(position = "topleft", pseudoFullscreen = FALSE) |>
-            # addDrawToolbar(polylineOptions = FALSE, circleOptions = FALSE, rectangleOptions = FALSE, 
-            #                markerOptions = FALSE, circleMarkerOptions = FALSE, editOptions = editToolbarOptions()) |>
             addScaleBar(position = 'bottomleft') |>
             osmGeocoder(position = 'bottomright', email = 'bcompton@umass.edu') |>
             setView(lng = home[1], lat = home[2], zoom = zoom)
@@ -160,9 +166,13 @@ server <- function(input, output, session) {
    
    observeEvent(input$synch, {
       session$userData$synch <- input$synch
+      output$tempdir <- renderText({
+         paste('Temp dir = ', tempdir(), sep = '')
+      })
+      
    })
    
-
+   
    observeEvent(input$drawPolys, {                    # ----- Draw button
       shinyjs::disable('drawPolys')
       shinyjs::disable('uploadShapefile')
@@ -215,7 +225,7 @@ server <- function(input, output, session) {
       
       leafletProxy('map') |>
          removeDrawToolbar(clearFeatures = TRUE) |>
-         removeShape('poly')
+         clearShapes()
    })
    
    observeEvent(input$getReport, {                    # ----- Get report button
@@ -223,10 +233,14 @@ server <- function(input, output, session) {
          paste('Wait time ', round(session$userData$time, 2), ' sec', sep = '')
       })
       
+      
       if(session$userData$drawn)                      #     If drawn polygon,
          session$userData$poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))  #    drawn poly as sf
       
       session$userData$saved <- list(input$proj.name, input$proj.info)
+      
+      
+      
       showModal(modalDialog(                          # --- Modal input to get project name and description
          textInput('proj.name', 'Project name', value = input$proj.name, width = '100%',
                    placeholder = 'Project name for report'),
@@ -234,14 +248,19 @@ server <- function(input, output, session) {
                        width = '100%', rows = 6, placeholder = 'Optional project description'),
          footer = tagList(
             downloadButton('do.report', 'Generate report'),
+            #shinyjs::useShiny(),
+            #disabled(downloadButton("do.report", "Download the thang")),
             actionButton('cancel.report', 'Cancel')
          )
       ))
       
+      
+      cat('\n\nHere 1\n')
+      
       # -- Download data while user is typing project info
       session$userData$acres <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
-      session$userData$poly <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj') # project to match downloaded rasters
-      session$userData$bbox <- as.list(st_bbox(session$userData$poly))
+      session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj') # project to match downloaded rasters
+      session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
       
       if(session$userData$synch) {  
          cat('Downloading data synchronously...\n')                                   # SYNCH
@@ -257,8 +276,27 @@ server <- function(input, output, session) {
             get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
          }) 
          session$userData$time <- Sys.time() - t
-         return()
+         NULL
       }
+      
+      cat('\n\nHere 2\n')
+      
+      
+      cat('\n\n---- Resolved: ', resolved(session$userData$the.promise), '----\n')
+      
+      # if(!resolved(session$userData$the.promise)) 
+      # {shinyjs::disable('do.report')}
+      # else
+      # {shinyjs::enable('do.report')}
+       
+      cat('\n\nHere 3\n')
+      
+      for(i in 1:25) {
+         print(resolved(session$userData$the.promise))
+         Sys.sleep(0.2)
+      }
+      
+      
    })
    
    
@@ -279,6 +317,8 @@ server <- function(input, output, session) {
          } else {
             cat('------------ doing ASYNCH report ------------\n')
             # Content needs to receive promise as return value, so including resolution
+            cat('\n\n---- In downloadHandler, resolved: ', resolved(session$userData$the.promise), '----\n')
+            
             session$userData$the.promise %...>% make.report(., f, input$proj.name, input$proj.info, session$userData$acres)
          }
       }

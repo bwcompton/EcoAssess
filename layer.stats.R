@@ -10,10 +10,6 @@
    
    
    
-   print('in layer.stats...')
-   print(length(layers))
-   plot(layers[[1]])
-   
    fo_mean <- mean(as.array(layers[[1]]), na.rm = TRUE)
    wet_mean <- mean(as.array(layers[[2]]), na.rm = TRUE)
    
