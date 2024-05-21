@@ -33,7 +33,7 @@
                           params = params,
                           envir = new.env(parent = globalenv()))
    removeNotification(id)
-   cat(Sys.time() - t, 'sec\n', sep = '')
+   cat('Time to create report: ', Sys.time() - t, ' sec\n', sep = '')
    
    z
 }

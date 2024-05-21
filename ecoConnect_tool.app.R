@@ -242,7 +242,8 @@ server <- function(input, output, session) {
          textAreaInput('proj.info', 'Project description', value = input$proj.info, 
                        width = '100%', rows = 6, placeholder = 'Optional project description'),
          footer = tagList(
-            downloadButton('do.report', 'Generate report'),
+            #downloadButton('do.report', 'Generate report'),
+            actionButton('do.report', 'OK'),
             actionButton('cancel.report', 'Cancel')
          )
       ))
@@ -279,20 +280,45 @@ server <- function(input, output, session) {
    })
    
    
-   # --- Generate report button from report dialog                # ASYNCH
-   output$do.report <- downloadHandler(
+   observeEvent(input$do.report, {
+      file <- 'report.pdf'
+      session$userData$report <- session$userData$the.promise %...>% make.report(., file, input$proj.name, input$proj.info, session$userData$acres) 
+      xxx <<- session$userData$report
+      
+      showModal(modalDialog(
+         downloadButton('download.report', 'Download report'),
+         footer = NULL,
+         size = 's'
+      ))
+      
+   })
+   
+   
+   output$download.report <- downloadHandler(
       file = 'report.pdf',
       content = function(f) {
-         if(session$userData$synch) {  
-            cat('------------ doing SYNCH report ------------\n')
-            make.report(session$userData$data, f, input$proj.name, input$proj.info, session$userData$acres)
-         } else {
-            cat('------------ doing ASYNCH report ------------\n')
-            # Content needs to receive promise as return value, so including resolution
-            session$userData$the.promise %...>% make.report(., f, input$proj.name, input$proj.info, session$userData$acres)
-         }
-      }
-   )
+         session$userData$report %...>% z
+         z
+   })
+   
+   
+   
+   # # --- Generate report button from report dialog                # ASYNCH
+   # output$do.report <- downloadHandler(
+   #    file = 'report.pdf',
+   #    content = function(f) {
+   #       if(session$userData$synch) {  
+   #          cat('------------ doing SYNCH report ------------\n')
+   #          make.report(session$userData$data, f, input$proj.name, input$proj.info, session$userData$acres)
+   #       } else {
+   #          cat('------------ doing ASYNCH report ------------\n')
+   #          # Content needs to receive promise as return value, so including resolution
+   #          session$userData$the.promise %...>% make.report(., f, input$proj.name, input$proj.info, session$userData$acres)
+   #       }
+   #    }
+   # )
+   
+   
 }
 
 shinyApp(ui, server)
