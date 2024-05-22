@@ -16,7 +16,7 @@ params:
 ```
 
 
-```{r}
+```{r, echo = FALSE}
 # The `params` object is available in the document.
 cat('Target area is ', params$acres, '\n', sep = '')
 cat('Forest ecoConnect = ', params$fo_mean, sep = '')

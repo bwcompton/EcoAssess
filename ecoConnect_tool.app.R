@@ -34,8 +34,6 @@ source('layer.stats.R')
 
 
 
-
-
 home <- c(-75, 42)            # center of NER (approx)
 zoom <- 6 
 
@@ -80,9 +78,8 @@ ui <- page_sidebar(
          ),
          
          card(
-            radioButtons('synch', label = NULL, choiceNames = list('Synch', 'Asynch'), choiceValues = list(TRUE, FALSE), selected = FALSE),
             textOutput('time'),
-        ),
+         ),
          
          card(
             span(('Target area report'),
@@ -127,8 +124,6 @@ server <- function(input, output, session) {
    
    #bs_themer()                                 # uncomment to select a new theme
    
-   session$userData$synch <- FALSE
-   session$userData$report.time <- NULL
    
    observeEvent(input$aboutTool, {
       modalHelp(aboutTool, 'About this tool')})
@@ -158,10 +153,6 @@ server <- function(input, output, session) {
          shinyjs::enable('scaling')
    })
    
-   observeEvent(input$synch, {
-      session$userData$synch <- input$synch
-   })
-   
    
    observeEvent(input$drawPolys, {                    # ----- Draw button
       shinyjs::disable('drawPolys')
@@ -185,7 +176,6 @@ server <- function(input, output, session) {
       shinyjs::disable('uploadShapefile')
       shinyjs::enable('startOver')
       
-      cat('synch = ', session$userData$synch, '\n', sep = '')
       
       # do modal dialog to get shapefile
       showModal(modalDialog(
@@ -218,19 +208,20 @@ server <- function(input, output, session) {
          clearShapes()
    })
    
-
+   
+   
    observeEvent(input$getReport, {                    # ----- Get report button
       output$time <- renderText({
          paste('Wait time ', round(session$userData$time, 2), ' sec', sep = '')
       })
       
-
+      
       if(session$userData$drawn)                      #     If drawn polygon,
          session$userData$poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))  #    drawn poly as sf
       
       session$userData$saved <- list(input$proj.name, input$proj.info)
       
-      
+      session$userData$waiting <- TRUE
       
       showModal(modalDialog(                          # --- Modal input to get project name and description
          textInput('proj.name', 'Project name', value = input$proj.name, width = '100%',
@@ -250,27 +241,20 @@ server <- function(input, output, session) {
       session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj') # project to match downloaded rasters
       session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
       
-      if(session$userData$synch) {  
-         cat('Downloading data synchronously...\n')                                   # SYNCH
-         t <- Sys.time()
-         session$userData$data <- get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
-         session$userData$time <- Sys.time() - t
-      } else {
-         plan('multisession')                                           # ASYNCH
-         cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n')
-         t <- Sys.time()
-         session$userData$the.promise <- future_promise({
-            cat('*** PID ', Sys.getpid(), ' is working in the future...\n')
-            get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
-         }) 
-         then(session$userData$the.promise, onFulfilled = function(x) {
-            print('***** Yay! The promise has been fulfilled!')
-            enable('do.report')
-         }
-         ) 
-         session$userData$time <- Sys.time() - t
-         NULL
-      }
+      plan('multisession')                                           # ASYNCH
+      cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n')
+      t <- Sys.time()
+      session$userData$the.promise <- future_promise({
+         cat('*** PID ', Sys.getpid(), ' is working in the future...\n')
+         get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
+      }) 
+      then(session$userData$the.promise, onFulfilled = function(x) {
+         print('***** Yay! The promise has been fulfilled!')
+         enable('do.report')
+         #session$userData$waiting <- FALSE
+      }) 
+      session$userData$time <- Sys.time() - t
+      NULL
    })
    
    
@@ -285,14 +269,9 @@ server <- function(input, output, session) {
    output$do.report <- downloadHandler(
       file = 'report.pdf',
       content = function(f) {
-         if(session$userData$synch) {  
-            cat('------------ doing SYNCH report ------------\n')
-            make.report(session$userData$data, f, input$proj.name, input$proj.info, session$userData$acres)
-         } else {
-            cat('------------ doing ASYNCH report ------------\n')
-            # Content needs to receive promise as return value, so including resolution
-            session$userData$the.promise %...>% make.report(., f, input$proj.name, input$proj.info, session$userData$acres)
-         }
+         cat('------------ doing ASYNCH report ------------\n')
+         removeModal()      
+         session$userData$the.promise %...>% make.report(., f, input$proj.name, input$proj.info, session$userData$acres)
       }
    )
 }
