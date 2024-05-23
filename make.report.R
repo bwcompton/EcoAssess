@@ -1,4 +1,4 @@
-'make.report' <- function(layers, resultfile, proj.name, proj.info, acres) {
+'make.report' <- function(layers, resultfile, proj.name, proj.info, acres, quick, params) {
    
    # make.report
    # Produce PDF report for target area
@@ -14,21 +14,21 @@
    
    
    
-   # layers <<- layers; resultfile <<- resultfile; proj.name <<- proj.name; proj.info <<- proj.info; acres <<- acres
-   
-   
    
    source = 'report_template.Rmd'         # markdown template
-   
-   cat('\n\nGenerating PDF...\n\n')
    t <- Sys.time()
-   layer.data <- lapply(layers, rast)
-   # plot(layer.data[[1]])                  # for testing
-   
-   
    id <- showNotification('Generating report...', duration = NULL, closeButton = FALSE)
+   cat('\n\nGenerating PDF...\n\n')
    
-   params <- c(layer.stats(layer.data), acres = acres)
+   if(quick) {
+      params <- xxparams
+   } else {                                                    # *** for testing: save params for Do it now button
+      layer.data <- lapply(layers, rast)
+      params <- c(layer.stats(layer.data), proj.name = proj.name, proj.info = proj.info, acres = acres)
+      xxresultfile <<- resultfile; xxparams <<- params
+   }
+   
+  
    tempReport <- file.path(tempdir(), source)                                    # copy to temp directory so it'll work on the server
    file.copy(paste0('inst/', source), tempReport, overwrite = TRUE)
    

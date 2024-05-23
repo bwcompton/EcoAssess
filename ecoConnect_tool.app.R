@@ -78,6 +78,7 @@ ui <- page_sidebar(
          ),
          
          card(
+            downloadButton('quick.report', 'Do it now'),
             textOutput('time'),
          ),
          
@@ -271,7 +272,16 @@ server <- function(input, output, session) {
       content = function(f) {
          cat('------------ doing ASYNCH report ------------\n')
          removeModal()      
-         session$userData$the.promise %...>% make.report(., f, input$proj.name, input$proj.info, session$userData$acres)
+         session$userData$the.promise %...>% make.report(., f, input$proj.name, input$proj.info, session$userData$acres, quick = FALSE)
+      }
+   )
+   
+   
+   # --- Generate report button from report dialog                # For testing reports
+   output$quick.report <- downloadHandler(
+      file = 'report.pdf',
+      content = function(f) {
+         make.report(resultfile = xxresultfile, quick = TRUE, params = xxparams)
       }
    )
 }

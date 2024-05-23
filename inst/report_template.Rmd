@@ -1,24 +1,52 @@
 ---
-title: "ecoConnect Report"
 output: pdf_document
 params:
+  proj.name: ''
+  proj.info: ''
   acres: NA
   fo_mean: NA
+  ridge_mean: NA
   wet_mean: NA
+  flood_mean: NA
+  
+  urlcolor: blue
+
 ---
-
-```{r eval = FALSE, echo = FALSE}
-# For PDF output, change the header to have "output: pdf_document".
-#
-# Note that due to an issue in rmarkdown, the default value of a parameter in
-# the header cannot be `NULL`, so I used a default of `NA` for the default value
-# of `n`.
+```{r include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
-```{r, echo = FALSE}
-# The `params` object is available in the document.
-cat('Target area is ', params$acres, '\n', sep = '')
-cat('Forest ecoConnect = ', params$fo_mean, sep = '')
-cat('Wetland ecoConnect = ', params$wet_mean, sep = '')
-```
+
+# ``r params$proj.name``
+## ``r round(params$acres, 1)`` acres
+## ecoConnect tool report (``r format(Sys.Date(), '%B %d, %Y')``)
+``r params$proj.info``
+
+
+
+Core | | Connect |
+-----|---|---------|---
+Northeast IEI | 0.92 (top 8%) | Forest | 92 (top 10%)
+State IEI | 0.85 (top 15%) | Ridgetops | 12 (top 60%)
+Ecoregion IEI | 0.79 (top 21%) | Wetlands | 78 (top 22%)
+Watershed IEI | 0.82 (top 18%) | Floodplain forest | 0 (top 0%) 
+
+Core is base on the Index of Ecological Integrity (IEI), blah blah blah blah
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah [web link]
+
+Connect is based on ecoConnect, a measure of each sites contribution to regional connectivity for a particular ecosystem. Blah blah blah blah blah blah blah blah blah. https://umassdsl.org/data/ecoConnect
+
+## (inset map)
+
+![](c:/Work/R/ecoConnect.tool/www/UMass_DSL_logo_v2_small.png)
+
+$\color{blue}{https://umassdsl.shinyapps.io/ecoConnect\_tool/}$
+
+or like this:
+
+[$\color{blue}{https://umassdsl.shinyapps.io/ecoConnect\_tool/}$](https://umassdsl.shinyapps.io/ecoConnect\_tool/)
+
+or
+
+[https://umassdsl.shinyapps.io/ecoConnect\_tool/](https://umassdsl.shinyapps.io/ecoConnect\_tool/)
