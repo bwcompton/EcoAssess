@@ -1,36 +1,43 @@
 ---
-output: pdf_document
+header-includes:
+   - \usepackage[default]{sourcesanspro}
+   - \usepackage[T1]{fontenc}
+output: 
+   pdf_document
+documentclass: report
+geometry: 
+- margin=1in
+- top=1in
+
+fontsize: 12pt 
+urlcolor: blue
 params:
   proj.name: ''
   proj.info: ''
+  date: ''
   acres: NA
-  fo_mean: NA
-  ridge_mean: NA
-  wet_mean: NA
-  flood_mean: NA
-  
+  Forest_fowet: NA
+  Ridgetop: NA
+  Nonfo_wet: NA
+  LR_floodplain_forest: NA
   urlcolor: blue
-
 ---
 ```{r include = FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(dev="cairo_pdf")
 ```
 
-
-
-# ``r params$proj.name``
-## ``r round(params$acres, 1)`` acres
-## ecoConnect tool report (``r format(Sys.Date(), '%B %d, %Y')``)
-``r params$proj.info``
+## `r params$proj.name` (`r params$acres` acres)
+| ecoConnect tool report, `r params$date`
+`r params$proj.info`
 
 
 
 Core | | Connect |
 -----|---|---------|---
-Northeast IEI | 0.92 (top 8%) | Forest | 92 (top 10%)
-State IEI | 0.85 (top 15%) | Ridgetops | 12 (top 60%)
-Ecoregion IEI | 0.79 (top 21%) | Wetlands | 78 (top 22%)
-Watershed IEI | 0.82 (top 18%) | Floodplain forest | 0 (top 0%) 
+Northeast IEI | 0.92 (top 8%) | Forest | `r params$Forest_fowet` (top 10%)
+State IEI | 0.85 (top 15%) | Ridgetops | `r params$Ridgetop` (top 60%)
+Ecoregion IEI | 0.79 (top 21%) | Wetlands | `r params$Nonfo_wet` (top 22%)
+Watershed IEI | 0.82 (top 18%) | Floodplain forest | `r params$LR_floodplain_forest` (top 0%) 
 
 Core is base on the Index of Ecological Integrity (IEI), blah blah blah blah
 blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah [web link]
@@ -41,12 +48,5 @@ Connect is based on ecoConnect, a measure of each sites contribution to regional
 
 ![](c:/Work/R/ecoConnect.tool/www/UMass_DSL_logo_v2_small.png)
 
-$\color{blue}{https://umassdsl.shinyapps.io/ecoConnect\_tool/}$
 
-or like this:
-
-[$\color{blue}{https://umassdsl.shinyapps.io/ecoConnect\_tool/}$](https://umassdsl.shinyapps.io/ecoConnect\_tool/)
-
-or
-
-[https://umassdsl.shinyapps.io/ecoConnect\_tool/](https://umassdsl.shinyapps.io/ecoConnect\_tool/)
+[https://umassdsl.org/data/ecoConnect](https://umassdsl.org/data/ecoConnect)

@@ -26,7 +26,7 @@ plan('multisession')
 
 
 source('modalHelp.R')
-source('get.WCS.data.quick.R')  #########
+source('get.WCS.data.R')
 source('make.report.R')
 source('get.shapefile.R')
 source('draw.poly.R')
@@ -39,6 +39,7 @@ zoom <- 6
 
 workspace <- 'ecoConnect'
 layers <- c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest')
+layer.names <- c('Forest', 'Ridgetop', 'Wetlands', 'Floodplain forests')
 WCSserver <- 'https://umassdsl.webgis1.com/geoserver/ecoConnect/ows'    # our WCS server for downloading data
 WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'               # our WMS server for drawing maps
 
@@ -247,7 +248,7 @@ server <- function(input, output, session) {
       t <- Sys.time()
       session$userData$the.promise <- future_promise({
          cat('*** PID ', Sys.getpid(), ' is working in the future...\n')
-         get.WCS.data.quick(WCSserver, layers, session$userData$bbox)    # download data  
+         get.WCS.data(WCSserver, layers, session$userData$bbox)    # download data  
       }) 
       then(session$userData$the.promise, onFulfilled = function(x) {
          print('***** Yay! The promise has been fulfilled!')
@@ -272,16 +273,16 @@ server <- function(input, output, session) {
       content = function(f) {
          cat('------------ doing ASYNCH report ------------\n')
          removeModal()      
-         session$userData$the.promise %...>% make.report(., f, input$proj.name, input$proj.info, session$userData$acres, quick = FALSE)
+         session$userData$the.promise %...>% make.report(., f, layers, layer.names, input$proj.name, input$proj.info, session$userData$acres, quick = FALSE)
       }
    )
    
    
-   # --- Generate report button from report dialog                # For testing reports
+   # --- Generate report button from report dialog                ############# For testing reports
    output$quick.report <- downloadHandler(
       file = 'report.pdf',
       content = function(f) {
-         make.report(resultfile = xxresultfile, quick = TRUE, params = xxparams)
+         make.report(resultfile = xxresultfile, layers = xxlayers, layer.names = xxlayer.names, quick = TRUE, params = xxparams)
       }
    )
 }

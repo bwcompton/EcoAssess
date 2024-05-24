@@ -1,13 +1,15 @@
-'make.report' <- function(layers, resultfile, proj.name, proj.info, acres, quick, params) {
+'make.report' <- function(layer.data, resultfile, layers, layer.names, proj.name, proj.info, acres, quick, params) {
    
    # make.report
    # Produce PDF report for target area
    # Arguments:
-   #     layers      paths to geoTIFFs of data layers
-   #     resultfile      resultfile filename
-   #     proj.name   user's project name
-   #     proj.info   user's project info
-   #     acres       area of polygon in acres, before projection messes it up
+   #     layer.data        paths to geoTIFFs of data layers
+   #     layers            names of layers on GeoServer
+   #     layer.names       friendly names of layers for report
+   #     resultfile        resultfile filename
+   #     proj.name         user's project name
+   #     proj.info         user's project info
+   #     acres             area of polygon in acres, before projection messes it up
    # resultfile:
    #     PDF report
    # B. Compton, 24 Apr 2024
@@ -23,12 +25,12 @@
    if(quick) {
       params <- xxparams
    } else {                                                    # *** for testing: save params for Do it now button
-      layer.data <- lapply(layers, rast)
-      params <- c(layer.stats(layer.data), proj.name = proj.name, proj.info = proj.info, acres = acres)
-      xxresultfile <<- resultfile; xxparams <<- params
+      params <- c(layer.stats(lapply(layer.data, rast)), proj.name = proj.name, proj.info = proj.info, acres = round(acres, 1), 
+                  date = format(Sys.Date(), '%B %d, %Y'))
+      xxlayers <<- layers; xxlayer.names <<- layer.names; xxresultfile <<- resultfile; xxparams <<- params
    }
+
    
-  
    tempReport <- file.path(tempdir(), source)                                    # copy to temp directory so it'll work on the server
    file.copy(paste0('inst/', source), tempReport, overwrite = TRUE)
    

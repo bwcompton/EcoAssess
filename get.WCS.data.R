@@ -1,4 +1,4 @@
-'get.WCS.data.quick' <- function(server, layers, bbox) {
+'get.WCS.data' <- function(server, layers, bbox) {
    
    # get.WCS.data - quick version
    # Download several layers on WCS server
@@ -25,5 +25,9 @@
       url2 <- sub('\\{layer\\}', layers[[i]], url)                   # now insert layer name
       download.file(url2, z[[i]] <- file.path(tempdir(), paste(layers[[i]], '.tif', sep = '')), mode = 'wb', quiet = TRUE)
    }
+   names(z) <- layers                                           # keep the names - we'll want them in layer.stats
+   
+   print(z)
+   
    z
 }
