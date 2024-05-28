@@ -8,7 +8,6 @@ documentclass: report
 geometry: 
 - margin=1in
 - top=1in
-
 fontsize: 12pt 
 urlcolor: blue
 params:
@@ -35,21 +34,23 @@ subtitle <- paste0('**ecoConnect tool report**, ', params$date)
 
 Project area is `r params$acres` acres
 
-Core | | Connect |
+**Core** | | **Connect** |
 -----|---|---------|---
-Northeast IEI | `r ifelse(params$bold, '**')`0.92 (top 8%) `r ifelse(params$bold, '**')`| Forest | `r params$Forest_fowet` (top 10%)
-State IEI | 0.85 (top 15%) | Ridgetops | `r params$Ridgetop` (top 60%)
+Northeast IEI | `r ifelse(params$bold, '**')`0.92 (top 8%) `r ifelse(params$bold, '**')`| Forests | `r params$Forest_fowet` (top 10%)
+State IEI | 0.85 (top 15%) | Ridgetops | `r params$Ridgetops` (top 60%)
 Ecoregion IEI | 0.79 (top 21%) | Wetlands | `r params$Nonfo_wet` (top 22%)
-Watershed IEI | 0.82 (top 18%) | Floodplain forest | `r params$LR_floodplain_forest` (top 0%) 
+Watershed IEI | 0.82 (top 18%) | Floodplain forests | `r params$LR_floodplain_forest` (top 0%) 
 
-Core is base on the Index of Ecological Integrity (IEI), blah blah blah blah
-blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah [web link]
+**Core**. The _Index of Ecological Integrity_ (IEI), is an estimate of the ecological integrity---the ability of a site
+to support biodiversity and ecosystem processes over the long term---based on several landscape metrics. IEI is estimated 
+at four scales, ranking each site within the entire northeastern United States, its state, its TNC terrestrial ecoregion, 
+and its HUC 6 watershed. https://umassdsl.org/DSLdocs//DSL_documentation_iei.pdf
 
-Connect is based on ecoConnect, a measure of each sites contribution to regional connectivity for a particular ecosystem. Blah blah blah blah blah blah blah blah blah. https://umassdsl.org/data/ecoConnect
+**Connect**. _ecoConnect_ provides a regional multi-scale ecoSystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is independent of pre-defined conservation targets, connecting sites with high IEI throughout the landscape based on ecological systems, development, roads, and bridges.
+For a given ecosystem, it gives a measure of each each site's contribution to regional connectivity. https://umassdsl.org/data/ecoConnect
 
 ## (inset map)
 
 ![](`r params$path`/www/UMass_DSL_logo_v2_small.png)
-
 
 [https://umassdsl.org/data/ecoConnect](https://umassdsl.org/data/ecoConnect)
