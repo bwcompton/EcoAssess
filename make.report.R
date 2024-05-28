@@ -26,7 +26,7 @@
       params <- xxparams
    } else {                                                    # *** for testing: save params for Do it now button
       params <- c(layer.stats(lapply(layer.data, rast)), proj.name = proj.name, proj.info = proj.info, acres = round(acres, 1), 
-                  date = format(Sys.Date(), '%B %d, %Y'))
+                  date = format(Sys.Date(), '%B %d, %Y'), path = getwd(), bold = 1)
       xxlayers <<- layers; xxlayer.names <<- layer.names; xxresultfile <<- resultfile; xxparams <<- params
    }
 

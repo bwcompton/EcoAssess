@@ -20,21 +20,24 @@ params:
   Ridgetop: NA
   Nonfo_wet: NA
   LR_floodplain_forest: NA
-  urlcolor: blue
+  path: ''
+  bold: 0
 ---
 ```{r include = FALSE}
 knitr::opts_chunk$set(dev="cairo_pdf")
+subtitle <- paste0('**ecoConnect tool report**, ', params$date)
 ```
 
-## `r params$proj.name` (`r params$acres` acres)
-| ecoConnect tool report, `r params$date`
+## `r ifelse(params$proj.name == '', subtitle, params$proj.name)`
+`r ifelse(params$proj.name == '', '', subtitle)`
+
 `r params$proj.info`
 
-
+Project area is `r params$acres` acres
 
 Core | | Connect |
 -----|---|---------|---
-Northeast IEI | 0.92 (top 8%) | Forest | `r params$Forest_fowet` (top 10%)
+Northeast IEI | `r ifelse(params$bold, '**')`0.92 (top 8%) `r ifelse(params$bold, '**')`| Forest | `r params$Forest_fowet` (top 10%)
 State IEI | 0.85 (top 15%) | Ridgetops | `r params$Ridgetop` (top 60%)
 Ecoregion IEI | 0.79 (top 21%) | Wetlands | `r params$Nonfo_wet` (top 22%)
 Watershed IEI | 0.82 (top 18%) | Floodplain forest | `r params$LR_floodplain_forest` (top 0%) 
@@ -46,7 +49,7 @@ Connect is based on ecoConnect, a measure of each sites contribution to regional
 
 ## (inset map)
 
-![](c:/Work/R/ecoConnect.tool/www/UMass_DSL_logo_v2_small.png)
+![](`r params$path`/www/UMass_DSL_logo_v2_small.png)
 
 
 [https://umassdsl.org/data/ecoConnect](https://umassdsl.org/data/ecoConnect)
