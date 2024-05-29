@@ -15,10 +15,10 @@ params:
   proj.info: ''
   date: ''
   acres: NA
-  Forest_fowet: NA
-  Ridgetop: NA
-  Nonfo_wet: NA
-  LR_floodplain_forest: NA
+  table.IEI.levels: NA
+  table.IEI: NA
+  table.connect.levels: NA
+  table.connect: NA
   path: ''
   bold: 0
 ---
@@ -34,19 +34,21 @@ subtitle <- paste0('**ecoConnect tool report**, ', params$date)
 
 Project area is `r params$acres` acres
 
-**Core** | | **Connect** |
------|---|---------|---
-Northeast IEI | `r ifelse(params$bold, '**')`0.92 (top 8%) `r ifelse(params$bold, '**')`| Forests | `r params$Forest_fowet` (top 10%)
-State IEI | 0.85 (top 15%) | Ridgetops | `r params$Ridgetops` (top 60%)
-Ecoregion IEI | 0.79 (top 21%) | Wetlands | `r params$Nonfo_wet` (top 22%)
-Watershed IEI | 0.82 (top 18%) | Floodplain forests | `r params$LR_floodplain_forest` (top 0%) 
+
+**Core** | | | **Connect** |
+-----|---|---|---------|---
+`r params$table.IEI.levels[1]` | `r params$table.IEI[1]` | | `r params$table.connect.levels[1]` | `r params$table.connect[1]` | 
+`r params$table.IEI.levels[2]` | `r params$table.IEI[2]` | | `r params$table.connect.levels[2]` | `r params$table.connect[2]` | 
+`r params$table.IEI.levels[3]` | `r params$table.IEI[3]` | | `r params$table.connect.levels[3]` | `r params$table.connect[3]` | 
+`r params$table.IEI.levels[4]` | `r params$table.IEI[4]` | | `r params$table.connect.levels[4]` | `r params$table.connect[4]` | 
+
 
 **Core**. The _Index of Ecological Integrity_ (IEI), is an estimate of the ecological integrity---the ability of a site
 to support biodiversity and ecosystem processes over the long term---based on several landscape metrics. IEI is estimated 
 at four scales, ranking each site within the entire northeastern United States, its state, its TNC terrestrial ecoregion, 
 and its HUC 6 watershed. https://umassdsl.org/DSLdocs//DSL_documentation_iei.pdf
 
-**Connect**. _ecoConnect_ provides a regional multi-scale ecoSystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is independent of pre-defined conservation targets, connecting sites with high IEI throughout the landscape based on ecological systems, development, roads, and bridges.
+**Connect**. _ecoConnect_ provides a regional multi-scale ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is independent of pre-defined conservation targets, connecting sites with high IEI throughout the landscape based on ecological systems, development, roads, and bridges.
 For a given ecosystem, it gives a measure of each each site's contribution to regional connectivity. https://umassdsl.org/data/ecoConnect
 
 ## (inset map)

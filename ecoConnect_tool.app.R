@@ -38,8 +38,13 @@ home <- c(-75, 42)            # center of NER (approx)
 zoom <- 6 
 
 workspace <- 'ecoConnect'
-layers <- c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest')
-layer.names <- c('Forest', 'Ridgetop', 'Wetlands', 'Floodplain forests')
+layers <- data.frame(
+   server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest'),
+      pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests'),
+      which = c('connect', 'connect', 'connect', 'connect')
+)
+
+
 WCSserver <- 'https://umassdsl.webgis1.com/geoserver/ecoConnect/ows'    # our WCS server for downloading data
 WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'               # our WMS server for drawing maps
 
@@ -139,7 +144,7 @@ server <- function(input, output, session) {
       output$map <- renderLeaflet({
          leaflet() |>
             addProviderTiles(provider = 'Stadia.StamenTonerLite') |>
-            addWMSTiles(WMSserver, layers = paste0(workspace, ':', layers[1]),        
+            addWMSTiles(WMSserver, layers = paste0(workspace, ':', layers$server.names[1]),        
                         options = WMSTileOptions(opacity = 0.5)) |>
             addFullscreenControl(position = "topleft", pseudoFullscreen = FALSE) |>
             addScaleBar(position = 'bottomleft') |>
@@ -248,7 +253,7 @@ server <- function(input, output, session) {
       t <- Sys.time()
       session$userData$the.promise <- future_promise({
          cat('*** PID ', Sys.getpid(), ' is working in the future...\n')
-         get.WCS.data(WCSserver, layers, session$userData$bbox)    # download data  
+         get.WCS.data(WCSserver, layers$server.names, session$userData$bbox)    # download data  
       }) 
       then(session$userData$the.promise, onFulfilled = function(x) {
          print('***** Yay! The promise has been fulfilled!')
@@ -273,7 +278,7 @@ server <- function(input, output, session) {
       content = function(f) {
          cat('------------ doing ASYNCH report ------------\n')
          removeModal()      
-         session$userData$the.promise %...>% make.report(., f, layers, layer.names, input$proj.name, input$proj.info, session$userData$acres, quick = FALSE)
+         session$userData$the.promise %...>% make.report(., f, layers, input$proj.name, input$proj.info, session$userData$acres, quick = FALSE)
       }
    )
    
@@ -282,7 +287,7 @@ server <- function(input, output, session) {
    output$quick.report <- downloadHandler(
       file = 'report.pdf',
       content = function(f) {
-         make.report(resultfile = xxresultfile, layers = xxlayers, layer.names = xxlayer.names, quick = TRUE, params = xxparams)
+         make.report(resultfile = xxresultfile, layers = xxlayers, quick = TRUE, params = xxparams)
       }
    )
 }

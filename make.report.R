@@ -1,15 +1,19 @@
-'make.report' <- function(layer.data, resultfile, layers, layer.names, proj.name, proj.info, acres, quick, params) {
+'make.report' <- function(layer.data, resultfile, layers, proj.name, proj.info, acres, quick, params) {
    
    # make.report
    # Produce PDF report for target area
    # Arguments:
    #     layer.data        paths to geoTIFFs of data layers
-   #     layers            names of layers on GeoServer
-   #     layer.names       friendly names of layers for report
+   #     layers            data frame with 
+   #        $server.names     names on GeoServer
+   #        $pretty.names     display names
+   #        $which            'connect' or 'IEI'
    #     resultfile        resultfile filename
    #     proj.name         user's project name
    #     proj.info         user's project info
    #     acres             area of polygon in acres, before projection messes it up
+   # Source data:
+   #     inst/ecoConnect_quantiles.RDS    percentiles of each ecoConnect layer, from ecoconnect.quantiles.R   
    # resultfile:
    #     PDF report
    # B. Compton, 24 Apr 2024
@@ -26,9 +30,29 @@
       params <- xxparams
    } else {                                                    # *** for testing: save params for Do it now button
       stats <- layer.stats(lapply(layer.data, rast))
-      params <- c(, proj.name = proj.name, proj.info = proj.info, acres = round(acres, 1), 
+      quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')
+      xxquant <<- quantiles
+      
+      xxstats <<- stats;xxlayers <<- layers
+      
+      IEIs <- c(0.92, 0.85, 0, 0.82)   # TEMPORARY will get from stats ------------------------------------------
+      IEI.top <- (1.01 - IEIs) * 100
+      IEI <- paste0(ifelse(IEI.top <= 10, '**', ''), IEIs, ifelse(IEIs > 0, paste0(' (top ', IEI.top, '%)'), ''), ifelse(IEI.top <= 10, '**', ''))
+      
+      connects <- c(unlist(stats[layers$which == 'connect']))
+      connect.top <- colSums(matrix(connects, 100, length(connects), byrow = TRUE) < quantiles)
+      connect <- paste0(ifelse(connect.top <= 10, '**', ''), connects, ifelse(connects > 0, paste0(' (top ', connect.top, '%)'), ''), ifelse(connect.top <= 10, '**', ''))
+      
+      
+      table <- data.frame(IEI.levels = c('Northeast IEI', 'State IEI', 'Ecoregion IEI', 'Watershed IEI'),        ################################ will get these from layers
+                          IEI = IEI,
+                          connect.levels = layers$pretty.names[layers$which == 'connect'],
+                          connect = connect)
+      
+      xxtable <<- table
+      params <- c(proj.name = proj.name, proj.info = proj.info, acres = round(acres, 1), 
                   date = format(Sys.Date(), '%B %d, %Y'), path = getwd(), bold = 1, table = table)
-      xxlayers <<- layers; xxlayer.names <<- layer.names; xxresultfile <<- resultfile; xxparams <<- params
+      xxlayers <<- layers; xxresultfile <<- resultfile; xxparams <<- params
    }
 
    
