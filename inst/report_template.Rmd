@@ -32,7 +32,7 @@ subtitle <- paste0('**ecoConnect tool report**, ', params$date)
 
 `r params$proj.info`
 
-Project area is `r params$acres` acres
+The project area is `r params$acres` acres.
 
 
 **Core** | | | **Connect** |
@@ -44,7 +44,7 @@ Project area is `r params$acres` acres
 
 
 **Core**. The _Index of Ecological Integrity_ (IEI), is an estimate of the ecological integrity---the ability of a site
-to support biodiversity and ecosystem processes over the long term---based on several landscape metrics. IEI is estimated 
+to support biodiversity and ecosystem processes over the long term, based on several landscape metrics. IEI is estimated 
 at four scales, ranking each site within the entire northeastern United States, its state, its TNC terrestrial ecoregion, 
 and its HUC 6 watershed. https://umassdsl.org/DSLdocs//DSL_documentation_iei.pdf
 

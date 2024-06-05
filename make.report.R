@@ -7,7 +7,7 @@
    #     layers            data frame with 
    #        $server.names     names on GeoServer
    #        $pretty.names     display names
-   #        $which            'connect' or 'IEI'
+   #        $which            'connect' or 'iei'
    #     resultfile        resultfile filename
    #     proj.name         user's project name
    #     proj.info         user's project info
@@ -31,30 +31,38 @@
    } else {                                                    # *** for testing: save params for Do it now button
       stats <- layer.stats(lapply(layer.data, rast))
       quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')
-      xxquant <<- quantiles
-      
-      xxstats <<- stats;xxlayers <<- layers
-      
-      IEIs <- c(0.92, 0.85, 0, 0.82)   # TEMPORARY will get from stats ------------------------------------------
-      IEI.top <- (1.01 - IEIs) * 100
-      IEI <- paste0(ifelse(IEI.top <= 10, '**', ''), IEIs, ifelse(IEIs > 0, paste0(' (top ', IEI.top, '%)'), ''), ifelse(IEI.top <= 10, '**', ''))
+ 
+      IEIs <-  round(unlist(stats[layers$which == 'iei']) / 100, 2)
+      IEI.top <- round((1.01 - IEIs) * 100, 0)
+      IEI <- paste0(ifelse(IEI.top <= 10, '**', ''), 
+                    IEIs, 
+                    ifelse(IEIs > 0, 
+                           ifelse(IEI.top <= 50, paste0(' (top ', IEI.top, '%)'), 
+                                  paste0(' (bottom ', 101 - IEI.top, '%)')),
+                           ''),
+                    ifelse(IEI.top <= 10, '**', ''))
       
       connects <- c(unlist(stats[layers$which == 'connect']))
       connect.top <- colSums(matrix(connects, 100, length(connects), byrow = TRUE) < quantiles)
-      connect <- paste0(ifelse(connect.top <= 10, '**', ''), connects, ifelse(connects > 0, paste0(' (top ', connect.top, '%)'), ''), ifelse(connect.top <= 10, '**', ''))
+      connect <- paste0(ifelse(connect.top <= 10, '**', ''),
+                        connects,
+                        ifelse(connects > 0, 
+                               ifelse(connect.top <= 50, paste0(' (top ', connect.top, '%)'), 
+                                      paste0(' (bottom ', 101 - connect.top, '%)')),
+                                      ''), 
+                        ifelse(connect.top <= 10, '**', ''))
       
       
-      table <- data.frame(IEI.levels = c('Northeast IEI', 'State IEI', 'Ecoregion IEI', 'Watershed IEI'),        ################################ will get these from layers
+      table <- data.frame(IEI.levels = layers$pretty.names[layers$which == 'iei'],
                           IEI = IEI,
                           connect.levels = layers$pretty.names[layers$which == 'connect'],
                           connect = connect)
       
-      xxtable <<- table
       params <- c(proj.name = proj.name, proj.info = proj.info, acres = round(acres, 1), 
                   date = format(Sys.Date(), '%B %d, %Y'), path = getwd(), bold = 1, table = table)
       xxlayers <<- layers; xxresultfile <<- resultfile; xxparams <<- params
    }
-
+   
    
    tempReport <- file.path(tempdir(), source)                                    # copy to temp directory so it'll work on the server
    file.copy(paste0('inst/', source), tempReport, overwrite = TRUE)

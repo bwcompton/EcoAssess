@@ -37,24 +37,25 @@ source('layer.stats.R')
 home <- c(-75, 42)            # center of NER (approx)
 zoom <- 6 
 
-workspace <- 'ecoConnect'
 layers <- data.frame(
-   server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest'),
-      pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests'),
-      which = c('connect', 'connect', 'connect', 'connect')
+   workspaces = c('ecoConnect', 'ecoConnect', 'ecoConnect', 'ecoConnect', 'IEI', 'IEI', 'IEI', 'IEI'),
+   server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest', 'iei_regional', 'iei_state', 'iei_ecoregion', 'iei_huc6'),
+   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'IEI (region)', 'IEI (state)', 'IEI (ecoregion)', 'IEI (watershed)'),
+   which = c('connect', 'connect', 'connect', 'connect', 'iei', 'iei', 'iei', 'iei')
 )
 
 
-WCSserver <- 'https://umassdsl.webgis1.com/geoserver/ecoConnect/ows'    # our WCS server for downloading data
+WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                  # our WCS server for downloading data
 WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'               # our WMS server for drawing maps
 
 # tool tips
-scalingInfo <- includeMarkdown('inst/scalingInfo.md')
-targetInfo <- includeMarkdown('inst/targetInfo.md')
-drawInfo <- includeMarkdown('inst/drawInfo.md')
-uploadInfo <- includeMarkdown('inst/uploadInfo.md')
-restartInfo <- includeMarkdown('inst/restartInfo.md')
-downloadInfo <- includeMarkdown('inst/downloadInfo.md')
+scalingTooltip <- includeMarkdown('inst/scalingTooltip.md')
+targetTooltip <- includeMarkdown('inst/targetTooltip.md')
+drawTooltip <- includeMarkdown('inst/drawTooltip.md')
+uploadTooltip <- includeMarkdown('inst/uploadTooltip.md')
+restartTooltip <- includeMarkdown('inst/restartTooltip.md')
+getReportTooltip <- includeMarkdown('inst/getReportTooltip.md')
+generateReportTooltip <- includeMarkdown('inst/generateReportTooltip.md')
 
 # help docs
 aboutTool <- includeMarkdown('inst/aboutTool.md')
@@ -77,7 +78,7 @@ ui <- page_sidebar(
          
          card(
             span(('Scaling'),
-                 tooltip(bs_icon('info-circle', title = 'About Scaling'), scalingInfo)),
+                 tooltip(bs_icon('info-circle', title = 'About Scaling'), scalingTooltip)),
             
             sliderInput('scaling', 'ecoConnect scale', 1, 4, 1, step = 1, ticks = FALSE),   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
             checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
@@ -90,21 +91,21 @@ ui <- page_sidebar(
          
          card(
             span(('Target area report'),
-                 tooltip(bs_icon('info-circle', title = 'About target area'), targetInfo)),
+                 tooltip(bs_icon('info-circle', title = 'About target area'), targetTooltip)),
             
             span(span(actionButton('drawPolys', HTML('Draw')),
-                      tooltip(bs_icon('info-circle', title = 'About Draw polys'), drawInfo),
+                      tooltip(bs_icon('info-circle', title = 'About Draw polys'), drawTooltip),
                       HTML('&nbsp;')),
                  
                  span(actionButton('uploadShapefile', HTML('Upload')),
-                      tooltip(bs_icon('info-circle', title = 'About Upload shapefile'), uploadInfo),
+                      tooltip(bs_icon('info-circle', title = 'About Upload shapefile'), uploadTooltip),
                       HTML('&nbsp;')),
                  
                  span(actionButton('startOver', HTML('Restart')),
-                      tooltip(bs_icon('info-circle', title = 'About Start over'), restartInfo))),
+                      tooltip(bs_icon('info-circle', title = 'About Start over'), restartTooltip))),
             
             span(actionButton('getReport', HTML('Get report')),
-                 tooltip(bs_icon('info-circle', title = 'About Get report'), downloadInfo))
+                 tooltip(bs_icon('info-circle', title = 'About Get report'), getReportTooltip))
          ),
          
          card(
@@ -128,6 +129,7 @@ ui <- page_sidebar(
 server <- function(input, output, session) {
    shinyjs::disable('startOver')
    shinyjs::disable('getReport')           #### disable for testing
+   shinyjs::disable('quick.report')        #### do it now button is currently broken
    
    #bs_themer()                                 # uncomment to select a new theme
    
@@ -144,7 +146,7 @@ server <- function(input, output, session) {
       output$map <- renderLeaflet({
          leaflet() |>
             addProviderTiles(provider = 'Stadia.StamenTonerLite') |>
-            addWMSTiles(WMSserver, layers = paste0(workspace, ':', layers$server.names[1]),        
+            addWMSTiles(WMSserver, layers = paste0(layers$workspaces[1], ':', layers$server.names[1]),        
                         options = WMSTileOptions(opacity = 0.5)) |>
             addFullscreenControl(position = "topleft", pseudoFullscreen = FALSE) |>
             addScaleBar(position = 'bottomleft') |>
@@ -237,11 +239,11 @@ server <- function(input, output, session) {
                        width = '100%', rows = 6, placeholder = 'Optional project description'),
          footer = tagList(
             #downloadButton('do.report', 'Generate report'),
-            disabled(downloadButton('do.report', 'Generate report')),
+            span(disabled(downloadButton('do.report', 'Generate report')), tooltip(bs_icon('info-circle', title = 'About Get report'), generateReportTooltip)),
             actionButton('cancel.report', 'Cancel')
          )
       ))
-      
+ 
       
       # -- Download data while user is typing project info
       session$userData$acres <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
@@ -251,9 +253,10 @@ server <- function(input, output, session) {
       plan('multisession')                                           # ASYNCH
       cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n')
       t <- Sys.time()
+      
       session$userData$the.promise <- future_promise({
          cat('*** PID ', Sys.getpid(), ' is working in the future...\n')
-         get.WCS.data(WCSserver, layers$server.names, session$userData$bbox)    # download data  
+         get.WCS.data(WCSserver, layers$workspaces, layers$server.names, session$userData$bbox)    # download data  
       }) 
       then(session$userData$the.promise, onFulfilled = function(x) {
          print('***** Yay! The promise has been fulfilled!')
