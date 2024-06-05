@@ -58,7 +58,7 @@
                           connect.levels = layers$pretty.names[layers$which == 'connect'],
                           connect = connect)
       
-      params <- c(proj.name = proj.name, proj.info = proj.info, acres = round(acres, 1), 
+      params <- c(proj.name = proj.name, proj.info = proj.info, acres = format(round(acres, 1), big.mark = ','), 
                   date = format(Sys.Date(), '%B %d, %Y'), path = getwd(), bold = 1, table = table)
       xxlayers <<- layers; xxresultfile <<- resultfile; xxparams <<- params
    }
