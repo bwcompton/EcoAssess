@@ -72,9 +72,9 @@ ui <- page_sidebar(
    
    sidebar = 
       sidebar(
-         add_busy_spinner(spin = 'fading-circle', position = 'top-left', onstart = TRUE, timeout = 0),   # for debugging
-         #add_busy_spinner(spin = 'fading-circle', position = 'top-right', onstart = FALSE, timeout = 500),
-         
+         #add_busy_spinner(spin = 'fading-circle', position = 'top-left', onstart = TRUE, timeout = 0),   # for debugging
+         add_busy_spinner(spin = 'fading-circle', position = 'top-left', onstart = FALSE, timeout = 500),
+         use_busy_spinner(spin = 'fading-circle', position = 'top-left'),
          
          card(
             span(('Scaling'),
@@ -227,9 +227,8 @@ server <- function(input, output, session) {
       
       if(session$userData$drawn)                      #     If drawn polygon,
          session$userData$poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))  #    drawn poly as sf
-      
+        
       session$userData$saved <- list(input$proj.name, input$proj.info)
-      
       session$userData$waiting <- TRUE
       
       showModal(modalDialog(                          # --- Modal input to get project name and description
@@ -239,6 +238,7 @@ server <- function(input, output, session) {
                        width = '100%', rows = 6, placeholder = 'Optional project description'),
          footer = tagList(
             #downloadButton('do.report', 'Generate report'),
+            show_spinner(),
             span(disabled(downloadButton('do.report', 'Generate report')), tooltip(bs_icon('info-circle', title = 'About Get report'), generateReportTooltip)),
             actionButton('cancel.report', 'Cancel')
          )
@@ -248,11 +248,19 @@ server <- function(input, output, session) {
       # -- Download data while user is typing project info
       session$userData$acres <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
       session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj') # project to match downloaded rasters
+      
+      
+      xxpoly <<- session$userData$poly
+      
+      
+      
       session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
       
       plan('multisession')                                           # ASYNCH
       cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n')
       t <- Sys.time()
+      downloading <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
+      
       
       session$userData$the.promise <- future_promise({
          cat('*** PID ', Sys.getpid(), ' is working in the future...\n')
@@ -261,6 +269,8 @@ server <- function(input, output, session) {
       then(session$userData$the.promise, onFulfilled = function(x) {
          print('***** Yay! The promise has been fulfilled!')
          enable('do.report')
+         hide_spinner()
+         removeNotification(downloading)
          #session$userData$waiting <- FALSE
       }) 
       session$userData$time <- Sys.time() - t

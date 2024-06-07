@@ -59,7 +59,7 @@
                           connect = connect)
       
       params <- c(proj.name = proj.name, proj.info = proj.info, acres = format(round(acres, 1), big.mark = ','), 
-                  date = format(Sys.Date(), '%B %d, %Y'), path = getwd(), bold = 1, table = table)
+                  date = sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y')), path = getwd(), bold = 1, table = table)
       xxlayers <<- layers; xxresultfile <<- resultfile; xxparams <<- params
    }
    

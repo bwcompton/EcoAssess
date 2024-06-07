@@ -35,21 +35,23 @@ subtitle <- paste0('**ecoConnect tool report**, ', params$date)
 The project area is `r params$acres` acres.
 
 
-**Core** | | | **Connect** |
------|---|---|---------|---
-`r params$table.IEI.levels[1]` | `r params$table.IEI[1]` | | `r params$table.connect.levels[1]` | `r params$table.connect[1]` | 
-`r params$table.IEI.levels[2]` | `r params$table.IEI[2]` | | `r params$table.connect.levels[2]` | `r params$table.connect[2]` | 
-`r params$table.IEI.levels[3]` | `r params$table.IEI[3]` | | `r params$table.connect.levels[3]` | `r params$table.connect[3]` | 
-`r params$table.IEI.levels[4]` | `r params$table.IEI[4]` | | `r params$table.connect.levels[4]` | `r params$table.connect[4]` | 
+**Core** | **Score** | | | **Connect** | **Score** |
+-----|---|---|---|---------|---
+`r params$table.IEI.levels[1]` | `r params$table.IEI[1]` | | | `r params$table.connect.levels[1]` | `r params$table.connect[1]` | 
+`r params$table.IEI.levels[2]` | `r params$table.IEI[2]` | | | `r params$table.connect.levels[2]` | `r params$table.connect[2]` | 
+`r params$table.IEI.levels[3]` | `r params$table.IEI[3]` | | | `r params$table.connect.levels[3]` | `r params$table.connect[3]` | 
+`r params$table.IEI.levels[4]` | `r params$table.IEI[4]` | | | `r params$table.connect.levels[4]` | `r params$table.connect[4]` | 
 
 
 **Core**. The _Index of Ecological Integrity_ (IEI), is an estimate of the ecological integrity---the ability of a site
 to support biodiversity and ecosystem processes over the long term, based on several landscape metrics. IEI is estimated 
 at four scales, ranking each site within the entire northeastern United States, its state, its TNC terrestrial ecoregion, 
-and its HUC 6 watershed. https://umassdsl.org/DSLdocs//DSL_documentation_iei.pdf
+and its HUC 6 watershed. IEI is scaled from 0.01 to 1.0 in percentiles for each ecological system.
+Reported scores are the mean IEI for the project area. https://umassdsl.org/DSLdocs//DSL_documentation_iei.pdf
 
 **Connect**. _ecoConnect_ provides a regional multi-scale ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is independent of pre-defined conservation targets, connecting sites with high IEI throughout the landscape based on ecological systems, development, roads, and bridges.
-For a given ecosystem, it gives a measure of each each site's contribution to regional connectivity. https://umassdsl.org/data/ecoConnect
+For a given ecosystem, it gives a measure of each each site's contribution to regional connectivity. ecoConnect is scaled from 0 to 100 for each ecosystem group.
+Reported scores are the mean ecoConnect for the project area. https://umassdsl.org/data/ecoConnect
 
 ## (inset map)
 
