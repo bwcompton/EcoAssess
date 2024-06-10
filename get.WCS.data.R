@@ -26,7 +26,7 @@
    {
       url2 <- sub('\\{workspace\\}', workspace[[i]], url)       # now insert workspace and layer name
       url2 <- sub('\\{layer\\}', layers[[i]], url2)                  
-      download.file(url2, z[[i]] <- file.path(tempdir(), paste(layers[[i]], '.tif', sep = '')), mode = 'wb', quiet = TRUE)
+      download.file(url2, z[[i]] <- file.path(paste(tempfile(), '_', layers[[i]], '.tif', sep = '')), mode = 'wb', quiet = TRUE)
    }
    names(z) <- layers                                           # keep the names - we'll want them in layer.stats
    z
