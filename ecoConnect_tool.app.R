@@ -14,7 +14,6 @@ library(shinybusy)
 library(htmltools)
 library(markdown)
 library(leaflet)
-# remotes::install_github('https://github.com/trafficonese/leaflet.extras.git')   # need until >= v. 1.0.1 is released
 library(leaflet.extras)
 library(leaflet.lagniappe)
 library(terra)

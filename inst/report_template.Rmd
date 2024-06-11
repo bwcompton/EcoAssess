@@ -56,10 +56,6 @@ For a given ecosystem, it gives a measure of each each site's contribution to re
 Reported scores are the mean ecoConnect for the project area. https://umassdsl.org/data/ecoConnect
 
 
-Map files: `r params$left` and `r params$right`
-
-## (inset map)
-
 ![](`r params$left`) ![](`r params$right`)
 
 
