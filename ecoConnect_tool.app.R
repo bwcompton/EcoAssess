@@ -22,14 +22,18 @@ library(sf)
 library(lwgeom)
 library(future)
 library(promises)
+library(ggmap)
+library(ggplot2)
+library(fs)
 plan('multisession')
 
 
 source('modalHelp.R')
 source('get.WCS.data.R')
-source('make.report.R')
 source('get.shapefile.R')
 source('draw.poly.R')
+source('make.report.R')
+source('make.report.maps.R')
 source('layer.stats.R')
 
 
@@ -47,6 +51,9 @@ layers <- data.frame(
 
 WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                  # our WCS server for downloading data
 WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'               # our WMS server for drawing maps
+
+register_stadiamaps(readChar(f <- 'www/stadia_api.txt', file.info(f)$size))   # register Stadia API key
+
 
 # tool tips
 scalingTooltip <- includeMarkdown('inst/scalingTooltip.md')
@@ -291,7 +298,7 @@ server <- function(input, output, session) {
       content = function(f) {
          cat('------------ doing ASYNCH report ------------\n')
          removeModal()      
-         session$userData$the.promise %...>% make.report(., f, layers, input$proj.name, input$proj.info, session$userData$acres, quick = FALSE)
+         session$userData$the.promise %...>% make.report(., f, layers, session$userData$poly, input$proj.name, input$proj.info, session$userData$acres, quick = FALSE)
       }
    )
    
