@@ -59,16 +59,8 @@
                           connect.levels = layers$pretty.names[layers$which == 'connect'],
                           connect = connect)
       
-      left <- make.report.maps(poly, 3000, 13)
-      right <- make.report.maps(poly, 30000, 10)
-      
-      # left <- 'C:/temp/IMG_1652.jpg'
-      # right <- 'C:/temp/IMG_1507.jpg'
-      # 
-      
-      print(left)
-      print(right)
-      
+      left <- make.report.maps(poly, 1000, 14)
+      right <- make.report.maps(poly, 20000, 10)
       
       params <- c(proj.name = proj.name, proj.info = proj.info, acres = format(round(acres, 1), big.mark = ','), 
                   date = sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y')), path = getwd(), bold = 1, table = table, left = left, right = right)
