@@ -135,7 +135,7 @@ ui <- page_sidebar(
 server <- function(input, output, session) {
    shinyjs::disable('startOver')
    shinyjs::disable('getReport')           #### disable for testing
-   shinyjs::disable('quick.report')        #### do it now button is currently broken
+ #  shinyjs::disable('quick.report')        #### do it now button is currently broken
    
    #bs_themer()                                 # uncomment to select a new theme
    
@@ -306,7 +306,7 @@ server <- function(input, output, session) {
    output$quick.report <- downloadHandler(
       file = 'report.pdf',
       content = function(f) {
-         make.report(resultfile = xxresultfile, layers = xxlayers, quick = TRUE, params = xxparams)
+         make.report(., f, params = xxparams, quick = TRUE)
       }
    )
 }

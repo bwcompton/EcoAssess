@@ -20,7 +20,7 @@
    
    full <- st_buffer(poly, buffer)                                                      # buffer target area so it doesn't fill the pane
    bb <- setNames(unlist(st_bbox(full)), c('left', 'bottom', 'right', 'top'))           # bounding box
-   basemap <- get_stadiamap(bbox = bb, maptype = 'stamen_toner_lite', zoom = zoom)      # get the basemap
+   basemap <- get_stadiamap(bbox = bb, maptype = 'stamen_toner_lite', zoom = zoom, messaging = FALSE)      # get the basemap
    
    map <- ggmap(basemap) +                                                              # plot the basemap with the poly
       geom_sf(data = poly, aes(), color = 'orange', lwd = 2,fill = NA, inherit.aes = FALSE) +

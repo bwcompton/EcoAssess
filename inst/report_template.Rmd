@@ -5,9 +5,12 @@ header-includes:
 output: 
    pdf_document
 documentclass: report
+pagestyle: empty
 geometry: 
 - margin=1in
-- top=1in
+- top=0.75in
+- bottom=0.5in
+
 fontsize: 12pt 
 urlcolor: blue
 params:
@@ -58,7 +61,15 @@ Reported scores are the mean ecoConnect for the project area. https://umassdsl.o
 
 ![](`r params$left`) ![](`r params$right`)
 
+<!--  This version includes the link in the logo; the whole thing is clickable. It's my sleazy
+      way of doing "keep with next"
+[![](`r params$path`/www/UMass_DSL_logo_v3.png)](https://umassdsl.org/data/ecoConnect)
+-->
 
+<!--  This version has a separate link, so the logo and link can be split between pages. It's 
+      way easier to change the link, though.
+-->
 ![](`r params$path`/www/UMass_DSL_logo_v2_small.png)
 
 [https://umassdsl.org/data/ecoConnect](https://umassdsl.org/data/ecoConnect)
+

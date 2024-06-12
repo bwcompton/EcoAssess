@@ -64,7 +64,7 @@
       
       params <- c(proj.name = proj.name, proj.info = proj.info, acres = format(round(acres, 1), big.mark = ','), 
                   date = sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y')), path = getwd(), bold = 1, table = table, left = left, right = right)
-      xxlayers <<- layers; xxresultfile <<- resultfile; xxparams <<- params
+      xxparams <<- params
    }
    
    
