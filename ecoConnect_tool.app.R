@@ -135,7 +135,7 @@ ui <- page_sidebar(
 server <- function(input, output, session) {
    shinyjs::disable('startOver')
    shinyjs::disable('getReport')           #### disable for testing
- #  shinyjs::disable('quick.report')        #### do it now button is currently broken
+   #  shinyjs::disable('quick.report')        #### do it now button is currently broken
    
    #bs_themer()                                 # uncomment to select a new theme
    
@@ -233,7 +233,7 @@ server <- function(input, output, session) {
       
       if(session$userData$drawn)                      #     If drawn polygon,
          session$userData$poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))  #    drawn poly as sf
-        
+      
       session$userData$saved <- list(input$proj.name, input$proj.info)
       session$userData$waiting <- TRUE
       
@@ -249,20 +249,21 @@ server <- function(input, output, session) {
             actionButton('cancel.report', 'Cancel')
          )
       ))
- 
+      
+      
+      
       
       # -- Download data while user is typing project info
+      session$userData$poly <- st_make_valid(session$userData$poly)    # attempt to fix bad shapefiles
       session$userData$acres <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
       session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj') # project to match downloaded rasters
+      session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
       
       
       xxpoly <<- session$userData$poly
       
       
-      
-      session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
-      
-      plan('multisession')                                           # ASYNCH
+      plan('multisession')
       cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n')
       t <- Sys.time()
       downloading <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
@@ -273,7 +274,7 @@ server <- function(input, output, session) {
          get.WCS.data(WCSserver, layers$workspaces, layers$server.names, session$userData$bbox)    # download data  
       }) 
       then(session$userData$the.promise, onFulfilled = function(x) {
-         print('***** Yay! The promise has been fulfilled!')
+         cat('*** The promise has been fulfilled\n!')
          enable('do.report')
          hide_spinner()
          removeNotification(downloading)
@@ -295,7 +296,6 @@ server <- function(input, output, session) {
    output$do.report <- downloadHandler(
       file = 'report.pdf',
       content = function(f) {
-         cat('------------ doing ASYNCH report ------------\n')
          removeModal()      
          session$userData$the.promise %...>% make.report(., f, layers, session$userData$poly, input$proj.name, input$proj.info, session$userData$acres, quick = FALSE)
       }

@@ -36,14 +36,14 @@
       IEIs <-  round(unlist(stats[layers$which == 'iei']) / 100, 2)
       IEI.top <- round((1.01 - IEIs) * 100, 0)
       IEI <- paste0(ifelse(IEI.top <= 10, '**', ''), 
-                    IEIs, 
+                    format(IEIs, nsmall = 2), 
                     ifelse(IEIs > 0, 
                            ifelse(IEI.top <= 50, paste0(' (top ', IEI.top, '%)'), 
                                   paste0(' (bottom ', 101 - IEI.top, '%)')),
                            ''),
                     ifelse(IEI.top <= 10, '**', ''))
       
-      connects <- c(unlist(stats[layers$which == 'connect']))
+      connects <- round((unlist(stats[layers$which == 'connect'])), 0)
       connect.top <- colSums(matrix(connects, 100, length(connects), byrow = TRUE) < quantiles)
       connect <- paste0(ifelse(connect.top <= 10, '**', ''),
                         connects,
@@ -59,8 +59,8 @@
                           connect.levels = layers$pretty.names[layers$which == 'connect'],
                           connect = connect)
       
-      left <- make.report.maps(poly, 1000, 14)
-      right <- make.report.maps(poly, 20000, 10)
+      left <- make.report.maps(poly, 1000, 11)
+      right <- make.report.maps(poly, 20000, 9)
       
       params <- c(proj.name = proj.name, proj.info = proj.info, acres = format(round(acres, 1), big.mark = ','), 
                   date = sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y')), path = getwd(), bold = 1, table = table, left = left, right = right)
