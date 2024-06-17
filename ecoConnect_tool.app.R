@@ -1,6 +1,6 @@
 # ecoConnect.tool.app.R - ecoConnect and IEI viewing and reporting tool
 # Before initial deployment on shinyapps.io, need to restart R and:
-#    library(remotes); install_github('https://github.com/trafficonese/leaflet.extras.git'); install_github('bwcompton/leaflet.lagniappe')
+#    library(remotes); install_github('https://github.com/elipousson/sfext.git'); install_github('bwcompton/leaflet.lagniappe')
 # B. Compton, 19 Apr-17 May 2024
 
 
@@ -24,6 +24,8 @@ library(promises)
 library(ggmap)
 library(ggplot2)
 library(fs)
+library(sfext)             # not using?
+###### library(geosphere)
 plan('multisession')
 
 
@@ -255,22 +257,22 @@ server <- function(input, output, session) {
       
       # -- Download data while user is typing project info
       session$userData$poly <- st_make_valid(session$userData$poly)    # attempt to fix bad shapefiles
-      session$userData$acres <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
-      session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', 'epsg:3857', type = 'proj') # project to match downloaded rasters
+      session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', type = 'proj') # project to match downloaded rasters
       session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
       
       
       xxpoly <<- session$userData$poly
+      xxpoly.proj <<- session$userData$poly.proj
       
       
       plan('multisession')
-      cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n')
+      cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n', sep = '')
       t <- Sys.time()
       downloading <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
       
       
       session$userData$the.promise <- future_promise({
-         cat('*** PID ', Sys.getpid(), ' is working in the future...\n')
+         cat('*** PID ', Sys.getpid(), ' is working in the future...\n', sep = '')
          get.WCS.data(WCSserver, layers$workspaces, layers$server.names, session$userData$bbox)    # download data  
       }) 
       then(session$userData$the.promise, onFulfilled = function(x) {
@@ -297,7 +299,7 @@ server <- function(input, output, session) {
       file = 'report.pdf',
       content = function(f) {
          removeModal()      
-         session$userData$the.promise %...>% make.report(., f, layers, session$userData$poly, input$proj.name, input$proj.info, session$userData$acres, quick = FALSE)
+         session$userData$the.promise %...>% make.report(., f, layers, session$userData$poly, session$userData$poly.proj, input$proj.name, input$proj.info, session$userData$acres, quick = FALSE)
       }
    )
    

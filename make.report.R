@@ -1,4 +1,4 @@
-'make.report' <- function(layer.data, resultfile, layers, poly, proj.name, proj.info, acres, quick, params) {
+'make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info, quick, params) {
    
    # make.report
    # Produce PDF report for target area
@@ -9,10 +9,10 @@
    #        $pretty.names     display names
    #        $which            'connect' or 'iei'
    #     poly              sf polygon of target area
+   #     poly.proj         and the reprojected target area poly
    #     resultfile        resultfile filename
    #     proj.name         user's project name
    #     proj.info         user's project info
-   #     acres             area of polygon in acres, before projection messes it up
    # Source data:
    #     inst/ecoConnect_quantiles.RDS    percentiles of each ecoConnect layer, from ecoconnect.quantiles.R   
    # resultfile:
@@ -59,8 +59,11 @@
                           connect.levels = layers$pretty.names[layers$which == 'connect'],
                           connect = connect)
       
-      left <- make.report.maps(poly, 1000, 11)
-      right <- make.report.maps(poly, 20000, 9)
+      acres <- sum(as.vector(st_area(poly)) * 247.105e-6) 
+      # session$userData$bbox <- as.list(st_bbox(poly.proj))
+      
+      left <- make.report.maps(poly, 1)
+      right <- make.report.maps(poly, 5)
       
       params <- c(proj.name = proj.name, proj.info = proj.info, acres = format(round(acres, 1), big.mark = ','), 
                   date = sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y')), path = getwd(), bold = 1, table = table, left = left, right = right)
