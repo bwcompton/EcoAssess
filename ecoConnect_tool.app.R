@@ -11,6 +11,7 @@ library(bslib)
 library(bsicons)
 library(shinyjs)
 library(shinybusy)
+library(shinyWidgets)
 library(htmltools)
 library(markdown)
 library(leaflet)
@@ -48,6 +49,7 @@ layers <- data.frame(
    pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'IEI (region)', 'IEI (state)', 'IEI (ecoregion)', 'IEI (watershed)'),
    which = c('connect', 'connect', 'connect', 'connect', 'iei', 'iei', 'iei', 'iei')
 )
+full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)   # we'll need these for addWMSTiles
 
 
 WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                  # our WCS server for downloading data
@@ -74,7 +76,8 @@ aboutIEI <- includeMarkdown('inst/aboutIEI.md')
 
 # User interface ---------------------
 ui <- page_sidebar(
-   theme = bs_theme(bootswatch = 'cerulean'),
+   theme = bs_theme(bootswatch = 'cerulean', version = 5),   # bslib version defense. Use version_default() to update
+   shinyjs::useShinyjs(),
    
    title = 'ecoConnect tool',
    
@@ -116,6 +119,9 @@ ui <- page_sidebar(
                  tooltip(bs_icon('info-circle', title = 'About Get report'), getReportTooltip))
          ),
          
+         
+         
+         
          card(
             actionLink('aboutTool', label = 'About this tool'),
             actionLink('aboutecoConnect', label = 'About ecoConnect'),
@@ -127,8 +133,35 @@ ui <- page_sidebar(
          width = 380
       ),
    
-   leafletOutput('map'),
-   shinyjs::useShinyjs()
+   
+   
+   
+   
+   card(
+      #full_screen = TRUE,
+      layout_sidebar(
+         sidebar = sidebar(
+            position = 'right', 
+            width = 180,
+            materialSwitch(
+               inputId = 'fullscreen',
+               label = 'Full screen',
+               value = FALSE,
+               status = 'default'
+            ),
+            
+            radioButtons('show.layer', 'Layer', 
+                         choiceNames = c(layers$pretty.names, 'None'),
+                         choiceValues = c(full.layer.names, 'none')),
+            radioButtons('show.basemap', 'Basemap',
+                         choiceNames = c('Map', 'Topo', 'Imagery'),
+                         choiceValues = c('Stadia.StamenTonerLite', 'USGS.USTopo', 'USGS.USImagery'))
+            
+         ),
+         
+         leafletOutput('map')
+      )
+   )
 )
 
 
@@ -151,17 +184,26 @@ server <- function(input, output, session) {
    
    
    card( 
-      output$map <- renderLeaflet({
-         leaflet() |>
-            addProviderTiles(provider = 'Stadia.StamenTonerLite') |>
-            addWMSTiles(WMSserver, layers = paste0(layers$workspaces[1], ':', layers$server.names[1]),        
-                        options = WMSTileOptions(opacity = 0.5)) |>
-            addFullscreenControl(position = "topleft", pseudoFullscreen = FALSE) |>
+      output$map <- renderLeaflet({                    # Draw static parts of Leaflet map
+         leaflet('map',
+                 options = leafletOptions(maxZoom = 16)) |>
             addScaleBar(position = 'bottomleft') |>
             osmGeocoder(position = 'bottomright', email = 'bcompton@umass.edu') |>
             setView(lng = home[1], lat = home[2], zoom = zoom)
-      })
+      }),
    )
+   
+   observe({                                           # Draw dynamic parts of Leaflet map
+      if(input$show.layer == 'none') 
+         leafletProxy('map') |>
+         addProviderTiles(provider = input$show.basemap) |>
+         removeTiles(layerId = 'dsl.layers')
+      else 
+         leafletProxy('map') |>                          
+         addProviderTiles(provider = input$show.basemap) |>
+         addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = input$show.layer,
+                     options = WMSTileOptions(opacity = 0.5))
+   })
    
    observeEvent(input$autoscale, {
       if(input$autoscale)
@@ -175,8 +217,7 @@ server <- function(input, output, session) {
       shinyjs::disable('drawPolys')
       shinyjs::disable('uploadShapefile')
       shinyjs::enable('startOver')
-      #  shinyjs::enable('getReport')
-      
+
       session$userData$drawn <- TRUE
       proxy <- leafletProxy('map')
       addDrawToolbar(proxy, polylineOptions = FALSE, circleOptions = FALSE, rectangleOptions = FALSE, 
@@ -245,7 +286,6 @@ server <- function(input, output, session) {
          textAreaInput('proj.info', 'Project description', value = input$proj.info, 
                        width = '100%', rows = 6, placeholder = 'Optional project description'),
          footer = tagList(
-            #downloadButton('do.report', 'Generate report'),
             show_spinner(),
             span(disabled(downloadButton('do.report', 'Generate report')), tooltip(bs_icon('info-circle', title = 'About Get report'), generateReportTooltip)),
             actionButton('cancel.report', 'Cancel')
@@ -263,7 +303,7 @@ server <- function(input, output, session) {
       
       xxpoly <<- session$userData$poly
       xxpoly.proj <<- session$userData$poly.proj
-    #  st_write(xxpoly, 'C:/GIS/GIS/sample_parcels/name.shp')  # save drawn poly as shapefile
+      #  st_write(xxpoly, 'C:/GIS/GIS/sample_parcels/name.shp')  # save drawn poly as shapefile
       
       plan('multisession')
       cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n', sep = '')
