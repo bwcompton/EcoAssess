@@ -263,7 +263,7 @@ server <- function(input, output, session) {
       
       xxpoly <<- session$userData$poly
       xxpoly.proj <<- session$userData$poly.proj
-      
+    #  st_write(xxpoly, 'C:/GIS/GIS/sample_parcels/name.shp')  # save drawn poly as shapefile
       
       plan('multisession')
       cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n', sep = '')

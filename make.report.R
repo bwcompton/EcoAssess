@@ -60,16 +60,26 @@
                           connect = connect)
       
       acres <- sum(as.vector(st_area(poly)) * 247.105e-6) 
+      acres <- format(round(acres, 1), big.mark = ',')
+      date <- sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y'))
       # session$userData$bbox <- as.list(st_bbox(poly.proj))
+       
+      cat('Time taken to do the math: ', Sys.time() - t, '\n')
+       
+      t1 <- Sys.time()
+      left <- make.report.maps(poly, 1.5, minsize = 1000)
+      cat('Time taken to make left map: ', Sys.time() - t1, '\n')
+      t1 <- Sys.time()
+      right <- make.report.maps(poly, 4, minsize = 20000)
+      cat('Time taken to make right map: ', Sys.time() - t1, '\n')
       
-      left <- make.report.maps(poly, 1)
-      right <- make.report.maps(poly, 5)
       
-      params <- c(proj.name = proj.name, proj.info = proj.info, acres = format(round(acres, 1), big.mark = ','), 
-                  date = sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y')), path = getwd(), bold = 1, table = table, left = left, right = right)
+      params <- c(proj.name = proj.name, proj.info = proj.info, acres = acres, date = date, path = getwd(), bold = 1, 
+                  table = table, left = left, right = right)
       xxparams <<- params
    }
    
+   t1 <- Sys.time()
    
    tempReport <- file.path(tempdir(), source)                                    # copy to temp directory so it'll work on the server
    file.copy(paste0('inst/', source), tempReport, overwrite = TRUE)
@@ -78,5 +88,8 @@
                           params = params,
                           envir = new.env(parent = globalenv()))
    removeNotification(id)
+   cat('Time taken to do knit report: ', Sys.time() - t1, '\n')
+   
+   cat('** Time taken for make.report: ', Sys.time() - t, '\n')
    z
 }
