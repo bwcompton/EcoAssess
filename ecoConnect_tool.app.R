@@ -5,7 +5,6 @@
 
 
 
-
 library(shiny)
 library(bslib)
 library(bsicons)
@@ -52,13 +51,14 @@ layers <- data.frame(
    radio.names = c('Forest ecoConnect', 'Ridgetop ecoConnect', 'Wetland ecoConnect', 'Floodplain forest ecoConnect',
                    'Regional IEI', 'State IEI', 'Ecoregion IEI', 'Watershed IEI'))
 
-full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)   # we'll need these for addWMSTiles
+full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)       # we'll need these for addWMSTiles
 
 
-WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                  # our WCS server for downloading data
-WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'               # our WMS server for drawing maps
+WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                        # our WCS server for downloading data
+WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'                     # our WMS server for drawing maps
 
-register_stadiamaps(readChar(f <- 'www/stadia_api.txt', file.info(f)$size))   # register Stadia API key
+register_stadiamaps(readChar(f <- 'www/stadia_api.txt', file.info(f)$size))   # register Stadia API key. Get key from https://client.stadiamaps.com 
+# and save it in www/stadia_api.txt. Make sure to .gitignore this file!
 
 
 # tool tips
@@ -69,7 +69,8 @@ uploadTooltip <- includeMarkdown('inst/uploadTooltip.md')
 restartTooltip <- includeMarkdown('inst/restartTooltip.md')
 getReportTooltip <- includeMarkdown('inst/getReportTooltip.md')
 generateReportTooltip <- includeMarkdown('inst/generateReportTooltip.md')
-layerTooltip <- includeMarkdown('inst/layerTooltip.md')
+connectTooltip <- includeMarkdown('inst/connectTooltip.md')
+ieiTooltip <- includeMarkdown('inst/ieiTooltip.md')
 basemapTooltip <- includeMarkdown('inst/basemapTooltip.md')
 opacityTooltip <- includeMarkdown('inst/opacityTooltip.md')
 
@@ -117,7 +118,7 @@ ui <- page_sidebar(
                  
                  span(actionButton('uploadShapefile', HTML('Upload')),
                       tooltip(bs_icon('info-circle'), uploadTooltip))
-                 ),
+            ),
             
             span(actionButton('getReport', HTML('Get report')),
                  tooltip(bs_icon('info-circle'), getReportTooltip)),
@@ -134,7 +135,7 @@ ui <- page_sidebar(
             br(),
             tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
          ),
-         width = 290    ### was 380, but could go to 280 by moving Restart down
+         width = 290
       ),
    
    layout_sidebar(
@@ -149,13 +150,27 @@ ui <- page_sidebar(
          ),
          hr(style = "border-top: 1px solid #000000;"),
          
-         radioButtons('show.layer', label = span(HTML('<h4 style="display: inline-block;">Layer</h4>'), 
-                                                 tooltip(bs_icon('info-circle'), layerTooltip)), 
-                      choiceNames = c(layers$radio.names, 'None'),
-                      choiceValues = c(full.layer.names, 'none'),
+         # radioButtons('show.layer', label = span(HTML('<h4 style="display: inline-block;">Layer</h4>'), 
+         #                                         tooltip(bs_icon('info-circle'), layerTooltip)), 
+         #              choiceNames = c(layers$radio.names, 'None'),
+         #              choiceValues = c(full.layer.names, 'none'),
+         #              selected = character(0)),
+         
+         radioButtons('connect.layer', label = span(HTML('<h4 style="display: inline-block;">ecoConnect layer</h4>'), 
+                                                    tooltip(bs_icon('info-circle'), connectTooltip)), 
+                      choiceNames = layers$radio.names[layers$which == 'connect'],
+                      choiceValues = full.layer.names[layers$which == 'connect']),
+         
+         radioButtons('iei.layer', label = span(HTML('<h4 style="display: inline-block;">IEI layer</h4>'), 
+                                                tooltip(bs_icon('info-circle'), ieiTooltip)), 
+                      choiceNames = layers$radio.names[layers$which == 'iei'],
+                      choiceValues = full.layer.names[layers$which == 'iei'],
                       selected = character(0)),
          
-         sliderInput('opacity', span(HTML('<h4 style="display: inline-block;">Opacity</h4>'), 
+         actionButton('no.layers', 'Turn off layers'),
+         
+         
+         sliderInput('opacity', span(HTML('<h4 style="display: inline-block;">Layer opacity</h4>'), 
                                      tooltip(bs_icon('info-circle'), opacityTooltip)), 
                      0, 100, post = '%', value = 50, ticks = FALSE),
          
@@ -181,7 +196,7 @@ server <- function(input, output, session) {
    #  shinyjs::disable('quick.report')        #### do it now button is currently broken
    
    #bs_themer()                                 # uncomment to select a new theme
- #  print(getDefaultReactiveDomain())
+   #  print(getDefaultReactiveDomain())
    
    observeEvent(input$aboutTool, {
       modalHelp(aboutTool, 'About this tool')})
@@ -191,14 +206,7 @@ server <- function(input, output, session) {
       modalHelp(aboutIEI, 'About the Index of Ecological Integrity')})
    
    
-   # Observe({
-   #    updateRadioButtons(inputId ='show.layer', selected = character(0))     # will modify this to turn off radio buttons in the unselected layer group
-   # })
-   
-   
-   
-   
-   output$map <- renderLeaflet({                    # ----- Draw static parts of Leaflet map
+   output$map <- renderLeaflet({                      # ----- Draw static parts of Leaflet map
       leaflet('map',
               options = leafletOptions(maxZoom = 16)) |>
          addScaleBar(position = 'bottomleft') |>
@@ -206,16 +214,50 @@ server <- function(input, output, session) {
          setView(lng = home[1], lat = home[2], zoom = zoom)
    })
    
-   observe({                                           # ----- Draw dynamic parts of Leaflet map
-      if(length(input$show.layer) != 0 && input$show.layer == 'none')
+   
+   
+   observeEvent(input$connect.layer, {
+      session$userData$show.layer <- input$connect.layer
+      updateRadioButtons(inputId ='iei.layer', selected = character(0))
+      cat('Selected layer = ', session$userData$show.layer, '\n', sep = '')
+   })
+   
+   # observeEvent(input$show.basemap, {
+   #    cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
+   #    leafletProxy('map') |>
+   #       addProviderTiles(provider = input$show.basemap)
+   # })
+   
+   observeEvent(input$iei.layer, {
+      session$userData$show.layer <- input$iei.layer
+      updateRadioButtons(inputId ='connect.layer', selected = character(0))
+      updateCheckboxInput(inputId = 'no.layers', value = 0)
+      cat('Selected layer = ', session$userData$show.layer, '\n', sep = '')
+   })
+   
+   observeEvent(input$no.layers, {
+         session$userData$show.layer <- 'none'
+         updateRadioButtons(inputId ='iei.layer', selected = character(0))
+         updateRadioButtons(inputId ='connect.layer', selected = character(0))
+         updateCheckboxInput(inputId = 'no.layers', value = 0)
+         cat('Layers off\n', sep = '')
+   })##########, ignoreInit = TRUE)
+   
+   observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap, 
+                     input$opacity), {                                          # ----- Draw dynamic parts of Leaflet map
+      cat('Observed selected layer = ', session$userData$show.layer, '\n', sep = '')
+      cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
+      cat('Opacity = ', input$opacity, '%\n', sep = '')
+      
+      if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
          leafletProxy('map') |>
          addProviderTiles(provider = input$show.basemap) |>
          removeTiles(layerId = 'dsl.layers')
-      else
+      else 
          leafletProxy('map') |>
          addProviderTiles(provider = input$show.basemap) |>
-         addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = input$show.layer,
-                     options = WMSTileOptions(opacity = input$opacity / 100))
+                  addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
+                  options = WMSTileOptions(opacity = input$opacity / 100))
    })
    
    observeEvent(input$autoscale, {
