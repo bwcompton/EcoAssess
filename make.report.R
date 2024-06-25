@@ -4,15 +4,17 @@
    # Produce PDF report for target area
    # Arguments:
    #     layer.data        paths to geoTIFFs of data layers
+   #     resultfile        resultfile filename
    #     layers            data frame with 
    #        $server.names     names on GeoServer
    #        $pretty.names     display names
    #        $which            'connect' or 'iei'
    #     poly              sf polygon of target area
    #     poly.proj         and the reprojected target area poly
-   #     resultfile        resultfile filename
    #     proj.name         user's project name
    #     proj.info         user's project info
+   #     quick             if TRUE, use saved params (for testing reports)
+   #     params            params set here in previous run in same R session, for testing reports with quick = TRUE
    # Source data:
    #     inst/ecoConnect_quantiles.RDS    percentiles of each ecoConnect layer, from ecoconnect.quantiles.R   
    # resultfile:
@@ -21,11 +23,11 @@
    
    
    
+   cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
    
    source = 'report_template.Rmd'         # markdown template
    t <- Sys.time()
-   id <- showNotification('Generating report...', duration = NULL, closeButton = FALSE)
-   cat('\n\nGenerating PDF...\n\n')
+   
    
    if(quick) {
       params <- xxparams
@@ -87,9 +89,9 @@
    z <- rmarkdown::render(tempReport, output_file = resultfile,                      # knit in child environment
                           params = params,
                           envir = new.env(parent = globalenv()))
-   removeNotification(id)
+
    cat('Time taken to do knit report: ', Sys.time() - t1, '\n')
-   
    cat('** Time taken for make.report: ', Sys.time() - t, '\n')
+   
    z
 }

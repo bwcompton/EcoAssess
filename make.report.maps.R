@@ -35,15 +35,15 @@
    
    zoom <- floor(zoomfit[1] + zoomfit[2] * min(size, zoomfit[4]) + zoomfit[3] * min(size, zoomfit[4])^2)     # decent zoom from regression on size
    
-   cat('expand = ', expand, ', minsize = ', minsize, '\n', sep = '')
-   cat('*** Original size = ', max(w, h), ' m\n', sep = '')
-   cat('*** Multipliers on dimensions to get final size = ', e[1], ', ', e[2], '\n', sep = '')
-   cat('*** Final size = ', size, ' m\n', sep = '')
-   cat('*** Zoom = ', zoom, '\n', sep ='')
+   # cat('expand = ', expand, ', minsize = ', minsize, '\n', sep = '')
+   # cat('*** Original size = ', max(w, h), ' m\n', sep = '')
+   # cat('*** Multipliers on dimensions to get final size = ', e[1], ', ', e[2], '\n', sep = '')
+   # cat('*** Final size = ', size, ' m\n', sep = '')
+   # cat('*** Zoom = ', zoom, '\n', sep ='')
    
    
    basemap <- get_stadiamap(bbox = newbb, maptype = 'stamen_toner_lite', zoom = zoom, messaging = FALSE)     # get the basemap
-   print(newbb)
+   # print(newbb)
    
    map <- ggmap(basemap) +                                                                # plot the basemap with the poly
       geom_sf(data = poly, aes(), color = 'orange', lwd = 2,fill = NA, inherit.aes = FALSE) +
