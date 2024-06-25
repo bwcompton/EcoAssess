@@ -45,13 +45,13 @@ home <- c(-75, 42)            # center of NER (approx)
 zoom <- 6 
 
 layers <- data.frame(
+   which = c('connect', 'connect', 'connect', 'connect', 'iei', 'iei', 'iei', 'iei'),
    workspaces = c('ecoConnect', 'ecoConnect', 'ecoConnect', 'ecoConnect', 'IEI', 'IEI', 'IEI', 'IEI'),
    server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest', 'iei_regional', 'iei_state', 'iei_ecoregion', 'iei_huc6'),
    pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'IEI (region)', 'IEI (state)', 'IEI (ecoregion)', 'IEI (watershed)'),
    radio.names = c('Forest ecoConnect', 'Ridgetop ecoConnect', 'Wetland ecoConnect', 'Floodplain forest ecoConnect',
-                   'Regional IEI', 'State IEI', 'Ecoregion IEI', 'Watershed IEI'),
-   which = c('connect', 'connect', 'connect', 'connect', 'iei', 'iei', 'iei', 'iei')
-)
+                   'Regional IEI', 'State IEI', 'Ecoregion IEI', 'Watershed IEI'))
+
 full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)   # we'll need these for addWMSTiles
 
 
@@ -96,7 +96,7 @@ ui <- page_sidebar(
          
          # card(
          #    span(('Scaling'),
-         #         tooltip(bs_icon('info-circle', title = 'About Scaling'), scalingTooltip)),
+         #         tooltip(bs_icon('info-circle'), scalingTooltip)),
          #    
          #    sliderInput('scaling', 'ecoConnect scale', 1, 4, 1, step = 1, ticks = FALSE),   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
          #    checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
@@ -108,22 +108,22 @@ ui <- page_sidebar(
          # ),
          
          card(
-            span(HTML('<h4 style="display: inline-block;">Target area report</h4'),
-                 tooltip(bs_icon('info-circle', title = 'About target area'), targetTooltip)),
+            span(HTML('<h4 style="display: inline-block;">Target area report</h4>'),
+                 tooltip(bs_icon('info-circle'), targetTooltip)),
             
             span(span(actionButton('drawPolys', HTML('Draw')),
-                      tooltip(bs_icon('info-circle', title = 'About Draw polys'), drawTooltip),
-                      HTML('&nbsp;')),
+                      tooltip(bs_icon('info-circle'), drawTooltip),
+                      HTML('&nbsp;'), HTML('or&nbsp;')),
                  
                  span(actionButton('uploadShapefile', HTML('Upload')),
-                      tooltip(bs_icon('info-circle', title = 'About Upload shapefile'), uploadTooltip),
-                      HTML('&nbsp;')),
-                 
-                 span(actionButton('startOver', HTML('Restart')),
-                      tooltip(bs_icon('info-circle', title = 'About Start over'), restartTooltip))),
+                      tooltip(bs_icon('info-circle'), uploadTooltip))
+                 ),
             
             span(actionButton('getReport', HTML('Get report')),
-                 tooltip(bs_icon('info-circle', title = 'About Get report'), getReportTooltip))
+                 tooltip(bs_icon('info-circle'), getReportTooltip)),
+            
+            span(actionButton('restart', HTML('Restart')),
+                 tooltip(bs_icon('info-circle'), restartTooltip))
          ),
          
          card(
@@ -134,7 +134,7 @@ ui <- page_sidebar(
             br(),
             tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
          ),
-         width = 380
+         width = 290    ### was 380, but could go to 280 by moving Restart down
       ),
    
    layout_sidebar(
@@ -150,18 +150,19 @@ ui <- page_sidebar(
          hr(style = "border-top: 1px solid #000000;"),
          
          radioButtons('show.layer', label = span(HTML('<h4 style="display: inline-block;">Layer</h4>'), 
-                                                 tooltip(bs_icon('info-circle', title = 'About layers'), layerTooltip)), 
+                                                 tooltip(bs_icon('info-circle'), layerTooltip)), 
                       choiceNames = c(layers$radio.names, 'None'),
-                      choiceValues = c(full.layer.names, 'none')),
+                      choiceValues = c(full.layer.names, 'none'),
+                      selected = character(0)),
          
          sliderInput('opacity', span(HTML('<h4 style="display: inline-block;">Opacity</h4>'), 
-                                     tooltip(bs_icon('info-circle', title = 'About opacity'), opacityTooltip)), 
+                                     tooltip(bs_icon('info-circle'), opacityTooltip)), 
                      0, 100, post = '%', value = 50, ticks = FALSE),
          
          hr(style = "border-top: 1px solid #000000;"),
          
          radioButtons('show.basemap', span(HTML('<h4 style="display: inline-block;">Basemap</h4>'),
-                                           tooltip(bs_icon('info-circle', title = 'About basemaps'), basemapTooltip)),
+                                           tooltip(bs_icon('info-circle'), basemapTooltip)),
                       choiceNames = c('Map', 'Topo', 'Imagery'),
                       choiceValues = c('Stadia.StamenTonerLite', 'USGS.USTopo', 'USGS.USImagery'))
          
@@ -175,12 +176,12 @@ ui <- page_sidebar(
 
 # Server -----------------------------
 server <- function(input, output, session) {
-   shinyjs::disable('startOver')
+   shinyjs::disable('restart')
    shinyjs::disable('getReport')           #### disable for testing
    #  shinyjs::disable('quick.report')        #### do it now button is currently broken
    
    #bs_themer()                                 # uncomment to select a new theme
-   
+ #  print(getDefaultReactiveDomain())
    
    observeEvent(input$aboutTool, {
       modalHelp(aboutTool, 'About this tool')})
@@ -188,6 +189,13 @@ server <- function(input, output, session) {
       modalHelp(aboutecoConnect, 'About ecoConnect', size = 'l')})
    observeEvent(input$aboutIEI, {
       modalHelp(aboutIEI, 'About the Index of Ecological Integrity')})
+   
+   
+   # Observe({
+   #    updateRadioButtons(inputId ='show.layer', selected = character(0))     # will modify this to turn off radio buttons in the unselected layer group
+   # })
+   
+   
    
    
    output$map <- renderLeaflet({                    # ----- Draw static parts of Leaflet map
@@ -199,12 +207,12 @@ server <- function(input, output, session) {
    })
    
    observe({                                           # ----- Draw dynamic parts of Leaflet map
-      if(input$show.layer == 'none') 
+      if(length(input$show.layer) != 0 && input$show.layer == 'none')
          leafletProxy('map') |>
          addProviderTiles(provider = input$show.basemap) |>
          removeTiles(layerId = 'dsl.layers')
-      else 
-         leafletProxy('map') |>                          
+      else
+         leafletProxy('map') |>
          addProviderTiles(provider = input$show.basemap) |>
          addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = input$show.layer,
                      options = WMSTileOptions(opacity = input$opacity / 100))
@@ -221,7 +229,7 @@ server <- function(input, output, session) {
    observeEvent(input$drawPolys, {                    # ----- Draw button
       shinyjs::disable('drawPolys')
       shinyjs::disable('uploadShapefile')
-      shinyjs::enable('startOver')
+      shinyjs::enable('restart')
       
       session$userData$drawn <- TRUE
       proxy <- leafletProxy('map')
@@ -238,7 +246,7 @@ server <- function(input, output, session) {
    observeEvent(input$uploadShapefile, {              # ----- Upload button
       shinyjs::disable('drawPolys')
       shinyjs::disable('uploadShapefile')
-      shinyjs::enable('startOver')
+      shinyjs::enable('restart')
       
       
       # do modal dialog to get shapefile
@@ -248,7 +256,7 @@ server <- function(input, output, session) {
                    placeholder = 'must include .shp, .shx, and .prj', width = '100%'),
          footer = tagList(
             modalButton('OK'),
-            actionButton('startOver', 'Cancel'))
+            actionButton('restart', 'Cancel'))
       ))
       
       session$userData$drawn <- FALSE
@@ -260,10 +268,10 @@ server <- function(input, output, session) {
       draw.poly(session$userData$poly)
    })
    
-   observeEvent(input$startOver, {                    # ----- Restart button
+   observeEvent(input$restart, {                    # ----- Restart button
       shinyjs::enable('drawPolys')
       shinyjs::enable('uploadShapefile')
-      shinyjs::disable('startOver')
+      shinyjs::disable('restart')
       shinyjs::disable('getReport')
       removeModal()                                   # when triggered by cancel button in upload
       
@@ -293,7 +301,7 @@ server <- function(input, output, session) {
                        width = '100%', rows = 6, placeholder = 'Optional project description'),
          footer = tagList(
             show_spinner(),
-            span(disabled(downloadButton('do.report', 'Generate report')), tooltip(bs_icon('info-circle', title = 'About Get report'), generateReportTooltip)),
+            span(disabled(downloadButton('do.report', 'Generate report')), tooltip(bs_icon('info-circle'), generateReportTooltip)),
             actionButton('cancel.report', 'Cancel')
          )
       ))
@@ -313,7 +321,7 @@ server <- function(input, output, session) {
       
       cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n', sep = '')
       t <- Sys.time()
-      ## downloading <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
+      downloading <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
       
       
       session$userData$the.promise <- future_promise({
@@ -324,7 +332,7 @@ server <- function(input, output, session) {
          cat('*** The promise has been fulfilled!\n')
          enable('do.report')
          hide_spinner()
-      ##  removeNotification(downloading)
+         removeNotification(downloading)
       }) 
       session$userData$time <- Sys.time() - t
       NULL
@@ -346,7 +354,7 @@ server <- function(input, output, session) {
          session$userData$the.promise %...>% 
             call.make.report(., f, layers, session$userData$poly, session$userData$poly.proj, 
                              input$proj.name, input$proj.info, session$userData$acres, 
-                             quick = FALSE)       
+                             quick = FALSE, session = getDefaultReactiveDomain())       
       })
    
    # --- Generate report button from report dialog                ############# For testing reports
@@ -356,8 +364,6 @@ server <- function(input, output, session) {
          make.report(., f, params = xxparams, quick = TRUE)
       }
    )
-   cat('done\n')
-   
 }
 
 shinyApp(ui, server)

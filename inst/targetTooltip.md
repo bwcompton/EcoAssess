@@ -1,2 +1,6 @@
-Get a report on a target conservation area, either by drawing one or 
-more polygons or by uploading a shapefile
+Get a report on a target conservation area
+
+Start with either **Draw** to draw one or 
+more polygons or **Upload** to upload a shapefile
+
+Then click **Get report**
