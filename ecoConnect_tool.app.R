@@ -151,12 +151,6 @@ ui <- page_sidebar(
          ),
          hr(style = "border-top: 1px solid #000000;"),
          
-         # radioButtons('show.layer', label = span(HTML('<h5 style="display: inline-block;">Layer</h5>'), 
-         #                                         tooltip(bs_icon('info-circle'), layerTooltip)), 
-         #              choiceNames = c(layers$radio.names, 'None'),
-         #              choiceValues = c(full.layer.names, 'none'),
-         #              selected = character(0)),
-         
          radioButtons('connect.layer', label = span(HTML('<h5 style="display: inline-block;">ecoConnect layers</h5>'), 
                                                     tooltip(bs_icon('info-circle'), connectTooltip)), 
                       choiceNames = layers$radio.names[layers$which == 'connect'],
@@ -168,8 +162,9 @@ ui <- page_sidebar(
                       choiceValues = full.layer.names[layers$which == 'iei'],
                       selected = character(0)),
          
-         actionButton('no.layers', 'Turn off layers'),
+         tags$img(height = 40, width = 185, src = 'iei_symbology.png'),
          
+         actionButton('no.layers', 'Turn off layers'),
          
          sliderInput('opacity', span(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), 
                                      tooltip(bs_icon('info-circle'), opacityTooltip)), 
@@ -402,7 +397,7 @@ server <- function(input, output, session) {
    
    # --- Generate report button from report dialog                ############# For testing reports
    output$quick.report <- downloadHandler(
-      file = 'report.pdf',
+      file = 'ecoConnect_report.pdf',
       content = function(f) {
          make.report(., f, params = xxparams, quick = TRUE)
       }

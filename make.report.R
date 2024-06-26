@@ -69,10 +69,10 @@
       cat('Time taken to do the math: ', Sys.time() - t, '\n')
        
       t1 <- Sys.time()
-      left <- make.report.maps(poly, 1.5, minsize = 1000)
+      left <- make.report.maps(poly, 1.5, minsize = 2000)
       cat('Time taken to make left map: ', Sys.time() - t1, '\n')
       t1 <- Sys.time()
-      right <- make.report.maps(poly, 4, minsize = 20000)
+      right <- make.report.maps(poly, 5, minsize = 30000)
       cat('Time taken to make right map: ', Sys.time() - t1, '\n')
       
       

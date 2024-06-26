@@ -16,6 +16,7 @@
    #   path       path to result file
    # Result:
    #   result file in SLD 1.0 format, ready to put up on GeoServer
+   # Notes:       I'm using Viridis::plasma for IEIs. It's iei_viridisC100 on the GeoServer
    # B. Compton, 3 Nov 2023 (from make.viridis.style)
    
    
