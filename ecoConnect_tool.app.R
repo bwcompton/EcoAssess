@@ -85,7 +85,9 @@ aboutIEI <- includeMarkdown('inst/aboutIEI.md')
 # User interface ---------------------
 ui <- page_sidebar(
    theme = bs_theme(bootswatch = 'cerulean', version = 5),   # bslib version defense. Use version_default() to update
-   shinyjs::useShinyjs(),
+   useShinyjs(),
+   extendShinyjs(script = 'fullscreen.js', functions = c('fullscreen', 'normalscreen')),
+   tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "fullscreen.css")),      ## turn off dark background for fullscreen
    
    title = 'ecoConnect tool',
    
@@ -210,7 +212,8 @@ server <- function(input, output, session) {
          setView(lng = home[1], lat = home[2], zoom = zoom)
    })
    
-   
+   observeEvent(input$fullscreen, 
+      js$fullscreen(input$fullscreen), ignoreInit = TRUE)
    
    observeEvent(input$connect.layer, {
       session$userData$show.layer <- input$connect.layer
@@ -240,21 +243,22 @@ server <- function(input, output, session) {
    })##########, ignoreInit = TRUE)
    
    observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap, 
-                     input$opacity), {                                          # ----- Draw dynamic parts of Leaflet map
-                        cat('Observed selected layer = ', session$userData$show.layer, '\n', sep = '')
-                        cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
-                        cat('Opacity = ', input$opacity, '%\n', sep = '')
-                        
-                        if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
-                           leafletProxy('map') |>
-                           addProviderTiles(provider = input$show.basemap) |>
-                           removeTiles(layerId = 'dsl.layers')
-                        else 
-                           leafletProxy('map') |>
-                           addProviderTiles(provider = input$show.basemap) |>
-                           addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
-                                       options = WMSTileOptions(opacity = input$opacity / 100))
-                     })
+                     input$opacity),
+                {                                          # ----- Draw dynamic parts of Leaflet map
+                   cat('Observed selected layer = ', session$userData$show.layer, '\n', sep = '')
+                   cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
+                   cat('Opacity = ', input$opacity, '%\n', sep = '')
+                   
+                   if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
+                      leafletProxy('map') |>
+                      addProviderTiles(provider = input$show.basemap) |>
+                      removeTiles(layerId = 'dsl.layers')
+                   else 
+                      leafletProxy('map') |>
+                      addProviderTiles(provider = input$show.basemap) |>
+                      addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
+                                  options = WMSTileOptions(opacity = input$opacity / 100))
+                })
    
    observeEvent(input$autoscale, {
       if(input$autoscale)
