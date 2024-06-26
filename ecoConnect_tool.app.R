@@ -1,6 +1,9 @@
 # ecoConnect.tool.app.R - ecoConnect and IEI viewing and reporting tool
 # Before initial deployment on shinyapps.io, need to restart R and:
 #    library(remotes); install_github('https://github.com/elipousson/sfext.git'); install_github('bwcompton/leaflet.lagniappe')
+# YOu'll need to get a Stadia Maps API  key from https://client.stadiamaps.com and save it in www/stadia_api.txt. Make sure 
+# to .gitignore this file!
+
 # B. Compton, 19 Apr-17 May 2024
 
 
@@ -48,17 +51,14 @@ layers <- data.frame(
    workspaces = c('ecoConnect', 'ecoConnect', 'ecoConnect', 'ecoConnect', 'IEI', 'IEI', 'IEI', 'IEI'),
    server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest', 'iei_regional', 'iei_state', 'iei_ecoregion', 'iei_huc6'),
    pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'IEI (region)', 'IEI (state)', 'IEI (ecoregion)', 'IEI (watershed)'),
-   radio.names = c('Forest ecoConnect', 'Ridgetop ecoConnect', 'Wetland ecoConnect', 'Floodplain forest ecoConnect',
-                   'Regional IEI', 'State IEI', 'Ecoregion IEI', 'Watershed IEI'))
+   radio.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests',
+                   'Regional', 'State', 'Ecoregion', 'Watershed'))
 
 full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)       # we'll need these for addWMSTiles
 
 
 WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                        # our WCS server for downloading data
 WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'                     # our WMS server for drawing maps
-
-register_stadiamaps(readChar(f <- 'www/stadia_api.txt', file.info(f)$size))   # register Stadia API key. Get key from https://client.stadiamaps.com 
-# and save it in www/stadia_api.txt. Make sure to .gitignore this file!
 
 
 # tool tips
@@ -109,7 +109,7 @@ ui <- page_sidebar(
          # ),
          
          card(
-            span(HTML('<h4 style="display: inline-block;">Target area report</h4>'),
+            span(HTML('<h5 style="display: inline-block;">Target area report</h5>'),
                  tooltip(bs_icon('info-circle'), targetTooltip)),
             
             span(span(actionButton('drawPolys', HTML('Draw')),
@@ -120,11 +120,12 @@ ui <- page_sidebar(
                       tooltip(bs_icon('info-circle'), uploadTooltip))
             ),
             
-            span(actionButton('getReport', HTML('Get report')),
-                 tooltip(bs_icon('info-circle'), getReportTooltip)),
-            
-            span(actionButton('restart', HTML('Restart')),
-                 tooltip(bs_icon('info-circle'), restartTooltip))
+            span(span(actionButton('getReport', HTML('Get report')),
+                      tooltip(bs_icon('info-circle'), getReportTooltip)),
+                 
+                 span(actionButton('restart', HTML('Restart')),
+                      tooltip(bs_icon('info-circle'), restartTooltip))
+            )
          ),
          
          card(
@@ -141,7 +142,7 @@ ui <- page_sidebar(
    layout_sidebar(
       sidebar = sidebar(
          position = 'right', 
-         width = 265,
+         width = 220,
          materialSwitch(
             inputId = 'fullscreen',
             label = 'Full screen',
@@ -150,18 +151,18 @@ ui <- page_sidebar(
          ),
          hr(style = "border-top: 1px solid #000000;"),
          
-         # radioButtons('show.layer', label = span(HTML('<h4 style="display: inline-block;">Layer</h4>'), 
+         # radioButtons('show.layer', label = span(HTML('<h5 style="display: inline-block;">Layer</h5>'), 
          #                                         tooltip(bs_icon('info-circle'), layerTooltip)), 
          #              choiceNames = c(layers$radio.names, 'None'),
          #              choiceValues = c(full.layer.names, 'none'),
          #              selected = character(0)),
          
-         radioButtons('connect.layer', label = span(HTML('<h4 style="display: inline-block;">ecoConnect layer</h4>'), 
+         radioButtons('connect.layer', label = span(HTML('<h5 style="display: inline-block;">ecoConnect layers</h5>'), 
                                                     tooltip(bs_icon('info-circle'), connectTooltip)), 
                       choiceNames = layers$radio.names[layers$which == 'connect'],
                       choiceValues = full.layer.names[layers$which == 'connect']),
          
-         radioButtons('iei.layer', label = span(HTML('<h4 style="display: inline-block;">IEI layer</h4>'), 
+         radioButtons('iei.layer', label = span(HTML('<h5 style="display: inline-block;">IEI layers</h5>'), 
                                                 tooltip(bs_icon('info-circle'), ieiTooltip)), 
                       choiceNames = layers$radio.names[layers$which == 'iei'],
                       choiceValues = full.layer.names[layers$which == 'iei'],
@@ -170,13 +171,13 @@ ui <- page_sidebar(
          actionButton('no.layers', 'Turn off layers'),
          
          
-         sliderInput('opacity', span(HTML('<h4 style="display: inline-block;">Layer opacity</h4>'), 
+         sliderInput('opacity', span(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), 
                                      tooltip(bs_icon('info-circle'), opacityTooltip)), 
                      0, 100, post = '%', value = 50, ticks = FALSE),
          
          hr(style = "border-top: 1px solid #000000;"),
          
-         radioButtons('show.basemap', span(HTML('<h4 style="display: inline-block;">Basemap</h4>'),
+         radioButtons('show.basemap', span(HTML('<h5 style="display: inline-block;">Basemap</h5>'),
                                            tooltip(bs_icon('info-circle'), basemapTooltip)),
                       choiceNames = c('Map', 'Topo', 'Imagery'),
                       choiceValues = c('Stadia.StamenTonerLite', 'USGS.USTopo', 'USGS.USImagery'))
@@ -236,29 +237,29 @@ server <- function(input, output, session) {
    })
    
    observeEvent(input$no.layers, {
-         session$userData$show.layer <- 'none'
-         updateRadioButtons(inputId ='iei.layer', selected = character(0))
-         updateRadioButtons(inputId ='connect.layer', selected = character(0))
-         updateCheckboxInput(inputId = 'no.layers', value = 0)
-         cat('Layers off\n', sep = '')
+      session$userData$show.layer <- 'none'
+      updateRadioButtons(inputId ='iei.layer', selected = character(0))
+      updateRadioButtons(inputId ='connect.layer', selected = character(0))
+      updateCheckboxInput(inputId = 'no.layers', value = 0)
+      cat('Layers off\n', sep = '')
    })##########, ignoreInit = TRUE)
    
    observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap, 
                      input$opacity), {                                          # ----- Draw dynamic parts of Leaflet map
-      cat('Observed selected layer = ', session$userData$show.layer, '\n', sep = '')
-      cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
-      cat('Opacity = ', input$opacity, '%\n', sep = '')
-      
-      if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
-         leafletProxy('map') |>
-         addProviderTiles(provider = input$show.basemap) |>
-         removeTiles(layerId = 'dsl.layers')
-      else 
-         leafletProxy('map') |>
-         addProviderTiles(provider = input$show.basemap) |>
-                  addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
-                  options = WMSTileOptions(opacity = input$opacity / 100))
-   })
+                        cat('Observed selected layer = ', session$userData$show.layer, '\n', sep = '')
+                        cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
+                        cat('Opacity = ', input$opacity, '%\n', sep = '')
+                        
+                        if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
+                           leafletProxy('map') |>
+                           addProviderTiles(provider = input$show.basemap) |>
+                           removeTiles(layerId = 'dsl.layers')
+                        else 
+                           leafletProxy('map') |>
+                           addProviderTiles(provider = input$show.basemap) |>
+                           addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
+                                       options = WMSTileOptions(opacity = input$opacity / 100))
+                     })
    
    observeEvent(input$autoscale, {
       if(input$autoscale)
