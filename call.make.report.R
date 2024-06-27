@@ -16,7 +16,7 @@
    })                                           
    
    then(report.promise, onFulfilled = function(x) {
-      cat('*** report.promise has been fulfilled!\n')
+      cat('\n*** report.promise has been fulfilled!\n')
       removeNotification(making.report, session = session)
    })
 }

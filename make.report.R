@@ -88,7 +88,8 @@
    
    z <- rmarkdown::render(tempReport, output_file = resultfile,                      # knit in child environment
                           params = params,
-                          envir = new.env(parent = globalenv()))
+                          envir = new.env(parent = globalenv()),
+                          quiet = TRUE)
 
    cat('Time taken to do knit report: ', Sys.time() - t1, '\n')
    cat('** Time taken for make.report: ', Sys.time() - t, '\n')

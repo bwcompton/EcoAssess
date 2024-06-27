@@ -86,8 +86,8 @@ aboutIEI <- includeMarkdown('inst/aboutIEI.md')
 ui <- page_sidebar(
    theme = bs_theme(bootswatch = 'cerulean', version = 5),   # bslib version defense. Use version_default() to update
    useShinyjs(),
-   extendShinyjs(script = 'fullscreen.js', functions = c('fullscreen', 'normalscreen')),
-   tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "fullscreen.css")),      ## turn off dark background for fullscreen
+   extendShinyjs(script = 'fullscreen.js', functions = c('fullscreen', 'normalscreen', 'is_iOS')),
+   tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "fullscreen.css")),      # turn off dark background for fullscreen
    
    title = 'ecoConnect tool',
    
@@ -97,13 +97,6 @@ ui <- page_sidebar(
          add_busy_spinner(spin = 'fading-circle', position = 'top-left', onstart = FALSE, timeout = 500),
          use_busy_spinner(spin = 'fading-circle', position = 'top-left'),
          
-         # card(
-         #    span(('Scaling'),
-         #         tooltip(bs_icon('info-circle'), scalingTooltip)),
-         #    
-         #    sliderInput('scaling', 'ecoConnect scale', 1, 4, 1, step = 1, ticks = FALSE),   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
-         #    checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
-         # ),
          
          # card(
          #    downloadButton('quick.report', 'Do it now'),
@@ -144,41 +137,46 @@ ui <- page_sidebar(
    layout_sidebar(
       sidebar = sidebar(
          position = 'right', 
-         width = 220,
-         materialSwitch(
-            inputId = 'fullscreen',
-            label = 'Full screen',
-            value = FALSE,
-            status = 'default'
+         width = 250,
+         
+         card( 
+            radioButtons('connect.layer', label = span(HTML('<h5 style="display: inline-block;">ecoConnect layers</h5>'), 
+                                                       tooltip(bs_icon('info-circle'), connectTooltip)), 
+                         choiceNames = layers$radio.names[layers$which == 'connect'],
+                         choiceValues = full.layer.names[layers$which == 'connect']),
+            
+            radioButtons('iei.layer', label = span(HTML('<h5 style="display: inline-block;">IEI layers</h5>'), 
+                                                   tooltip(bs_icon('info-circle'), ieiTooltip)), 
+                         choiceNames = layers$radio.names[layers$which == 'iei'],
+                         choiceValues = full.layer.names[layers$which == 'iei'],
+                         selected = character(0)),
+            
+            tags$img(height = 40, width = 182, src = 'iei_symbology.png'),
+            
+            actionButton('no.layers', 'Turn off layers'),
+            
+            sliderInput('opacity', span(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), 
+                                        tooltip(bs_icon('info-circle'), opacityTooltip)), 
+                        0, 100, post = '%', value = 50, ticks = FALSE),
+            
+            span(('Scaling'),
+                 tooltip(bs_icon('info-circle'), scalingTooltip)),
+
+            sliderInput('scaling', 'ecoConnect scaling', 1, 4, 1, step = 1, ticks = FALSE),   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
+            checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
          ),
-         hr(style = "border-top: 1px solid #000000;"),
          
-         radioButtons('connect.layer', label = span(HTML('<h5 style="display: inline-block;">ecoConnect layers</h5>'), 
-                                                    tooltip(bs_icon('info-circle'), connectTooltip)), 
-                      choiceNames = layers$radio.names[layers$which == 'connect'],
-                      choiceValues = full.layer.names[layers$which == 'connect']),
+         card(
+            radioButtons('show.basemap', span(HTML('<h5 style="display: inline-block;">Basemap</h5>'),
+                                              tooltip(bs_icon('info-circle'), basemapTooltip)),
+                         choiceNames = c('Map', 'Topo', 'Imagery'),
+                         choiceValues = c('Stadia.StamenTonerLite', 'USGS.USTopo', 'USGS.USImagery'))
+         ),
          
-         radioButtons('iei.layer', label = span(HTML('<h5 style="display: inline-block;">IEI layers</h5>'), 
-                                                tooltip(bs_icon('info-circle'), ieiTooltip)), 
-                      choiceNames = layers$radio.names[layers$which == 'iei'],
-                      choiceValues = full.layer.names[layers$which == 'iei'],
-                      selected = character(0)),
-         
-         tags$img(height = 40, width = 185, src = 'iei_symbology.png'),
-         
-         actionButton('no.layers', 'Turn off layers'),
-         
-         sliderInput('opacity', span(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), 
-                                     tooltip(bs_icon('info-circle'), opacityTooltip)), 
-                     0, 100, post = '%', value = 50, ticks = FALSE),
-         
-         hr(style = "border-top: 1px solid #000000;"),
-         
-         radioButtons('show.basemap', span(HTML('<h5 style="display: inline-block;">Basemap</h5>'),
-                                           tooltip(bs_icon('info-circle'), basemapTooltip)),
-                      choiceNames = c('Map', 'Topo', 'Imagery'),
-                      choiceValues = c('Stadia.StamenTonerLite', 'USGS.USTopo', 'USGS.USImagery'))
-         
+         card(
+            materialSwitch(inputId = 'fullscreen', label = 'Full screen', value = FALSE, 
+                           status = 'default')
+         ),
       ),
       
       leafletOutput('map')
@@ -190,8 +188,8 @@ ui <- page_sidebar(
 # Server -----------------------------
 server <- function(input, output, session) {
    shinyjs::disable('restart')
-   shinyjs::disable('getReport')           #### disable for testing
-   #  shinyjs::disable('quick.report')        #### do it now button is currently broken
+   shinyjs::disable('getReport')                #### disable for testing
+   #  shinyjs::disable('quick.report')          #### do it now button is currently broken
    
    #bs_themer()                                 # uncomment to select a new theme
    #  print(getDefaultReactiveDomain())
@@ -213,19 +211,13 @@ server <- function(input, output, session) {
    })
    
    observeEvent(input$fullscreen, 
-      js$fullscreen(input$fullscreen), ignoreInit = TRUE)
+                js$fullscreen(input$fullscreen), ignoreInit = TRUE)
    
    observeEvent(input$connect.layer, {
       session$userData$show.layer <- input$connect.layer
       updateRadioButtons(inputId ='iei.layer', selected = character(0))
       cat('Selected layer = ', session$userData$show.layer, '\n', sep = '')
    })
-   
-   # observeEvent(input$show.basemap, {
-   #    cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
-   #    leafletProxy('map') |>
-   #       addProviderTiles(provider = input$show.basemap)
-   # })
    
    observeEvent(input$iei.layer, {
       session$userData$show.layer <- input$iei.layer
@@ -240,7 +232,7 @@ server <- function(input, output, session) {
       updateRadioButtons(inputId ='connect.layer', selected = character(0))
       updateCheckboxInput(inputId = 'no.layers', value = 0)
       cat('Layers off\n', sep = '')
-   })##########, ignoreInit = TRUE)
+   })
    
    observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap, 
                      input$opacity),
