@@ -139,6 +139,11 @@ ui <- page_sidebar(
          position = 'right', 
          width = 250,
          
+         card(
+            materialSwitch(inputId = 'fullscreen', label = 'Full screen', value = FALSE, 
+                           status = 'default')
+         ),
+         
          card( 
             radioButtons('connect.layer', label = span(HTML('<h5 style="display: inline-block;">ecoConnect layers</h5>'), 
                                                        tooltip(bs_icon('info-circle'), connectTooltip)), 
@@ -157,12 +162,12 @@ ui <- page_sidebar(
             
             sliderInput('opacity', span(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), 
                                         tooltip(bs_icon('info-circle'), opacityTooltip)), 
-                        0, 100, post = '%', value = 50, ticks = FALSE),
+                        0, 100, post = '%', value = 80, ticks = FALSE),
             
             span(('Scaling'),
                  tooltip(bs_icon('info-circle'), scalingTooltip)),
-
-            sliderInput('scaling', 'ecoConnect scaling', 1, 4, 1, step = 1, ticks = FALSE),   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
+            
+            sliderInput('scaling', 'ecoConnect scaling', 1, 3, 1, step = 1, ticks = FALSE),   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
             checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
          ),
          
@@ -171,12 +176,7 @@ ui <- page_sidebar(
                                               tooltip(bs_icon('info-circle'), basemapTooltip)),
                          choiceNames = c('Map', 'Topo', 'Imagery'),
                          choiceValues = c('Stadia.StamenTonerLite', 'USGS.USTopo', 'USGS.USImagery'))
-         ),
-         
-         card(
-            materialSwitch(inputId = 'fullscreen', label = 'Full screen', value = FALSE, 
-                           status = 'default')
-         ),
+         )
       ),
       
       leafletOutput('map')
@@ -202,7 +202,7 @@ server <- function(input, output, session) {
       modalHelp(aboutIEI, 'About the Index of Ecological Integrity')})
    
    
-   output$map <- renderLeaflet({                      # ----- Draw static parts of Leaflet map
+   output$map <- renderLeaflet({                                                    # ----- Draw static parts of Leaflet map
       leaflet('map',
               options = leafletOptions(maxZoom = 16)) |>
          addScaleBar(position = 'bottomleft') |>
@@ -235,8 +235,8 @@ server <- function(input, output, session) {
    })
    
    observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap, 
-                     input$opacity),
-                {                                          # ----- Draw dynamic parts of Leaflet map
+                     input$opacity, input$scaling),
+                {                                                                   # ----- Draw dynamic parts of Leaflet map
                    cat('Observed selected layer = ', session$userData$show.layer, '\n', sep = '')
                    cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
                    cat('Opacity = ', input$opacity, '%\n', sep = '')
@@ -245,11 +245,17 @@ server <- function(input, output, session) {
                       leafletProxy('map') |>
                       addProviderTiles(provider = input$show.basemap) |>
                       removeTiles(layerId = 'dsl.layers')
-                   else 
+                   else {
+                      if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')
+                         style <- paste0(sub('.*:', '', session$userData$show.layer), input$scaling)
+                      else 
+                         style <- ''
+                         
                       leafletProxy('map') |>
                       addProviderTiles(provider = input$show.basemap) |>
                       addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
-                                  options = WMSTileOptions(opacity = input$opacity / 100))
+                                  options = WMSTileOptions(opacity = input$opacity / 100, styles = style))
+                   }
                 })
    
    observeEvent(input$autoscale, {
