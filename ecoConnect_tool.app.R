@@ -137,7 +137,7 @@ ui <- page_sidebar(
    layout_sidebar(
       sidebar = sidebar(
          position = 'right', 
-         width = 250,
+         width = 260,
          
          card(
             materialSwitch(inputId = 'fullscreen', label = 'Full screen', value = FALSE, 
@@ -162,13 +162,11 @@ ui <- page_sidebar(
             
             sliderInput('opacity', span(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), 
                                         tooltip(bs_icon('info-circle'), opacityTooltip)), 
-                        0, 100, post = '%', value = 80, ticks = FALSE),
+                        0, 100, post = '%', value = 60, ticks = FALSE),
             
-            span(('Scaling'),
-                 tooltip(bs_icon('info-circle'), scalingTooltip)),
-            
-            sliderInput('scaling', 'ecoConnect scaling', 1, 3, 1, step = 0.5, ticks = FALSE),   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
-            checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
+            sliderInput('scaling', span(HTML('<h5 style="display: inline-block;">ecoConnect scaling</h5>'), 
+                                        tooltip(bs_icon('info-circle'), scalingTooltip)), 1, 3, 1, step = 0.5, ticks = FALSE)   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
+#            checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
          ),
          
          card(
@@ -235,26 +233,15 @@ server <- function(input, output, session) {
    })
    
    observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap, 
-                     input$opacity, input$autoscale, input$scaling, input$map_zoom),
+                     input$opacity, input$autoscale, input$scaling),
                 {                                                                   # ----- Draw dynamic parts of Leaflet map
-                   #                cat('Observed selected layer = ', session$userData$show.layer, '\n', sep = '')
-                   #                cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
-                   #                cat('Opacity = ', input$opacity, '%\n', sep = '')
-                   
-                   if(input$autoscale)
-                      scaling <- ifelse(input$map_zoom <= 9, 2, ifelse(input$map_zoom <= 12, 1.5, 1))
-                   else 
-                      scaling <- input$scaling
-                   
-              #     cat('zoom = ', input$map_zoom, ', scaling = ', scaling, '\n', sep = '')
-                   
                    if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
                       leafletProxy('map') |>
                       addProviderTiles(provider = input$show.basemap) |>
                       removeTiles(layerId = 'dsl.layers')
                    else {
                       if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')                 # if ecoConnect, use scaled style
-                         style <- paste0(sub('.*:', '', session$userData$show.layer), scaling)
+                         style <- paste0(sub('.*:', '', session$userData$show.layer), input$scaling)
                       else                                                                            # else, use default style for IEI
                          style <- ''
                       
@@ -265,12 +252,12 @@ server <- function(input, output, session) {
                    }
                 })
    
-   observeEvent(input$autoscale, {
-      if(input$autoscale)
-         shinyjs::disable('scaling')
-      else
-         shinyjs::enable('scaling')
-   })
+   # observeEvent(input$autoscale, {
+   #    if(input$autoscale)
+   #       shinyjs::disable('scaling')
+   #    else
+   #       shinyjs::enable('scaling')
+   # })
    
    
    observeEvent(input$drawPolys, {                    # ----- Draw button

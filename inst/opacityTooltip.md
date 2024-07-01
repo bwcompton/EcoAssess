@@ -1,1 +1,1 @@
-**Opacity** affects the ecoConnect and IEI layers, allowing you to make them more transparent or more opaque
+Change the opacity of the ecoConnect and IEI layers

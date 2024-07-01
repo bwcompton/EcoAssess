@@ -1,1 +1,1 @@
-This lets you scale symbology of ecoConnect
+Lighten display of lower-valued ecoConnect paths, emphasizing higher-valued paths
