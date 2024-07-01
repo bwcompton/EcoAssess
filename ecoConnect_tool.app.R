@@ -167,7 +167,7 @@ ui <- page_sidebar(
             span(('Scaling'),
                  tooltip(bs_icon('info-circle'), scalingTooltip)),
             
-            sliderInput('scaling', 'ecoConnect scaling', 1, 3, 1, step = 1, ticks = FALSE),   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
+            sliderInput('scaling', 'ecoConnect scaling', 1, 3, 1, step = 0.5, ticks = FALSE),   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
             checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
          ),
          
@@ -216,14 +216,14 @@ server <- function(input, output, session) {
    observeEvent(input$connect.layer, {
       session$userData$show.layer <- input$connect.layer
       updateRadioButtons(inputId ='iei.layer', selected = character(0))
-      cat('Selected layer = ', session$userData$show.layer, '\n', sep = '')
+      #   cat('Selected layer = ', session$userData$show.layer, '\n', sep = '')
    })
    
    observeEvent(input$iei.layer, {
       session$userData$show.layer <- input$iei.layer
       updateRadioButtons(inputId ='connect.layer', selected = character(0))
       updateCheckboxInput(inputId = 'no.layers', value = 0)
-      cat('Selected layer = ', session$userData$show.layer, '\n', sep = '')
+      #   cat('Selected layer = ', session$userData$show.layer, '\n', sep = '')
    })
    
    observeEvent(input$no.layers, {
@@ -231,30 +231,37 @@ server <- function(input, output, session) {
       updateRadioButtons(inputId ='iei.layer', selected = character(0))
       updateRadioButtons(inputId ='connect.layer', selected = character(0))
       updateCheckboxInput(inputId = 'no.layers', value = 0)
-      cat('Layers off\n', sep = '')
+      #   cat('Layers off\n', sep = '')
    })
    
    observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap, 
-                     input$opacity, input$scaling),
+                     input$opacity, input$autoscale, input$scaling, input$map_zoom),
                 {                                                                   # ----- Draw dynamic parts of Leaflet map
-                   cat('Observed selected layer = ', session$userData$show.layer, '\n', sep = '')
-                   cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
-                   cat('Opacity = ', input$opacity, '%\n', sep = '')
+                   #                cat('Observed selected layer = ', session$userData$show.layer, '\n', sep = '')
+                   #                cat('Drawing basemap ', input$show.basemap, '\n', sep = '')
+                   #                cat('Opacity = ', input$opacity, '%\n', sep = '')
+                   
+                   if(input$autoscale)
+                      scaling <- ifelse(input$map_zoom <= 9, 2, ifelse(input$map_zoom <= 12, 1.5, 1))
+                   else 
+                      scaling <- input$scaling
+                   
+              #     cat('zoom = ', input$map_zoom, ', scaling = ', scaling, '\n', sep = '')
                    
                    if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
                       leafletProxy('map') |>
                       addProviderTiles(provider = input$show.basemap) |>
                       removeTiles(layerId = 'dsl.layers')
                    else {
-                      if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')
-                         style <- paste0(sub('.*:', '', session$userData$show.layer), input$scaling)
-                      else 
+                      if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')                 # if ecoConnect, use scaled style
+                         style <- paste0(sub('.*:', '', session$userData$show.layer), scaling)
+                      else                                                                            # else, use default style for IEI
                          style <- ''
-                         
+                      
                       leafletProxy('map') |>
-                      addProviderTiles(provider = input$show.basemap) |>
-                      addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
-                                  options = WMSTileOptions(opacity = input$opacity / 100, styles = style))
+                         addProviderTiles(provider = input$show.basemap) |>
+                         addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
+                                     options = WMSTileOptions(opacity = input$opacity / 100, styles = style))
                    }
                 })
    
@@ -359,13 +366,13 @@ server <- function(input, output, session) {
       xxpoly.proj <<- session$userData$poly.proj
       #  st_write(xxpoly, 'C:/GIS/GIS/sample_parcels/name.shp')  # save drawn poly as shapefile
       
-      cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n', sep = '')
+      # cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n', sep = '')
       t <- Sys.time()
       downloading <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
       
       
       session$userData$the.promise <- future_promise({
-         cat('*** PID ', Sys.getpid(), ' is working in the future...\n', sep = '')
+         #cat('*** PID ', Sys.getpid(), ' is working in the future...\n', sep = '')
          get.WCS.data(WCSserver, layers$workspaces, layers$server.names, session$userData$bbox)    # ----- Download data in the future  
       }) 
       then(session$userData$the.promise, onFulfilled = function(x) {

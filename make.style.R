@@ -1,5 +1,5 @@
-'make.style' <- function(palette, count = 100, range = c(1, 100), reverse = FALSE, power = 1,
-                         name = paste0(gsub('[: ]+', '_', palette), '_', count),
+'make.style' <- function(palette, count = 100, range = c(1, 100), reverse = FALSE, white = FALSE,
+                         power = 1, name = paste0(gsub('[: ]+', '_', palette), '_', count),
                          abstract = paste('GeoServer style from make.style for', name, 'using palette', palette), 
                          path = 'C:/Users/bcompton/Desktop/') {
    
@@ -11,9 +11,10 @@
    #   count      number of classes within range
    #   range      two element vector of range
    #   reverse    if TRUE, reverse order of colors
+   #   white      if TRUE, force the lowest value to pure white
    #   power      Rescale colors by power, giving lighter colors at the low end for 
    #              powers > 1. Used for ecoConnect scaling in ecoConnect tool.
-   #   name       name of style (result file will be name.txt)
+   #   name       name of style (result file will be name.sld)
    #   abstract   abstract line
    #   path       path to result file
    # Result:
@@ -21,8 +22,10 @@
    # Notes:       I'm using Viridis::plasma for IEIs. It's iei_viridisC100 on the GeoServer
    # B. Compton, 3 Nov 2023 (from make.viridis.style)
    # 28 Jun 2024: add power argument
+   # 1 Jul 2024: add white option to force white; use .sld as extension. Can then copy result to 
+   #             Geoserver, in /appservers/apache-tomcat-8x/webapps/geoserver/data/workspaces/ecoConnect/styles/
    
-
+   
    
    library(paletteer)
    
@@ -34,7 +37,8 @@
    if(reverse)
       v$color <- rev(v$color)
    
- #  v<<-v;power<<-power;return()
+   if(white)
+      v$color[1] <- '#FFFFFF'
    
    if(power != 1) {                       # if using power rescaling, stretch palette
       x <- v$cutpoint ^ power
@@ -43,9 +47,9 @@
       v$color <- v$color[y]
       abstract <- paste0(abstract, ', power rescaling = ', power)
    }
-      
-      
-      
+   
+   
+   
    
    z <- paste('              <ColorMapEntry color="', v$color, '" quantity="', 
               v$cutpoint, '"/>', sep = '')
@@ -75,7 +79,7 @@
              '</StyledLayerDescriptor>')
    
    
-   result <- paste(path, name, '.txt', sep = '')
+   result <- paste(path, name, '.sld', sep = '')
    writeLines(c(head, z, tail), result)
    cat('Result written to ', result, '\n', sep = '')
 }
