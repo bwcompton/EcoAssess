@@ -166,7 +166,7 @@ ui <- page_sidebar(
             
             sliderInput('scaling', span(HTML('<h5 style="display: inline-block;">ecoConnect scaling</h5>'), 
                                         tooltip(bs_icon('info-circle'), scalingTooltip)), 1, 3, 1, step = 0.5, ticks = FALSE)   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
-#            checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
+            #            checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
          ),
          
          card(
@@ -298,8 +298,27 @@ server <- function(input, output, session) {
    })
    
    observeEvent(input$shapefile, {                    # --- Have uploaded shapefile
-      session$userData$poly <- get.shapefile(input$shapefile)
-      draw.poly(session$userData$poly)
+      cat('input$shapefile = ')
+      print(input$shapefile)
+      cat('\n')
+      
+      tryCatch({
+         session$userData$poly <- get.shapefile(input$shapefile)
+         draw.poly(session$userData$poly)
+      }, 
+      error = function(e) {
+         showModal(modalDialog(
+            title = 'Error', 
+            'The shapefile is incomplete or corrupted. Make sure you 
+                     included all three of the .shp, .shx, and .prj for your shapefile.',
+            footer = modalButton('OK'),
+            easyClose = TRUE
+         ))
+         shinyjs::enable('drawPolys')               # bad shapefile: do a restart
+         shinyjs::enable('uploadShapefile')
+         shinyjs::disable('restart')
+         shinyjs::disable('getReport')
+      })
    })
    
    observeEvent(input$restart, {                    # ----- Restart button
@@ -326,7 +345,24 @@ server <- function(input, output, session) {
          session$userData$poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))  #    drawn poly as sf
       
       session$userData$saved <- list(input$proj.name, input$proj.info)
-      session$userData$waiting <- TRUE
+      session$userData$poly <- st_make_valid(session$userData$poly)    # attempt to fix bad shapefiles
+      session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', type = 'proj') # project to match downloaded rasters
+      session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
+      
+      bbarea <- (session$userData$bbox$xmax - session$userData$bbox$xmin) * (session$userData$bbox$ymax - session$userData$bbox$ymin) * 247.105e-6
+      cat('bbacres = ', bbarea, '\n', sep = '')
+      
+      if(bbarea > 1e6) {
+         showModal(modalDialog(
+            title = 'Error', 
+            'Target area is too large. This could be because you have uploaded or drawn huge polygons 
+            or multiple widely-spaced polygons. The rectangle enclosing all polygons must be no larger 
+            than 1 million acres.',
+            footer = modalButton('OK'),
+            easyClose = TRUE
+         ))
+         return()
+      }
       
       showModal(modalDialog(                          # --- Modal input to get project name and description
          textInput('proj.name', 'Project name', value = input$proj.name, width = '100%',
@@ -344,9 +380,7 @@ server <- function(input, output, session) {
       
       
       # -- Download data while user is typing project info
-      session$userData$poly <- st_make_valid(session$userData$poly)    # attempt to fix bad shapefiles
-      session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', type = 'proj') # project to match downloaded rasters
-      session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
+      
       
       
       xxpoly <<- session$userData$poly
@@ -363,7 +397,7 @@ server <- function(input, output, session) {
          get.WCS.data(WCSserver, layers$workspaces, layers$server.names, session$userData$bbox)    # ----- Download data in the future  
       }) 
       then(session$userData$the.promise, onFulfilled = function(x) {
-         cat('*** The promise has been fulfilled!\n')
+         #   cat('*** The promise has been fulfilled!\n')
          enable('do.report')
          hide_spinner()
          removeNotification(downloading)

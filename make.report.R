@@ -23,7 +23,7 @@
    
    
    
-   cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
+  #  cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
    
    source = 'report_template.Rmd'         # markdown template
    t <- Sys.time()
