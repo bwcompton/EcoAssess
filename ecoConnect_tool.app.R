@@ -278,11 +278,6 @@ server <- function(input, output, session) {
    })
    
    observeEvent(input$uploadShapefile, {              # ----- Upload button
-      shinyjs::disable('drawPolys')
-      shinyjs::disable('uploadShapefile')
-      shinyjs::enable('restart')
-      
-      
       # do modal dialog to get shapefile
       showModal(modalDialog(
          title = 'Select shapefile to upload',
@@ -292,9 +287,7 @@ server <- function(input, output, session) {
             modalButton('OK'),
             actionButton('restart', 'Cancel'))
       ))
-      
-      session$userData$drawn <- FALSE
-      shinyjs::enable('getReport')
+      shinyjs::disable('getReport')
    })
    
    observeEvent(input$shapefile, {                    # --- Have uploaded shapefile
@@ -305,6 +298,11 @@ server <- function(input, output, session) {
       tryCatch({
          session$userData$poly <- get.shapefile(input$shapefile)
          draw.poly(session$userData$poly)
+         session$userData$drawn <- FALSE
+         shinyjs::disable('drawPolys')
+         shinyjs::disable('uploadShapefile')
+         shinyjs::enable('getReport')
+         shinyjs::enable('restart')
       }, 
       error = function(e) {
          showModal(modalDialog(
