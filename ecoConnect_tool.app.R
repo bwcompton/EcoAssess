@@ -306,19 +306,18 @@ server <- function(input, output, session) {
       error = function(e) {
          showModal(modalDialog(
             title = 'Error', 
-            'The shapefile is incomplete or corrupted. Make sure you 
-                     included all three of the .shp, .shx, and .prj for your shapefile.',
+            includeMarkdown('inst/errorShapefile.md'),
             footer = modalButton('OK'),
             easyClose = TRUE
          ))
-         shinyjs::enable('drawPolys')               # bad shapefile: do a restart
+         shinyjs::enable('drawPolys')                 # bad shapefile: do a restart
          shinyjs::enable('uploadShapefile')
          shinyjs::disable('restart')
          shinyjs::disable('getReport')
       })
    })
    
-   observeEvent(input$restart, {                    # ----- Restart button
+   observeEvent(input$restart, {                      # ----- Restart button
       shinyjs::enable('drawPolys')
       shinyjs::enable('uploadShapefile')
       shinyjs::disable('restart')
@@ -352,9 +351,7 @@ server <- function(input, output, session) {
       if(bbarea > 1e6) {
          showModal(modalDialog(
             title = 'Error', 
-            'Target area is too large. This could be because you have uploaded or drawn huge polygons 
-            or multiple widely-spaced polygons. The rectangle enclosing all polygons must be no larger 
-            than 1 million acres.',
+            includeMarkdown('inst/errorToobig.md'),
             footer = modalButton('OK'),
             easyClose = TRUE
          ))
