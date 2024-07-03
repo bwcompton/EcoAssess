@@ -56,9 +56,8 @@ layers <- data.frame(
 
 full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)       # we'll need these for addWMSTiles
 
-
-WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                        # our WCS server for downloading data
 WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'                     # our WMS server for drawing maps
+WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                        # our WCS server for downloading data
 
 
 # tool tips

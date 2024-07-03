@@ -23,7 +23,7 @@
    
    
    
-  #  cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
+   #  cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
    
    source = 'report_template.Rmd'         # markdown template
    t <- Sys.time()
@@ -34,7 +34,7 @@
    } else {                                                    # *** for testing: save params for Do it now button
       stats <- layer.stats(lapply(layer.data, rast))
       quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')
- 
+      
       IEIs <-  round(unlist(stats[layers$which == 'iei']) / 100, 2)
       IEI.top <- round((1.01 - IEIs) * 100, 0)
       IEI <- paste0(ifelse(IEI.top <= 10, '**', ''), 
@@ -47,13 +47,14 @@
       
       connects <- round((unlist(stats[layers$which == 'connect'])), 0)
       connect.top <- colSums(matrix(connects, 100, length(connects), byrow = TRUE) < quantiles)
-      connect <- paste0(ifelse(connect.top <= 10, '**', ''),
+      
+      connect <- paste0(ifelse(connect.top <= 10 & connects != 0, '**', ''),
                         connects,
                         ifelse(connects > 0, 
                                ifelse(connect.top <= 50, paste0(' (top ', connect.top, '%)'), 
                                       paste0(' (bottom ', 101 - connect.top, '%)')),
-                                      ''), 
-                        ifelse(connect.top <= 10, '**', ''))
+                               ''), 
+                        ifelse(connect.top <= 10 & connects != 0, '**', ''))
       
       
       table <- data.frame(IEI.levels = layers$pretty.names[layers$which == 'iei'],
@@ -65,9 +66,9 @@
       acres <- format(round(acres, 1), big.mark = ',')
       date <- sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y'))
       # session$userData$bbox <- as.list(st_bbox(poly.proj))
-       
+      
       cat('Time taken to do the math: ', Sys.time() - t, '\n')
-       
+      
       t1 <- Sys.time()
       left <- make.report.maps(poly, 1.5, minsize = 2000)
       cat('Time taken to make left map: ', Sys.time() - t1, '\n')
@@ -90,7 +91,7 @@
                           params = params,
                           envir = new.env(parent = globalenv()),
                           quiet = TRUE)
-
+   
    cat('Time taken to do knit report: ', Sys.time() - t1, '\n')
    cat('** Time taken for make.report: ', Sys.time() - t, '\n')
    
