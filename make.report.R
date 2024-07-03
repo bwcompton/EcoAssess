@@ -34,6 +34,7 @@
    } else {                                                    # *** for testing: save params for Do it now button
       stats <- layer.stats(lapply(layer.data, rast))
       quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')
+      # quantiles <- readRDS('inst/ecoConnect_quantiles_100.RDS')
       
       IEIs <-  round(unlist(stats[layers$which == 'iei']) / 100, 2)
       IEI.top <- round((1.01 - IEIs) * 100, 0)
@@ -73,7 +74,7 @@
       left <- make.report.maps(poly, 1.5, minsize = 2000)
       cat('Time taken to make left map: ', Sys.time() - t1, '\n')
       t1 <- Sys.time()
-      right <- make.report.maps(poly, 5, minsize = 30000)
+      right <- make.report.maps(poly, 5, minsize = 40000)
       cat('Time taken to make right map: ', Sys.time() - t1, '\n')
       
       

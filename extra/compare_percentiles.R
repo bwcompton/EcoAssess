@@ -24,8 +24,8 @@ x$a50 <- readRDS(paste0(path, 'ecoConnect_quantiles_50.RDS'))$Forest_fowet
 x$a100 <- readRDS(paste0(path, 'ecoConnect_quantiles_100.RDS'))$Forest_fowet
 
 
-lines(x$single, col = 'black')
-plot(1:100, x$a1, ty = 'l', col = 'red')
+plot(1:100, x$single, col = 'black', ty = 'l')
+#plot(1:100, x$a1, ty = 'l', col = 'red')
 #lines(x$a1b, col = 'green')
 lines(x$a10, col = 'blue')
 lines(x$a50, col = 'orange')
