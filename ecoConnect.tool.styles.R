@@ -39,3 +39,6 @@ cat('.SLD files created. Now connect to the GeoServer via SFTP, and copy results
 # make.style('grDevices::Greens 3', reverse = TRUE, name = 'forests2', power = 1.5)
 # make.style('grDevices::Greens 3', reverse = TRUE, name = 'forests3', power = 2)
 # make.style('grDevices::Greens 3', reverse = TRUE, name = 'forests4', power = 2.5)
+
+# IEI
+make.style('grDevices::Greens 3', reverse = TRUE, name = 'iei_green100')

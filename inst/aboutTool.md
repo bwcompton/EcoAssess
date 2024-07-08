@@ -9,6 +9,8 @@ This tool is under development
 
 Funded by USGS Northeast Climate Adaptation Science Center and the intramural research program of the U.S. Department of Agriculture, National Institute of Food and Agriculture, McIntire-Stennis and Renewable Resources Extension Act (RREA) programs.
 
-**Your data**. No data are retained on our servers. We use secure https, so data are encrypted between your computer and our servers. Reports you request may be saved on your computer, depending on your browser settings. When you close your browser, all drawn polygons, uploaded shapefiles, and reports are immediately deleted from our servers. We do not use cookies.
+**Your data**. No data are retained on our servers. We use secure https, so data are encrypted between your computer and our servers. Reports you request may be saved on your computer, depending on your browser settings. When you close your browser, all user data, including drawn polygons, uploaded shapefiles, and reports are immediately deleted from our servers. 
+We use <a href="https://matomo.org/" target="_blank" rel="noopener noreferrer">Matomo</a>, a privacy-focused site analytic
+tool to collect general information on site visits. We do not use cookies.
 
 **Questions**, bugs, problems, suggestions? <a href="https://umassdsl.webgis1.com/hesk/index.php?a=add&category=5" target="_blank" rel="noopener noreferrer">Let us know</a>

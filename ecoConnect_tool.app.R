@@ -143,19 +143,31 @@ ui <- page_sidebar(
                            status = 'default')
          ),
          
+         card(
+            radioButtons('iei.layer', label = span(HTML('<h5 style="display: inline-block;">IEI layers</h5>'), 
+                                                   tooltip(bs_icon('info-circle'), ieiTooltip)), 
+                         choiceNames = layers$radio.names[layers$which == 'iei'],
+                         choiceValues = full.layer.names[layers$which == 'iei'],
+                         selected = character(0))
+         ),
+         
          card( 
             radioButtons('connect.layer', label = span(HTML('<h5 style="display: inline-block;">ecoConnect layers</h5>'), 
                                                        tooltip(bs_icon('info-circle'), connectTooltip)), 
                          choiceNames = layers$radio.names[layers$which == 'connect'],
                          choiceValues = full.layer.names[layers$which == 'connect']),
+            # sliderInput('scaling', span(HTML('<h5 style="display: inline-block;">ecoConnect scaling</h5>'), 
+            #                             tooltip(bs_icon('info-circle'), scalingTooltip)), 1, 2, 1, step = 0.5, ticks = FALSE),   # numeric version
             
-            radioButtons('iei.layer', label = span(HTML('<h5 style="display: inline-block;">IEI layers</h5>'), 
-                                                   tooltip(bs_icon('info-circle'), ieiTooltip)), 
-                         choiceNames = layers$radio.names[layers$which == 'iei'],
-                         choiceValues = full.layer.names[layers$which == 'iei'],
-                         selected = character(0)),
+            sliderTextInput('scaling', span(HTML('<h5 style="display: inline-block;">ecoConnect scaling</h5>'), 
+                                             tooltip(bs_icon('info-circle'), scalingTooltip)), 
+                                             choices = c('local', 'medium', 'regional'))
             
-            tags$img(height = 40, width = 182, src = 'iei_symbology.png'),
+         ),
+         
+         card(
+            
+            #    tags$img(height = 40, width = 182, src = 'iei_symbology.png'),
             
             actionButton('no.layers', 'Turn off layers'),
             
@@ -163,8 +175,6 @@ ui <- page_sidebar(
                                         tooltip(bs_icon('info-circle'), opacityTooltip)), 
                         0, 100, post = '%', value = 60, ticks = FALSE),
             
-            sliderInput('scaling', span(HTML('<h5 style="display: inline-block;">ecoConnect scaling</h5>'), 
-                                        tooltip(bs_icon('info-circle'), scalingTooltip)), 1, 3, 1, step = 0.5, ticks = FALSE)   # maybe a slider in shinyjs shiny.fluent can label 0 and 4?
             #            checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
          ),
          
@@ -240,7 +250,8 @@ server <- function(input, output, session) {
                       removeTiles(layerId = 'dsl.layers')
                    else {
                       if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')                 # if ecoConnect, use scaled style
-                         style <- paste0(sub('.*:', '', session$userData$show.layer), input$scaling)
+                         style <- paste0(sub('.*:', '', session$userData$show.layer), 
+                                         match(input$scaling, c('local', 'medium', 'regional')) / 2 + 0.5)
                       else                                                                            # else, use default style for IEI
                          style <- ''
                       
@@ -266,7 +277,7 @@ server <- function(input, output, session) {
       
       session$userData$drawn <- TRUE
       proxy <- leafletProxy('map')
-      addDrawToolbar(proxy, polygonOptions = drawPolygonOptions(shapeOptions = drawShapeOptions(color = 'purple', fillColor = 'purple')), 
+      addDrawToolbar(proxy, polygonOptions = drawPolygonOptions(shapeOptions = drawShapeOptions(color = 'purple', weight = 2, fillOpacity = 0)), 
                      polylineOptions = FALSE, circleOptions = FALSE, rectangleOptions = FALSE, markerOptions = FALSE, 
                      circleMarkerOptions = FALSE, editOptions = editToolbarOptions()) 
    })
