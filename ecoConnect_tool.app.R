@@ -28,6 +28,7 @@ library(ggmap)
 library(ggplot2)
 library(fs)
 library(sfext)             # not using?
+library(httr)              # for pinging GeoServer
 ###### library(geosphere)
 plan('multisession')
 
@@ -58,6 +59,8 @@ full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)       # 
 
 WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'                     # our WMS server for drawing maps
 WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                        # our WCS server for downloading data
+
+
 
 
 # tool tips
@@ -160,8 +163,8 @@ ui <- page_sidebar(
             #                             tooltip(bs_icon('info-circle'), scalingTooltip)), 1, 2, 1, step = 0.5, ticks = FALSE),   # numeric version
             
             sliderTextInput('scaling', span(HTML('<h5 style="display: inline-block;">ecoConnect scaling</h5>'), 
-                                             tooltip(bs_icon('info-circle'), scalingTooltip)), 
-                                             choices = c('local', 'medium', 'regional'))
+                                            tooltip(bs_icon('info-circle'), scalingTooltip)), 
+                            choices = c('local', 'medium', 'regional'))
             
          ),
          
@@ -200,6 +203,20 @@ server <- function(input, output, session) {
    
    #bs_themer()                                 # uncomment to select a new theme
    #  print(getDefaultReactiveDomain())
+   
+   tryCatch({
+      if(GET(WCSserver)$status_code != 200) stop()
+   }, 
+   error = function(e) {      # ping our GeoServer
+      showModal(modalDialog(
+         title = 'Error', 
+         includeMarkdown('inst/errorGeoServer.md'),
+         footer = modalButton('OK'),
+         easyClose = TRUE
+      ))
+      shinyjs::disable('drawPolys')
+      shinyjs::disable('uploadShapefile')
+   })
    
    observeEvent(input$aboutTool, {
       modalHelp(aboutTool, 'About this tool')})
