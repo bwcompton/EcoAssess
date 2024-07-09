@@ -219,7 +219,7 @@ server <- function(input, output, session) {
    })
    
    observeEvent(input$aboutTool, {
-      modalHelp(aboutTool, 'About this tool')})
+      modalHelp(aboutTool, 'About this tool', size = 'l')})
    observeEvent(input$aboutecoConnect, {
       modalHelp(aboutecoConnect, 'About ecoConnect', size = 'l')})
    observeEvent(input$aboutIEI, {
