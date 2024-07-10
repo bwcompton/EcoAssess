@@ -23,12 +23,15 @@ Environmental Affairs, the Massachusetts Natural Heritage and Endangered Species
 the Trustees of Reservations---Highlands Community Initiative. Coastal metrics were developed in collaboration with the 
 Massachusetts Office of Coastal Zone Management.
 
-
+How IEI works: 
 <a href="https://umasscaps.org/about/index.html" target="_blank" rel="noopener 
-noreferrer">How IEI works</a> (this links to the closely-related Massachusetts version)
+noreferrer"> brief description</a> (of the closely-related Massachusetts version)
+ | <a href="https://umassdsl.org/DSLdocs//DSL_documentation_iei.pdf" target="_blank" rel="noopener 
+noreferrer"> detailed description</a>
 
-Published manuscript <a href="https://doi.org/10.1007/s10980-018-0653-9" target="_blank" rel="noopener 
-noreferrer">DOI</a>
+
+Published manuscript:
+ <a href="https://doi.org/10.1007/s10980-018-0653-9" target="_blank" rel="noopener noreferrer">DOI</a>
  | <a href="https://umassdsl.org/DSLdocs/McGarigal_2018_LandEco.pdf" target="_blank" rel="noopener 
 noreferrer">PDF</a> (submitted version)
- | <a href="https://umassdsl.webgis1.com/hesk/index.php?a=add&catid=3" target="_blank" rel="noopener noreferrer">Request PDF of published paper</a>
+ | <a href="https://umassdsl.webgis1.com/hesk/index.php?a=add&catid=3" target="_blank" rel="noopener noreferrer"> request PDF of published paper</a>
