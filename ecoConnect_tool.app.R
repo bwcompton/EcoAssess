@@ -79,7 +79,7 @@ opacityTooltip <- includeMarkdown('inst/tooltipOpacity.md')
 
 # help docs
 aboutTool <- includeMarkdown('inst/aboutTool.md')
-aboutecoConnect <- includeMarkdown('inst/shortdoc.md')
+aboutecoConnect <- includeMarkdown('inst/aboutEcoConnect.md')
 aboutIEI <- includeMarkdown('inst/aboutIEI.md')
 
 
@@ -126,7 +126,7 @@ ui <- page_sidebar(
          ),
          
          card(
-            actionLink('aboutTool', label = 'About this tool'),
+            actionLink('aboutTool', label = 'About this site'),
             actionLink('aboutecoConnect', label = 'About ecoConnect'),
             actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
             p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener noreferrer">UMass DSL home page</a>')),
@@ -172,13 +172,11 @@ ui <- page_sidebar(
             
             #    tags$img(height = 40, width = 182, src = 'iei_symbology.png'),
             
-            actionButton('no.layers', 'Turn off layers'),
-            
             sliderInput('opacity', span(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), 
                                         tooltip(bs_icon('info-circle'), opacityTooltip)), 
                         0, 100, post = '%', value = 60, ticks = FALSE),
             
-            #            checkboxInput('autoscale', 'Scale with zoom', value = TRUE)
+            actionButton('no.layers', 'Turn off layers')
          ),
          
          card(
@@ -219,11 +217,11 @@ server <- function(input, output, session) {
    })
    
    observeEvent(input$aboutTool, {
-      modalHelp(aboutTool, 'About this tool', size = 'l')})
+      modalHelp(aboutTool, 'About this site', size = 'l')})
    observeEvent(input$aboutecoConnect, {
       modalHelp(aboutecoConnect, 'About ecoConnect', size = 'l')})
    observeEvent(input$aboutIEI, {
-      modalHelp(aboutIEI, 'About the Index of Ecological Integrity')})
+      modalHelp(aboutIEI, 'About the Index of Ecological Integrity', size = 'l')})
    
    
    output$map <- renderLeaflet({                                                    # ----- Draw static parts of Leaflet map
