@@ -64,17 +64,17 @@ WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                        # 
 
 
 # tool tips
-scalingTooltip <- includeMarkdown('inst/scalingTooltip.md')
-targetTooltip <- includeMarkdown('inst/targetTooltip.md')
-drawTooltip <- includeMarkdown('inst/drawTooltip.md')
-uploadTooltip <- includeMarkdown('inst/uploadTooltip.md')
-restartTooltip <- includeMarkdown('inst/restartTooltip.md')
-getReportTooltip <- includeMarkdown('inst/getReportTooltip.md')
-generateReportTooltip <- includeMarkdown('inst/generateReportTooltip.md')
-connectTooltip <- includeMarkdown('inst/connectTooltip.md')
-ieiTooltip <- includeMarkdown('inst/ieiTooltip.md')
-basemapTooltip <- includeMarkdown('inst/basemapTooltip.md')
-opacityTooltip <- includeMarkdown('inst/opacityTooltip.md')
+scalingTooltip <- includeMarkdown('inst/tooltipScaling.md')
+targetTooltip <- includeMarkdown('inst/tooltipTarget.md')
+drawTooltip <- includeMarkdown('inst/tooltipDraw.md')
+uploadTooltip <- includeMarkdown('inst/tooltipUpload.md')
+restartTooltip <- includeMarkdown('inst/tooltipRestart.md')
+getReportTooltip <- includeMarkdown('inst/tooltipGetReport.md')
+generateReportTooltip <- includeMarkdown('inst/tooltipGenerateReport.md')
+connectTooltip <- includeMarkdown('inst/tooltipConnect.md')
+ieiTooltip <- includeMarkdown('inst/tooltipIei.md')
+basemapTooltip <- includeMarkdown('inst/tooltipBasemap.md')
+opacityTooltip <- includeMarkdown('inst/tooltipOpacity.md')
 
 
 # help docs
