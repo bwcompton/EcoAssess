@@ -65,7 +65,7 @@ WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                        # 
 
 # tool tips
 scalingTooltip <- includeMarkdown('inst/tooltipScaling.md')
-targetTooltip <- includeMarkdown('inst/tooltipTarget.md')
+projectAreaToolTip <- includeMarkdown('inst/tooltipProjectArea.md')
 drawTooltip <- includeMarkdown('inst/tooltipDraw.md')
 uploadTooltip <- includeMarkdown('inst/tooltipUpload.md')
 restartTooltip <- includeMarkdown('inst/tooltipRestart.md')
@@ -100,8 +100,8 @@ ui <- page_sidebar(
          use_busy_spinner(spin = 'fading-circle', position = 'top-left'),
          
          card(
-            span(HTML('<h5 style="display: inline-block;">Target area report</h5>'),
-                 tooltip(bs_icon('info-circle'), targetTooltip)),
+            span(HTML('<h5 style="display: inline-block;">Project area report</h5>'),
+                 tooltip(bs_icon('info-circle'), projectAreaToolTip)),
             
             span(span(actionButton('drawPolys', HTML('Draw')),
                       tooltip(bs_icon('info-circle'), drawTooltip),
