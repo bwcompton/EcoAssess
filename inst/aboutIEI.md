@@ -14,14 +14,14 @@ IEI is scaled four ways: regionally, such that each point is compared with other
 entire northeast, as well as by state, ecoregion, and watershed. These latter scalings can be useful when working in 
 relatively developed areas where regional IEI is low.
 
-Funding for development and application of the Index of Ecological Integrity has been provided by U.S. Fish and Wildlife 
+*Funding for development and application of the Index of Ecological Integrity has been provided by U.S. Fish and Wildlife 
 Service, the USGS Northeast Climate Adaptation Science Center, the Massachusetts Department of Environmental Protection, 
 Massachusetts Department of Fish and Game, The Nature Conservancy, the Massachusetts Department of Environmental Protection, 
 the U.S. Environmental Protection Agency under section 104 (b)(3) of the U.S. Clean Water Act, the Federal Highway 
 Administration via a grant administered by the Massachusetts Department of Transportation, Massachusetts Office of Energy and 
 Environmental Affairs, the Massachusetts Natural Heritage and Endangered Species Program, Massachusetts Audubon Society and 
 the Trustees of Reservations---Highlands Community Initiative. Coastal metrics were developed in collaboration with the 
-Massachusetts Office of Coastal Zone Management.
+Massachusetts Office of Coastal Zone Management.*
 
 How IEI works: 
 <a href="https://umasscaps.org/about/index.html" target="_blank" rel="noopener 

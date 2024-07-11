@@ -25,7 +25,7 @@
    
    #  cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
    
-   source = 'report_template.Rmd'         # markdown template
+   source = 'report_template3.Rmd'         # markdown template
    t <- Sys.time()
    
    
@@ -70,11 +70,12 @@
       
       cat('Time taken to do the math: ', Sys.time() - t, '\n')
       
+      
       t1 <- Sys.time()
-      left <- make.report.maps(poly, 1.5, minsize = 2000)
+      left <- make.report.maps(poly, 1.5, minsize = 2000, maptype = 'stamen_terrain')
       cat('Time taken to make left map: ', Sys.time() - t1, '\n')
       t1 <- Sys.time()
-      right <- make.report.maps(poly, 5, minsize = 40000)
+      right <- make.report.maps(poly, 5, minsize = 60000)
       cat('Time taken to make right map: ', Sys.time() - t1, '\n')
       
       

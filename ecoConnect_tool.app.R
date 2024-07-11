@@ -21,13 +21,13 @@ library(leaflet.extras)
 library(leaflet.lagniappe)
 library(terra)
 library(sf)
-library(lwgeom)
+#library(lwgeom)           # apparently not using
 library(future)
 library(promises)
 library(ggmap)
 library(ggplot2)
-library(fs)
-library(sfext)             # not using?
+#library(fs)               # apparently not using
+#library(sfext)            # not using?
 library(httr)              # for pinging GeoServer
 ###### library(geosphere)
 plan('multisession')
@@ -51,7 +51,8 @@ layers <- data.frame(
    which = c('connect', 'connect', 'connect', 'connect', 'iei', 'iei', 'iei', 'iei'),
    workspaces = c('ecoConnect', 'ecoConnect', 'ecoConnect', 'ecoConnect', 'IEI', 'IEI', 'IEI', 'IEI'),
    server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest', 'iei_regional', 'iei_state', 'iei_ecoregion', 'iei_huc6'),
-   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'IEI (region)', 'IEI (state)', 'IEI (ecoregion)', 'IEI (watershed)'),
+   #   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'IEI (region)', 'IEI (state)', 'IEI (ecoregion)', 'IEI (watershed)'),
+   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'Northeast region', 'State', 'Ecoregion', 'Watershed'),
    radio.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests',
                    'Regional', 'State', 'Ecoregion', 'Watershed'))
 
@@ -59,7 +60,6 @@ full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)       # 
 
 WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'                     # our WMS server for drawing maps
 WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                        # our WCS server for downloading data
-
 
 
 
@@ -98,12 +98,6 @@ ui <- page_sidebar(
          #add_busy_spinner(spin = 'fading-circle', position = 'top-left', onstart = TRUE, timeout = 0),   # for debugging
          add_busy_spinner(spin = 'fading-circle', position = 'top-left', onstart = FALSE, timeout = 500),
          use_busy_spinner(spin = 'fading-circle', position = 'top-left'),
-         
-         
-         # card(
-         #    downloadButton('quick.report', 'Do it now'),
-         #    textOutput('time'),
-         # ),
          
          card(
             span(HTML('<h5 style="display: inline-block;">Target area report</h5>'),
@@ -277,14 +271,6 @@ server <- function(input, output, session) {
                    }
                 })
    
-   # observeEvent(input$autoscale, {
-   #    if(input$autoscale)
-   #       shinyjs::disable('scaling')
-   #    else
-   #       shinyjs::enable('scaling')
-   # })
-   
-   
    observeEvent(input$drawPolys, {                    # ----- Draw button
       shinyjs::disable('drawPolys')
       shinyjs::disable('uploadShapefile')
@@ -316,10 +302,6 @@ server <- function(input, output, session) {
    })
    
    observeEvent(input$shapefile, {                    # --- Have uploaded shapefile
-      cat('input$shapefile = ')
-      print(input$shapefile)
-      cat('\n')
-      
       tryCatch({
          session$userData$poly <- get.shapefile(input$shapefile)
          draw.poly(session$userData$poly)
@@ -372,7 +354,7 @@ server <- function(input, output, session) {
       session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
       
       bbarea <- (session$userData$bbox$xmax - session$userData$bbox$xmin) * (session$userData$bbox$ymax - session$userData$bbox$ymin) * 247.105e-6
-      cat('bbacres = ', bbarea, '\n', sep = '')
+      #      cat('bbacres = ', bbarea, '\n', sep = '')
       
       if(bbarea > 1e6) {
          showModal(modalDialog(
@@ -397,11 +379,7 @@ server <- function(input, output, session) {
       ))
       
       
-      
-      
       # -- Download data while user is typing project info
-      
-      
       
       xxpoly <<- session$userData$poly
       xxpoly.proj <<- session$userData$poly.proj
@@ -444,14 +422,6 @@ server <- function(input, output, session) {
                              input$proj.name, input$proj.info, session$userData$acres, 
                              quick = FALSE, session = getDefaultReactiveDomain())       
       })
-   
-   # --- Generate report button from report dialog                ############# For testing reports
-   output$quick.report <- downloadHandler(
-      file = 'ecoConnect_report.pdf',
-      content = function(f) {
-         make.report(., f, params = xxparams, quick = TRUE)
-      }
-   )
 }
 
 shinyApp(ui, server)

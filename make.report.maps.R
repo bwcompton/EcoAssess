@@ -1,5 +1,6 @@
 'make.report.maps' <- function(poly, expand, minsize = 1000, 
-                               zoomfit = c(intercept = 1.412e+01, size = -1.857e-04, size2 = 1.802e-09, max = 60000)) {
+                               zoomfit = c(intercept = 1.412e+01, size = -1.857e-04, size2 = 1.802e-09, max = 60000), 
+                                           maptype = 'stamen_toner_lite') {
    
    # make.report.maps
    # Produce locus maps for report
@@ -44,7 +45,11 @@
    # cat('*** Zoom = ', zoom, '\n', sep ='')
    
    
-   basemap <- get_stadiamap(bbox = newbb, maptype = 'stamen_toner_lite', zoom = zoom, messaging = FALSE)     # get the basemap
+   basemap <- get_stadiamap(bbox = newbb, maptype = maptype, zoom = zoom, messaging = FALSE)     # get the basemap
+#   basemap <- get_stadiamap(bbox = newbb, maptype = 'stamen_terrain', zoom = zoom, messaging = FALSE)     # get the basemap
+#   basemap <- get_googlemap(center = c(mean(newbb[c(1, 3)]), mean(newbb[c(4, 2)])), zoom = zoom, maptype = 'roadmap')   # need API key
+   
+   
    # print(newbb)
    
    map <- ggmap(basemap) +                                                                # plot the basemap with the poly

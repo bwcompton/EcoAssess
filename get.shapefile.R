@@ -7,10 +7,10 @@
    # Result:
    #     processed polygon
    # B. Compton, 7 May 2024
-  
    
    
-     if(is.null(shapefile))
+   
+   if(is.null(shapefile))
       stop('No shapefile')
    
    

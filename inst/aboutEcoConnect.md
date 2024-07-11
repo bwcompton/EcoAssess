@@ -28,9 +28,9 @@ conserve connectivity, including   land important for connectivity that might no
 highly rated for habitat quality or ecological integrity. It can also be used to assess potential locations for road crossing 
 structures for wildlife and identify bridges and culverts that may already provide connectivity under high-traffic roads.
 
-Funded by USGS Northeast Climate Adaptation Science Center and the intramural research program of the U.S. Department of 
+*Funded by USGS Northeast Climate Adaptation Science Center and the intramural research program of the U.S. Department of 
 Agriculture, National Institute of Food and Agriculture, McIntire-Stennis and Renewable Resources Extension Act (RREA) 
-programs.
+programs.*
 
 <a href="https://landeco.umass.edu/web/lcc/dsl/ecoconnect/dsl_documentation_ecoConnect.pdf" target="_blank" rel="noopener 
 noreferrer">How ecoConnect works</a>
