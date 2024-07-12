@@ -354,8 +354,6 @@ server <- function(input, output, session) {
       session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
       
       bbarea <- (session$userData$bbox$xmax - session$userData$bbox$xmin) * (session$userData$bbox$ymax - session$userData$bbox$ymin) * 247.105e-6
-      #      cat('bbacres = ', bbarea, '\n', sep = '')
-      
       if(bbarea > 1e6) {
          showModal(modalDialog(
             title = 'Error', 
@@ -383,7 +381,7 @@ server <- function(input, output, session) {
       
       xxpoly <<- session$userData$poly
       xxpoly.proj <<- session$userData$poly.proj
-      #  st_write(xxpoly, 'C:/GIS/GIS/sample_parcels/name.shp')  # save drawn poly as shapefile
+      #  st_write(session$userData$poly, 'C:/GIS/GIS/sample_parcels/name.shp')  # save drawn poly as shapefile
       
       # cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n', sep = '')
       t <- Sys.time()
@@ -419,8 +417,7 @@ server <- function(input, output, session) {
          removeModal()   
          session$userData$the.promise %...>% 
             call.make.report(., f, layers, session$userData$poly, session$userData$poly.proj, 
-                             input$proj.name, input$proj.info, session$userData$acres, 
-                             quick = FALSE, session = getDefaultReactiveDomain())       
+                             input$proj.name, input$proj.info, session = getDefaultReactiveDomain())       
       })
 }
 

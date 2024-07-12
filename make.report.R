@@ -1,4 +1,4 @@
-'make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info, quick, params) {
+'make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info) {
    
    # make.report
    # Produce PDF report for target area
@@ -13,8 +13,6 @@
    #     poly.proj         and the reprojected target area poly
    #     proj.name         user's project name
    #     proj.info         user's project info
-   #     quick             if TRUE, use saved params (for testing reports)
-   #     params            params set here in previous run in same R session, for testing reports with quick = TRUE
    # Source data:
    #     inst/ecoConnect_quantiles.RDS    percentiles of each ecoConnect layer, from ecoconnect.quantiles.R   
    # resultfile:
@@ -29,60 +27,56 @@
    t <- Sys.time()
    
    
-   if(quick) {
-      params <- xxparams
-   } else {                                                    # *** for testing: save params for Do it now button
-      stats <- layer.stats(lapply(layer.data, rast))
-      quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')
-      # quantiles <- readRDS('inst/ecoConnect_quantiles_100.RDS')
-      
-      IEIs <-  round(unlist(stats[layers$which == 'iei']) / 100, 2)
-      IEI.top <- round((1.01 - IEIs) * 100, 0)
-      IEI <- paste0(ifelse(IEI.top <= 10, '**', ''), 
-                    format(IEIs, nsmall = 2), 
-                    ifelse(IEIs > 0, 
-                           ifelse(IEI.top <= 50, paste0(' (top ', IEI.top, '%)'), 
-                                  paste0(' (bottom ', 101 - IEI.top, '%)')),
-                           ''),
-                    ifelse(IEI.top <= 10, '**', ''))
-      
-      connects <- round((unlist(stats[layers$which == 'connect'])), 0)
-      connect.top <- colSums(matrix(connects, 100, length(connects), byrow = TRUE) < quantiles)
-      
-      connect <- paste0(ifelse(connect.top <= 10 & connects != 0, '**', ''),
-                        connects,
-                        ifelse(connects > 0, 
-                               ifelse(connect.top <= 50, paste0(' (top ', connect.top, '%)'), 
-                                      paste0(' (bottom ', 101 - connect.top, '%)')),
-                               ''), 
-                        ifelse(connect.top <= 10 & connects != 0, '**', ''))
-      
-      
-      table <- data.frame(IEI.levels = layers$pretty.names[layers$which == 'iei'],
-                          IEI = IEI,
-                          connect.levels = layers$pretty.names[layers$which == 'connect'],
-                          connect = connect)
-      
-      acres <- sum(as.vector(st_area(poly)) * 247.105e-6) 
-      acres <- format(round(acres, 1), big.mark = ',')
-      date <- sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y'))
-      # session$userData$bbox <- as.list(st_bbox(poly.proj))
-      
-      cat('Time taken to do the math: ', Sys.time() - t, '\n')
-      
-      
-      t1 <- Sys.time()
-      left <- make.report.maps(poly, 1.5, minsize = 2000, maptype = 'stamen_terrain')
-      cat('Time taken to make left map: ', Sys.time() - t1, '\n')
-      t1 <- Sys.time()
-      right <- make.report.maps(poly, 5, minsize = 60000)
-      cat('Time taken to make right map: ', Sys.time() - t1, '\n')
-      
-      
-      params <- c(proj.name = proj.name, proj.info = proj.info, acres = acres, date = date, path = getwd(), bold = 1, 
-                  table = table, left = left, right = right)
-      xxparams <<- params
-   }
+   stats <- layer.stats(lapply(layer.data, rast))
+   quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')        # cell-based percentiles
+   # quantiles <- readRDS('inst/ecoConnect_quantiles_100.RDS')  # percentiles of 100 acre blocks
+   
+   IEIs <-  round(unlist(stats[layers$which == 'iei']) / 100, 2)
+   IEI.top <- round((1.01 - IEIs) * 100, 0)
+   IEI <- paste0(ifelse(IEI.top <= 10, '**', ''), 
+                 format(IEIs, nsmall = 2), 
+                 ifelse(IEIs > 0, 
+                        ifelse(IEI.top <= 50, paste0(' (top ', IEI.top, '%)'), 
+                               paste0(' (bottom ', 101 - IEI.top, '%)')),
+                        ''),
+                 ifelse(IEI.top <= 10, '**', ''))
+   
+   connects <- round((unlist(stats[layers$which == 'connect'])), 0)
+   connect.top <- colSums(matrix(connects, 100, length(connects), byrow = TRUE) < quantiles)
+   
+   connect <- paste0(ifelse(connect.top <= 10 & connects != 0, '**', ''),
+                     connects,
+                     ifelse(connects > 0, 
+                            ifelse(connect.top <= 50, paste0(' (top ', connect.top, '%)'), 
+                                   paste0(' (bottom ', 101 - connect.top, '%)')),
+                            ''), 
+                     ifelse(connect.top <= 10 & connects != 0, '**', ''))
+   
+   
+   table <- data.frame(IEI.levels = layers$pretty.names[layers$which == 'iei'],
+                       IEI = IEI,
+                       connect.levels = layers$pretty.names[layers$which == 'connect'],
+                       connect = connect)
+   
+   acres <- sum(as.vector(st_area(poly)) * 247.105e-6) 
+   acres <- format(round(acres, 1), big.mark = ',')
+   date <- sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y'))
+   # session$userData$bbox <- as.list(st_bbox(poly.proj))
+   
+   cat('Time taken to do the math: ', Sys.time() - t, '\n')
+   
+   
+   t1 <- Sys.time()
+   left <- make.report.maps(poly, 1.5, minsize = 2000)
+   cat('Time taken to make left map: ', Sys.time() - t1, '\n')
+   t1 <- Sys.time()
+   right <- make.report.maps(poly, 5, minsize = 60000)
+   cat('Time taken to make right map: ', Sys.time() - t1, '\n')
+   
+   
+   params <- c(proj.name = proj.name, proj.info = proj.info, acres = acres, date = date, path = getwd(), bold = 1, 
+               table = table, left = left, right = right)
+   
    
    t1 <- Sys.time()
    

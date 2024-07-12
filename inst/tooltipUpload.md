@@ -1,5 +1,4 @@
-Use **Upload** to upload a polygon shapefile (or other common formats,
-such as KML or geoJSON) designating your project area
+Use **Upload** to upload a polygon shapefile designating your project area
 
 Note that you'll need to 
 prepare the shapefile in GIS software---it should include only the project area;

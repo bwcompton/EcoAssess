@@ -12,11 +12,11 @@
   # cat('In call.make.report...\n')
    report.promise <- future_promise({
       cat('*** PID ', Sys.getpid(), ' is writing the report in the future...\n', sep = '')
-      make.report(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info, quick, params)      # write the report in the future
+      make.report(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info)      # write the report in the future
    })                                           
    
    then(report.promise, onFulfilled = function(x) {
-      cat('\n*** report.promise has been fulfilled!\n')
+  #    cat('\n*** report.promise has been fulfilled!\n')
       removeNotification(making.report, session = session)
    })
 }
