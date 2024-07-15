@@ -17,10 +17,12 @@
    }
    
    times$pct <- round(times$time / sum(times$time) * 100, 2)
-   times$cumpct <- cumsum(times$pct)
    times$time <- round(times$time, 2)
-   print(times[order(times$time, decreasing = TRUE), ])
-   cat('Total time to load libraries = ', sum(times$time), 'sec\n', sep = '')
+   times <- times[order(times$time, decreasing = TRUE), ]
+   times$cumpct <- cumsum(times$pct)
+   
+   print(times)
+   cat('Total time to load libraries = ', sum(times$time), ' sec\n', sep = '')
    times <<- times
    
 }

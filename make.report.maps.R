@@ -43,17 +43,14 @@
    # cat('*** Final size = ', size, ' m\n', sep = '')
    # cat('*** Zoom = ', zoom, '\n', sep ='')
    
-   
-   basemap <- get_stadiamap(bbox = newbb, maptype = 'stamen_toner_lite', zoom = zoom, messaging = FALSE)     # get the basemap
-
+   basemap <- suppressMessages(get_stadiamap(bbox = newbb, maptype = 'stamen_toner_lite', zoom = zoom, messaging = FALSE))     # get the basemap
    
    # print(newbb)
-   
+    
    map <- ggmap(basemap) +                                                                # plot the basemap with the poly
       geom_sf(data = poly, aes(), color = 'orange', lwd = 2,fill = NA, inherit.aes = FALSE) +
       theme_void() +
       theme(panel.border = element_rect(color = "black", fill = NA))
-   
    
    #################
    
@@ -62,13 +59,10 @@
    #################
    
    
-   
-   
    png(file <- file.path(paste(tempfile(), '.png', sep = '')), width = 3.2, height = 3.2, units = 'in', res = 300)
    print(map)                                                                           # to a .png
    dev.off()
-   
+
    file <- gsub('\\\\', '/', file)
-   
    file                                                                                 # return the filename
 }

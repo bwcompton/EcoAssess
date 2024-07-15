@@ -11,7 +11,7 @@
 libraries <- c('shiny', 'bslib', 'bsicons', 'shinyjs', 'shinybusy', 'shinyWidgets', 'htmltools', 'markdown', 
                'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'terra', 'sf', 'future', 'promises', 'ggmap', 
                'ggplot2', 'httr')
-source('loadlibs')
+source('loadlibs.R')
 loadlibs(libraries)  # get loading times for libraries (for development)
 
 
@@ -52,6 +52,7 @@ source('call.make.report.R')
 source('make.report.R')
 source('make.report.maps.R')
 source('layer.stats.R')
+source('format.stats.R')
 
 
 
@@ -63,7 +64,7 @@ layers <- data.frame(
    workspaces = c('ecoConnect', 'ecoConnect', 'ecoConnect', 'ecoConnect', 'IEI', 'IEI', 'IEI', 'IEI'),
    server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest', 'iei_regional', 'iei_state', 'iei_ecoregion', 'iei_huc6'),
    #   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'IEI (region)', 'IEI (state)', 'IEI (ecoregion)', 'IEI (watershed)'),
-   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'Northeast region', 'State', 'Ecoregion', 'Watershed'),
+   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'Region', 'State', 'Ecoregion', 'Watershed'),
    radio.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests',
                    'Regional', 'State', 'Ecoregion', 'Watershed'))
 
