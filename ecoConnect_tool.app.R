@@ -8,6 +8,13 @@
 
 
 
+libraries <- c('shiny', 'bslib', 'bsicons', 'shinyjs', 'shinybusy', 'shinyWidgets', 'htmltools', 'markdown', 
+               'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'terra', 'sf', 'future', 'promises', 'ggmap', 
+               'ggplot2', 'httr')
+source('loadlibs')
+loadlibs(libraries)  # get loading times for libraries (for development)
+
+
 library(shiny)
 library(bslib)
 library(bsicons)
@@ -30,6 +37,10 @@ library(ggplot2)
 #library(sfext)            # not using?
 library(httr)              # for pinging GeoServer
 ###### library(geosphere)
+
+
+
+
 plan('multisession')
 
 

@@ -28,8 +28,8 @@
    
    
    stats <- layer.stats(lapply(layer.data, rast))
-   quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')        # cell-based percentiles
-   # quantiles <- readRDS('inst/ecoConnect_quantiles_100.RDS')  # percentiles of 100 acre blocks
+   # quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')        # cell-based percentiles
+   quantiles <- readRDS('inst/ecoConnect_quantiles_100.RDS')  # percentiles of 100 acre blocks
    
    IEIs <-  round(unlist(stats[layers$which == 'iei']) / 100, 2)
    IEI.top <- round((1.01 - IEIs) * 100, 0)
