@@ -31,7 +31,7 @@
    
    stats <- layer.stats(lapply(layer.data, rast))
    # quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')        # cell-based percentiles
-   quantiles <- readRDS('inst/ecoConnect_quantiles_100.RDS')  # percentiles of 100 acre blocks
+   quantiles <- readRDS('inst/ecoConnect_quantiles_100_1e5.RDS')  # percentiles of 100 acre blocks
    
  
    IEI <- format.stats(stats, 'iei', 'mean')

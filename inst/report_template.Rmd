@@ -68,10 +68,12 @@ independent of pre-defined conservation cores, connecting points with high IEI t
 setting, development, roads, and bridges. For a given ecosystem, it gives a measure of each site's contribution to regional 
 connectivity. ecoConnect is scaled from 0 to 100 for each ecosystem group. https://umassdsl.org/data/ecoConnect
 
+&nbsp;
 
-For both IEI and ecoConnect, reported scores for "mean" are the mean for the project area, while scores for "best" are the mean of 
-the top quartile in the project area. Percentiles ("top" or "bottom") are based on a comparison with a large sample of
-random 100 acre squares across the Northeast. Scores in the top 10% are in bold.
+**_Note_**: **For both IEI and ecoConnect**, reported scores for "mean" are the mean scores for all
+cells in the project area, while scores for "best" are the mean scores for cells in the top quartile
+(25%) within the project area. Percentiles ("top" or "bottom") are based on comparisons with a large
+sample of random 100-acre squares across the Northeast. Scores in the top 10% are in bold.
 
 ![](`r params$left`) ![](`r params$right`)
 
