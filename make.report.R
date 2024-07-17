@@ -26,7 +26,11 @@
    source = 'report_template.Rmd'         # markdown template
    t <- Sys.time()
 
+<<<<<<< HEAD
 ######   saveRDS(layer.data, 'c:/temp/layer.data.RDS')  # just for testing!
+=======
+######   saveRDS(layer.data, 'c:/temp/layer.data.RDS')
+>>>>>>> 0b709299c6dde7ce60cc9712f09af1e273744ae9
    
    stats <- layer.stats(lapply(layer.data, rast))
    # quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')        # cell-based percentiles
