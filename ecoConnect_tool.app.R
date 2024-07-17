@@ -103,7 +103,11 @@ ui <- page_sidebar(
    extendShinyjs(script = 'fullscreen.js', functions = c('fullscreen', 'normalscreen', 'is_iOS')),
    tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "fullscreen.css")),      # turn off dark background for fullscreen
    
-   title = 'ecoConnect tool',
+   tags$head(tags$script(src = 'matomo.js')),               # add Matomo tracking JS
+   tags$head(tags$script(src = 'matomo_heartbeat.js')),     # turn on heartbeat timer
+   tags$script(src = 'matomo_events.js'),                   # track popups and help text
+   
+   title = 'ecoConnect tool (beta version)',
    
    sidebar = 
       sidebar(
@@ -145,7 +149,7 @@ ui <- page_sidebar(
    layout_sidebar(
       sidebar = sidebar(
          position = 'right', 
-         width = 260,
+         width = 280,
          
          card(
             materialSwitch(inputId = 'fullscreen', label = 'Full screen', value = FALSE, 
