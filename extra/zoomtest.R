@@ -61,7 +61,7 @@ plot(make.report.maps(poly, 10, 13))
 
 
 # use a regression to get zoom from size based on zooms I picked by eye
-x <- read.csv('C:/Work/R/ecoConnect.tool/extra/size_zoom.csv')
+#x <- read.csv('C:/Work/R/ecoConnect.tool/extra/size_zoom.csv')                  # commented out so Shiny posting will stop yelling at me. Grr.
 
 # linear. r^2 = 0.7
 fit <- lm(zoom ~ size, x)
