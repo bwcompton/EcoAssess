@@ -107,7 +107,7 @@ ui <- page_sidebar(
    tags$head(tags$script(src = 'matomo_heartbeat.js')),     # turn on heartbeat timer
    tags$script(src = 'matomo_events.js'),                   # track popups and help text
    
-   title = 'ecoConnect tool (beta version)',
+   title = 'ecoConnect tool (dev version)',
    
    sidebar = 
       sidebar(
