@@ -37,6 +37,8 @@ library(ggplot2)
 #library(sfext)            # not using?
 library(httr)              # for pinging GeoServer
 ###### library(geosphere)
+library(leaflet.esri)      # test, for PAD-US
+
 
 
 
@@ -53,6 +55,7 @@ source('make.report.R')
 source('make.report.maps.R')
 source('layer.stats.R')
 source('format.stats.R')
+source('addPADUS.R')
 
 
 
@@ -193,7 +196,8 @@ ui <- page_sidebar(
             radioButtons('show.basemap', span(HTML('<h5 style="display: inline-block;">Basemap</h5>'),
                                               tooltip(bs_icon('info-circle'), basemapTooltip)),
                          choiceNames = c('Map', 'Topo', 'Imagery'),
-                         choiceValues = c('Stadia.StamenTonerLite', 'USGS.USTopo', 'USGS.USImagery'))
+                         choiceValues = c('Stadia.StamenTonerLite', 'USGS.USTopo', 'USGS.USImagery')),
+            checkboxInput('show.POS', label = 'Protected open space', value = FALSE)
          )
       ),
       
@@ -267,12 +271,13 @@ server <- function(input, output, session) {
    })
    
    observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap, 
-                     input$opacity, input$autoscale, input$scaling),
+                     input$opacity, input$autoscale, input$scaling, input$show.POS),
                 {                                                                   # ----- Draw dynamic parts of Leaflet map
                    if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
                       leafletProxy('map') |>
                       addProviderTiles(provider = input$show.basemap) |>
-                      removeTiles(layerId = 'dsl.layers')
+                      removeTiles(layerId = 'dsl.layers') |>
+                      addPADUS(input$show.POS, input$map_zoom)
                    else {
                       if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')                 # if ecoConnect, use scaled style
                          style <- paste0(sub('.*:', '', session$userData$show.layer), 
@@ -283,7 +288,8 @@ server <- function(input, output, session) {
                       leafletProxy('map') |>
                          addProviderTiles(provider = input$show.basemap) |>
                          addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
-                                     options = WMSTileOptions(opacity = input$opacity / 100, styles = style))
+                                     options = WMSTileOptions(opacity = input$opacity / 100, styles = style)) |>
+                         addPADUS(input$show.POS, input$map_zoom)
                    }
                 })
    
@@ -294,7 +300,7 @@ server <- function(input, output, session) {
       
       session$userData$drawn <- TRUE
       proxy <- leafletProxy('map')
-      addDrawToolbar(proxy, polygonOptions = drawPolygonOptions(shapeOptions = drawShapeOptions(color = 'purple', weight = 2, fillOpacity = 0)), 
+      addDrawToolbar(proxy, polygonOptions = drawPolygonOptions(shapeOptions = drawShapeOptions(color = 'purple', weight = 4, fillOpacity = 0)), 
                      polylineOptions = FALSE, circleOptions = FALSE, rectangleOptions = FALSE, markerOptions = FALSE, 
                      circleMarkerOptions = FALSE, editOptions = editToolbarOptions()) 
    })
