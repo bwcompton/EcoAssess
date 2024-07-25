@@ -37,7 +37,7 @@ library(ggplot2)
 #library(sfext)            # not using?
 library(httr)              # for pinging GeoServer
 ###### library(geosphere)
-library(leaflet.esri)      # test, for PAD-US
+###library(leaflet.esri)      # test, for PAD-US. It sucks
 
 
 
@@ -55,7 +55,8 @@ source('make.report.R')
 source('make.report.maps.R')
 source('layer.stats.R')
 source('format.stats.R')
-source('addPADUS.R')
+##source('addPADUS.R')     # dropped
+source('addBoundaries.R')
 
 
 
@@ -79,7 +80,7 @@ WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                        # 
 
 
 # tool tips
-scalingTooltip <- includeMarkdown('inst/tooltipScaling.md')
+ecoConnectDisplayTooltip <- includeMarkdown('inst/tooltipEcoConnectDisplay.md')
 projectAreaToolTip <- includeMarkdown('inst/tooltipProjectArea.md')
 drawTooltip <- includeMarkdown('inst/tooltipDraw.md')
 uploadTooltip <- includeMarkdown('inst/tooltipUpload.md')
@@ -155,11 +156,6 @@ ui <- page_sidebar(
          width = 280,
          
          card(
-            materialSwitch(inputId = 'fullscreen', label = 'Full screen', value = FALSE, 
-                           status = 'default')
-         ),
-         
-         card(
             radioButtons('iei.layer', label = span(HTML('<h5 style="display: inline-block;">IEI layers</h5>'), 
                                                    tooltip(bs_icon('info-circle'), ieiTooltip)), 
                          choiceNames = layers$radio.names[layers$which == 'iei'],
@@ -172,11 +168,9 @@ ui <- page_sidebar(
                                                        tooltip(bs_icon('info-circle'), connectTooltip)), 
                          choiceNames = layers$radio.names[layers$which == 'connect'],
                          choiceValues = full.layer.names[layers$which == 'connect']),
-            # sliderInput('scaling', span(HTML('<h5 style="display: inline-block;">ecoConnect scaling</h5>'), 
-            #                             tooltip(bs_icon('info-circle'), scalingTooltip)), 1, 2, 1, step = 0.5, ticks = FALSE),   # numeric version
-            
-            sliderTextInput('scaling', span(HTML('<h5 style="display: inline-block;">ecoConnect scaling</h5>'), 
-                                            tooltip(bs_icon('info-circle'), scalingTooltip)), 
+ 
+            sliderTextInput('scaling', span(HTML('<h5 style="display: inline-block;">ecoConnect display</h5>'), 
+                                            tooltip(bs_icon('info-circle'), ecoConnectDisplayTooltip)), 
                             choices = c('local', 'medium', 'regional'))
             
          ),
@@ -195,9 +189,15 @@ ui <- page_sidebar(
          card(
             radioButtons('show.basemap', span(HTML('<h5 style="display: inline-block;">Basemap</h5>'),
                                               tooltip(bs_icon('info-circle'), basemapTooltip)),
-                         choiceNames = c('Map', 'Topo', 'Imagery'),
-                         choiceValues = c('Stadia.StamenTonerLite', 'USGS.USTopo', 'USGS.USImagery')),
-            checkboxInput('show.POS', label = 'Protected open space', value = FALSE)
+                         choiceNames = c('Simple map', 'Open Street Map', 'Topo map', 'Imagery'),
+                         choiceValues = c('Stadia.StamenTonerLite', 'OpenStreetMap.Mapnik', 'USGS.USTopo', 'USGS.USImagery')),
+            hr(),
+            checkboxInput('show.boundaries', label = 'States and counties', value = FALSE),
+         ),
+         
+         card(
+            materialSwitch(inputId = 'fullscreen', label = 'Full screen', value = FALSE, 
+                           status = 'default')
          )
       ),
       
@@ -210,8 +210,7 @@ ui <- page_sidebar(
 # Server -----------------------------
 server <- function(input, output, session) {
    shinyjs::disable('restart')
-   shinyjs::disable('getReport')                #### disable for testing
-   #  shinyjs::disable('quick.report')          #### do it now button is currently broken
+   shinyjs::disable('getReport')
    
    #bs_themer()                                 # uncomment to select a new theme
    #  print(getDefaultReactiveDomain())
@@ -252,14 +251,14 @@ server <- function(input, output, session) {
    observeEvent(input$connect.layer, {
       session$userData$show.layer <- input$connect.layer
       updateRadioButtons(inputId ='iei.layer', selected = character(0))
-      #   cat('Selected layer = ', session$userData$show.layer, '\n', sep = '')
+      enable('opacity')
    })
    
    observeEvent(input$iei.layer, {
       session$userData$show.layer <- input$iei.layer
       updateRadioButtons(inputId ='connect.layer', selected = character(0))
       updateCheckboxInput(inputId = 'no.layers', value = 0)
-      #   cat('Selected layer = ', session$userData$show.layer, '\n', sep = '')
+      enable('opacity')
    })
    
    observeEvent(input$no.layers, {
@@ -267,17 +266,16 @@ server <- function(input, output, session) {
       updateRadioButtons(inputId ='iei.layer', selected = character(0))
       updateRadioButtons(inputId ='connect.layer', selected = character(0))
       updateCheckboxInput(inputId = 'no.layers', value = 0)
-      #   cat('Layers off\n', sep = '')
+      disable('opacity')
    })
-   
-   observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap, 
-                     input$opacity, input$autoscale, input$scaling, input$show.POS),
-                {                                                                   # ----- Draw dynamic parts of Leaflet map
+ 
+   observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap,   # ----- Draw dynamic parts of Leaflet map
+                     input$opacity, input$autoscale, input$scaling, input$show.boundaries), {
                    if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
                       leafletProxy('map') |>
-                      addProviderTiles(provider = input$show.basemap) |>
+                      addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
                       removeTiles(layerId = 'dsl.layers') |>
-                      addPADUS(input$show.POS, input$map_zoom)
+                      addBoundaries(input$show.boundaries)
                    else {
                       if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')                 # if ecoConnect, use scaled style
                          style <- paste0(sub('.*:', '', session$userData$show.layer), 
@@ -286,10 +284,10 @@ server <- function(input, output, session) {
                          style <- ''
                       
                       leafletProxy('map') |>
-                         addProviderTiles(provider = input$show.basemap) |>
+                         addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
                          addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
                                      options = WMSTileOptions(opacity = input$opacity / 100, styles = style)) |>
-                         addPADUS(input$show.POS, input$map_zoom)
+                         addBoundaries(input$show.boundaries)
                    }
                 })
    

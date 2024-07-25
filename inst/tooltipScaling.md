@@ -1,1 +1,0 @@
-Lighten display of lower-valued ecoConnect paths, emphasizing higher-valued paths

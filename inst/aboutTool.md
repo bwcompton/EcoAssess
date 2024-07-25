@@ -10,16 +10,18 @@ The **center** pane displays maps of IEI and ecoConnect and provides tools for n
 - type an address or location in the locate bar at the bottom right. This can be a full street address, the name of a town (for example "spruce creek pa"), or a latitude and longitude (for example, "42.3923, -72.3448")
 
 The **right** pane allows selected layers to display and controls how they are displayed
-- toggle Full screen to make more room for maps and panels
 - click **>** to collapse the right panel, making more room for the map
 - select one of the four scalings for the Index of Ecological Integrity (IEI), or one of the four
 ecoConnect layers
-- drag the ecoConnect scaling slider to the right to lighten lower-valued paths, emphasizing important
+- drag the ecoConnect display slider to the right to lighten lower-valued paths, emphasizing important
 paths for regional connectivity
 - drag the layer opacity slider to make the IEI or ecoConnect layers more transparent or more opaque
 - turn off layers or set layer opacity to 0% to focus on the basemap
-- select one of the three choices of basemap: *Map* - a plain map of roads and place names,
-*Topo* - USGS topographic maps, or *Imagery* - aerial photographs from USGS
+- select one of the four choices of basemap: *Simple map* - a plain map of roads and place names (best for
+display with layers),
+*Open Street Map* - A crowdsourced map with more detail, *Topo* - USGS topographic maps, or *Imagery* - aerial photographs from USGS
+- turn on state and county boundaries
+- toggle Full screen to make more room for maps and panels
 
 The **left** pane includes a tool for producing reports for specific sites (e.g., parcels) as well as links to documentation
 - click **<** to collapse the panel
