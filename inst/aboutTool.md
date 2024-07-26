@@ -26,7 +26,7 @@ display with layers),
 The **left** pane includes a tool for producing reports for specific sites (e.g., parcels) as well as links to documentation
 - click **<** to collapse the panel
 - click Draw to draw a polygon delineating your project area, or
-- click Upload to upload a shapefile of your project area, and then
+- click Upload to upload a shapefile of your project area (or a zipped shapefile), and then
 - click Get report. You'll have an opportunity to provide a project name and description, then you can download a PDF report to your computer.
 - click Restart to clear drawn polygons or uploaded shapefiles and start over
 

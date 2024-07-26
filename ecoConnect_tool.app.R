@@ -4,7 +4,7 @@
 # YOu'll need to get a Stadia Maps API  key from https://client.stadiamaps.com and save it in www/stadia_api.txt. Make sure 
 # to .gitignore this file!
 
-# B. Compton, 19 Apr-17 May 2024
+# B. Compton, 19 Apr
 
 
 
@@ -312,7 +312,7 @@ server <- function(input, output, session) {
       # do modal dialog to get shapefile
       showModal(modalDialog(
          title = 'Select shapefile to upload',
-         fileInput('shapefile', '', accept = c('.shp', '.shx', '.prj'), multiple = TRUE, 
+         fileInput('shapefile', '', accept = c('.shp', '.shx', '.prj', '.zip'), multiple = TRUE, 
                    placeholder = 'must include .shp, .shx, and .prj', width = '100%'),
          footer = tagList(
             modalButton('OK'),
