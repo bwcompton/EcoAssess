@@ -28,7 +28,7 @@
    
    dsn <- paste(uploaddir, shapefile$name[grep(pattern="*.shp$", shapefile$name)], sep="/")
    
-   poly <- st_read(dsn, quiet = TRUE) |>
+   poly <- suppressWarnings(st_read(dsn, quiet = TRUE)) |>
       st_buffer(0.5) |>             # buffer 0.5 m to remove slivers
       st_union()                    # and dissolve
    

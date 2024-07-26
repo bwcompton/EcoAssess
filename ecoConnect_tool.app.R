@@ -169,15 +169,13 @@ ui <- page_sidebar(
                          choiceNames = layers$radio.names[layers$which == 'connect'],
                          choiceValues = full.layer.names[layers$which == 'connect']),
  
-            sliderTextInput('scaling', span(HTML('<h5 style="display: inline-block;">ecoConnect display</h5>'), 
+            sliderTextInput('ecoConnectDisplay', span(HTML('<h5 style="display: inline-block;">ecoConnect display</h5>'), 
                                             tooltip(bs_icon('info-circle'), ecoConnectDisplayTooltip)), 
                             choices = c('local', 'medium', 'regional'))
             
          ),
          
          card(
-            
-            #    tags$img(height = 40, width = 182, src = 'iei_symbology.png'),
             
             sliderInput('opacity', span(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), 
                                         tooltip(bs_icon('info-circle'), opacityTooltip)), 
@@ -251,6 +249,7 @@ server <- function(input, output, session) {
    observeEvent(input$connect.layer, {
       session$userData$show.layer <- input$connect.layer
       updateRadioButtons(inputId ='iei.layer', selected = character(0))
+      enable('ecoConnectDisplay')
       enable('opacity')
    })
    
@@ -258,6 +257,7 @@ server <- function(input, output, session) {
       session$userData$show.layer <- input$iei.layer
       updateRadioButtons(inputId ='connect.layer', selected = character(0))
       updateCheckboxInput(inputId = 'no.layers', value = 0)
+      disable('ecoConnectDisplay')
       enable('opacity')
    })
    
@@ -266,11 +266,12 @@ server <- function(input, output, session) {
       updateRadioButtons(inputId ='iei.layer', selected = character(0))
       updateRadioButtons(inputId ='connect.layer', selected = character(0))
       updateCheckboxInput(inputId = 'no.layers', value = 0)
+      disable('ecoConnectDisplay')
       disable('opacity')
    })
  
    observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap,   # ----- Draw dynamic parts of Leaflet map
-                     input$opacity, input$autoscale, input$scaling, input$show.boundaries), {
+                     input$opacity, input$autoscale, input$ecoConnectDisplay, input$show.boundaries), {
                    if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
                       leafletProxy('map') |>
                       addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
@@ -279,7 +280,7 @@ server <- function(input, output, session) {
                    else {
                       if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')                 # if ecoConnect, use scaled style
                          style <- paste0(sub('.*:', '', session$userData$show.layer), 
-                                         match(input$scaling, c('local', 'medium', 'regional')) / 2 + 0.5)
+                                         match(input$ecoConnectDisplay, c('local', 'medium', 'regional')) / 2 + 0.5)
                       else                                                                            # else, use default style for IEI
                          style <- ''
                       
