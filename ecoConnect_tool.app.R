@@ -57,6 +57,7 @@ source('layer.stats.R')
 source('format.stats.R')
 ##source('addPADUS.R')     # dropped
 source('addBoundaries.R')
+source('addUserBasemap.R')
 
 
 
@@ -91,12 +92,14 @@ connectTooltip <- includeMarkdown('inst/tooltipConnect.md')
 ieiTooltip <- includeMarkdown('inst/tooltipIei.md')
 basemapTooltip <- includeMarkdown('inst/tooltipBasemap.md')
 opacityTooltip <- includeMarkdown('inst/tooltipOpacity.md')
+usermapTooltip <- includeMarkdown('inst/tooltipUsermap.md')
 
 
 # help docs
 aboutTool <- includeMarkdown('inst/aboutTool.md')
 aboutecoConnect <- includeMarkdown('inst/aboutEcoConnect.md')
 aboutIEI <- includeMarkdown('inst/aboutIEI.md')
+aboutWhatsNew <- includeMarkdown('inst/aboutWhatsnew.md')
 
 
 
@@ -123,18 +126,18 @@ ui <- page_sidebar(
             span(HTML('<h5 style="display: inline-block;">Project area report</h5>'),
                  tooltip(bs_icon('info-circle'), projectAreaToolTip)),
             
-            span(span(actionButton('drawPolys', HTML('Draw')),
+            span(span(actionButton('drawPolys', 'Draw'),
                       tooltip(bs_icon('info-circle'), drawTooltip),
                       HTML('&nbsp;'), HTML('or&nbsp;')),
                  
-                 span(actionButton('uploadShapefile', HTML('Upload')),
+                 span(actionButton('uploadShapefile', 'Upload'),
                       tooltip(bs_icon('info-circle'), uploadTooltip))
             ),
             
-            span(span(actionButton('getReport', HTML('Get report')),
+            span(span(actionButton('getReport', 'Get report'),
                       tooltip(bs_icon('info-circle'), getReportTooltip)),
                  
-                 span(actionButton('restart', HTML('Restart')),
+                 span(actionButton('restart', 'Restart'),
                       tooltip(bs_icon('info-circle'), restartTooltip))
             )
          ),
@@ -144,6 +147,8 @@ ui <- page_sidebar(
             actionLink('aboutecoConnect', label = 'About ecoConnect'),
             actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
             p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener noreferrer">UMass DSL home page</a>')),
+            br(),
+            span('Version 0.2.0', actionLink('whatsNew', label = 'What\'s new?')),
             br(),
             tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
          ),
@@ -168,9 +173,9 @@ ui <- page_sidebar(
                                                        tooltip(bs_icon('info-circle'), connectTooltip)), 
                          choiceNames = layers$radio.names[layers$which == 'connect'],
                          choiceValues = full.layer.names[layers$which == 'connect']),
- 
+            
             sliderTextInput('ecoConnectDisplay', span(HTML('<h5 style="display: inline-block;">ecoConnect display</h5>'), 
-                                            tooltip(bs_icon('info-circle'), ecoConnectDisplayTooltip)), 
+                                                      tooltip(bs_icon('info-circle'), ecoConnectDisplayTooltip)), 
                             choices = c('local', 'medium', 'regional'))
             
          ),
@@ -190,7 +195,11 @@ ui <- page_sidebar(
                          choiceNames = c('Simple map', 'Open Street Map', 'Topo map', 'Imagery'),
                          choiceValues = c('Stadia.StamenTonerLite', 'OpenStreetMap.Mapnik', 'USGS.USTopo', 'USGS.USImagery')),
             hr(),
-            checkboxInput('show.boundaries', label = 'States and counties', value = FALSE),
+            checkboxInput('show.boundaries', label = 'Show states and counties', value = FALSE),
+            checkboxInput('show.usermap', label = 'Show user basemap', value = FALSE),                          # ...........................
+            span(actionButton('upload.usermap', 'Upload user basemap'),
+                 tooltip(bs_icon('info-circle'), usermapTooltip))
+            
          ),
          
          card(
@@ -209,6 +218,7 @@ ui <- page_sidebar(
 server <- function(input, output, session) {
    shinyjs::disable('restart')
    shinyjs::disable('getReport')
+   shinyjs::disable('show.usermap')
    
    #bs_themer()                                 # uncomment to select a new theme
    #  print(getDefaultReactiveDomain())
@@ -233,6 +243,8 @@ server <- function(input, output, session) {
       modalHelp(aboutecoConnect, 'About ecoConnect', size = 'l')})
    observeEvent(input$aboutIEI, {
       modalHelp(aboutIEI, 'About the Index of Ecological Integrity', size = 'l')})
+   observeEvent(input$whatsNew, {
+      modalHelp(aboutWhatsNew, 'What\'s new in this version?')})
    
    
    output$map <- renderLeaflet({                                                    # ----- Draw static parts of Leaflet map
@@ -269,28 +281,33 @@ server <- function(input, output, session) {
       disable('ecoConnectDisplay')
       disable('opacity')
    })
- 
-   observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap,   # ----- Draw dynamic parts of Leaflet map
-                     input$opacity, input$autoscale, input$ecoConnectDisplay, input$show.boundaries), {
-                   if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
-                      leafletProxy('map') |>
-                      addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
-                      removeTiles(layerId = 'dsl.layers') |>
-                      addBoundaries(input$show.boundaries)
-                   else {
-                      if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')                 # if ecoConnect, use scaled style
-                         style <- paste0(sub('.*:', '', session$userData$show.layer), 
-                                         match(input$ecoConnectDisplay, c('local', 'medium', 'regional')) / 2 + 0.5)
-                      else                                                                            # else, use default style for IEI
-                         style <- ''
-                      
-                      leafletProxy('map') |>
-                         addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
-                         addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
-                                     options = WMSTileOptions(opacity = input$opacity / 100, styles = style)) |>
-                         addBoundaries(input$show.boundaries)
-                   }
-                })
+   
+   observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap,   # ----- Draw dynamic parts of Leaflet map           ........................
+                     input$opacity, input$autoscale, input$ecoConnectDisplay, input$show.boundaries,
+                     input$show.usermap), {
+                        if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
+                           leafletProxy('map') |>
+                           addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
+                           removeTiles(layerId = 'dsl.layers') |>
+                           addUserBasemap(input$show.usermap, session$userData$userPoly) |>
+                           addBoundaries(input$show.boundaries)
+                        else {
+                           if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')                 # if ecoConnect, use scaled style
+                              style <- paste0(sub('.*:', '', session$userData$show.layer), 
+                                              match(input$ecoConnectDisplay, c('local', 'medium', 'regional')) / 2 + 0.5)
+                           else                                                                            # else, use default style for IEI
+                              style <- ''
+                           
+                           leafletProxy('map') |>
+                              addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
+                              addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
+                                          options = WMSTileOptions(opacity = input$opacity / 100, styles = style)) |>
+                              addUserBasemap(input$show.usermap, session$userData$userPoly) |>
+                              addBoundaries(input$show.boundaries)
+                           
+                           
+                        }
+                     })
    
    observeEvent(input$drawPolys, {                    # ----- Draw button
       shinyjs::disable('drawPolys')
@@ -331,10 +348,10 @@ server <- function(input, output, session) {
          shinyjs::disable('uploadShapefile')
          shinyjs::enable('getReport')
          shinyjs::enable('restart')
-      }, 
+      },
       error = function(e) {
          showModal(modalDialog(
-            title = 'Error', 
+            title = 'Error',
             includeMarkdown('inst/errorShapefile.md'),
             footer = modalButton('OK'),
             easyClose = TRUE
@@ -346,6 +363,7 @@ server <- function(input, output, session) {
       })
    })
    
+   
    observeEvent(input$restart, {                      # ----- Restart button
       shinyjs::enable('drawPolys')
       shinyjs::enable('uploadShapefile')
@@ -355,7 +373,39 @@ server <- function(input, output, session) {
       
       leafletProxy('map') |>
          removeDrawToolbar(clearFeatures = TRUE) |>
-         clearShapes()
+         clearGroup(group = 'targetArea')                                                  # <<<<<<<<<<<<<<<<<<< I think this will also clear user basemap!
+   })
+   
+   
+   
+   observeEvent(input$upload.usermap, {              # ----- Upload map button for user basemap                ..................................................
+      # do modal dialog to get shapefile
+      showModal(modalDialog(
+         title = 'Select shapefile to upload',
+         fileInput('user.shapefile', '', accept = c('.shp', '.shx', '.prj', '.zip'), multiple = TRUE, 
+                   placeholder = 'must include .shp, .shx, and .prj', width = '100%'),
+         footer = tagList(
+            modalButton('Done'))
+      ))
+   })
+   
+   observeEvent(input$user.shapefile, {               # --- Have uploaded shapefile for user basemap                ..................................................
+      tryCatch({
+         session$userData$userPoly <- get.shapefile(input$user.shapefile, merge = FALSE)
+         leafletProxy('map') |>
+            addUserBasemap(FALSE) |>                   # clear old shapefile
+            addUserBasemap(TRUE, session$userData$userPoly)
+         shinyjs::enable('show.usermap')
+         updateCheckboxInput('show.usermap', value = TRUE, session = getDefaultReactiveDomain())
+      }, 
+      error = function(e) {
+         showModal(modalDialog(
+            title = 'Error',
+            includeMarkdown('inst/errorShapefile.md'),
+            footer = modalButton('OK'),
+            easyClose = TRUE
+         ))
+      })
    })
    
    

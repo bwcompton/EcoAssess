@@ -21,7 +21,7 @@ paths for regional connectivity
 display with layers),
 *Open Street Map* - A crowdsourced map with more detail, *Topo* - USGS topographic maps, or *Imagery* - aerial photographs from USGS
 - turn on state and county boundaries
-- toggle Full screen to make more room for maps and panels
+- upload a polygon shapefile to use as an additional basemap of, for instance, parcels or protected open space. This shapefile cna't be huge---protected open space for a county or parcels for a town are about the limit
 
 The **left** pane includes a tool for producing reports for specific sites (e.g., parcels) as well as links to documentation
 - click **<** to collapse the panel

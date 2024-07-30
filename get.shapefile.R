@@ -1,14 +1,15 @@
-'get.shapefile' <- function(shapefile) {
+'get.shapefile' <- function(shapefile, merge = TRUE) {
    
    # get.shapefile
    # Process uploaded shapefile
    # Arguments:
    #     shapefile      uploaded shapefile (or .zip containing shapefile)
+   #     merge          if TRUE, buffer 0.5 m to remove slivers and dissolve
    # Result:
    #     processed sf polygon
    # B. Compton, 7 May 2024
    
-   
+
    
    if(is.null(shapefile))
       stop('No shapefile')
@@ -28,9 +29,10 @@
    
    dsn <- paste(uploaddir, shapefile$name[grep(pattern="*.shp$", shapefile$name)], sep="/")
    
-   poly <- suppressWarnings(st_read(dsn, quiet = TRUE)) |>
-      st_buffer(0.5) |>             # buffer 0.5 m to remove slivers
-      st_union()                    # and dissolve
+   poly <- suppressWarnings(st_read(dsn, quiet = TRUE))
+   if(merge)
+      poly <- st_buffer(poly, 0.5) |>        # buffer 0.5 m to remove slivers
+      st_union()                             # and dissolve
    
    st_transform(poly, '+proj=longlat +datum=WGS84')
 }
