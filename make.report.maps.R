@@ -45,12 +45,10 @@
    
    basemap <- suppressMessages(get_stadiamap(bbox = newbb, maptype = 'stamen_toner_lite', zoom = zoom, messaging = FALSE))     # get the basemap
 
-   map <- ggmap(basemap) +                                                                # plot the basemap with the poly
+   map <- suppressMessages(ggmap(basemap) +                                               # plot the basemap with the poly, and don't print the goddamn "Coordinate system already present" blather
       geom_sf(mapping = aes(), data = poly, color = 'orange', lwd = 2,fill = NA, inherit.aes = FALSE) +
-      coord_sf(default = TRUE) +                                                         # suppress annoying "Coordinate system already present" message   **** THIS DOES NOT WORK ****
       theme_void() +
-      theme(panel.border = element_rect(color = "black", fill = NA))
-   
+      theme(panel.border = element_rect(color = "black", fill = NA)))
    
    png(file <- file.path(paste(tempfile(), '.png', sep = '')), width = 3.2, height = 3.2, units = 'in', res = 300)
    print(map)                                                                           # to a .png

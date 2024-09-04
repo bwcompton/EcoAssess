@@ -13,7 +13,7 @@
    report.promise <- future_promise({
       cat('*** PID ', Sys.getpid(), ' is writing the report in the future...\n', sep = '')
       make.report(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info)      # write the report in the future
-   })                                           
+   }, seed = TRUE)                                           
    
    then(report.promise, onFulfilled = function(x) {
   #    cat('\n*** report.promise has been fulfilled!\n')

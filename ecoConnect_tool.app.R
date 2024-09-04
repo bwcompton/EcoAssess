@@ -462,7 +462,7 @@ server <- function(input, output, session) {
       session$userData$the.promise <- future_promise({
          #cat('*** PID ', Sys.getpid(), ' is working in the future...\n', sep = '')
          get.WCS.data(WCSserver, layers$workspaces, layers$server.names, session$userData$bbox)    # ----- Download data in the future  
-      }) 
+      }, seed = TRUE) 
       then(session$userData$the.promise, onFulfilled = function(x) {
          #   cat('*** The promise has been fulfilled!\n')
          enable('do.report')
