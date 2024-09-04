@@ -118,9 +118,9 @@ ui <- page_sidebar(
    
    sidebar = 
       sidebar(
-         #add_busy_spinner(spin = 'fading-circle', position = 'top-left', onstart = TRUE, timeout = 0),   # for debugging
-         add_busy_spinner(spin = 'fading-circle', position = 'top-left', onstart = FALSE, timeout = 500),
-         use_busy_spinner(spin = 'fading-circle', position = 'top-left'),
+         # add_busy_spinner(spin = 'fading-circle', position = 'bottom-left', onstart = TRUE, timeout = 0),   # for debugging
+         add_busy_spinner(spin = 'fading-circle', position = 'bottom-left', onstart = FALSE, timeout = 500),
+         use_busy_spinner(spin = 'fading-circle', position = 'bottom-left'),
          
          card(
             span(HTML('<h5 style="display: inline-block;">Project area report</h5>'),
