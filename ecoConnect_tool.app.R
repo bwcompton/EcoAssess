@@ -483,12 +483,20 @@ server <- function(input, output, session) {
    
    # --- Generate report button from report dialog
    output$do.report <- downloadHandler(
-      file = 'report.pdf',
-      content = function(f) {
+      filename = function() {
+         if(input$proj.name == '')     # if no project name, use default report name
+            'report.pdf'
+         else {                         # else clean up the project name and use it
+            gsub('[ <>:"/\\|?*]', '_', input$proj.name) |>
+               gsub('[_]+', '_', x = _) |>
+               paste0('.pdf')
+         }
+      },
+      content = function(localfile) {
          removeModal()   
-         session$userData$the.promise %...>% 
-            call.make.report(., f, layers, session$userData$poly, session$userData$poly.proj, 
-                             input$proj.name, input$proj.info, session = getDefaultReactiveDomain())       
+         session$userData$the.promise %...>%                      # when data downloading promise is fulfilled, make the report in the future
+            call.make.report(., localfile, layers, session$userData$poly, session$userData$poly.proj, 
+                             gsub('\\\\', '/', input$proj.name), input$proj.info, session = getDefaultReactiveDomain())       
       })
 }
 

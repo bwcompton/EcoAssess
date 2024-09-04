@@ -22,3 +22,4 @@ on small screens for layers
 - Tooltips and About this site have been updated for clarity and to describe new features
 - The version number and "What's new" have been added. We'll drop these for the final rollout, but
 wanted to keep Beta users updated about what's changed
+- The project name (if supplied) is now used as the report filename, after scrubbing illegal characters.

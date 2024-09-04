@@ -21,7 +21,7 @@
    
    
    register_stadiamaps(x <- readChar(f <- 'www/stadia_api.txt', file.info(f)$size))       # register Stadia API key
-
+   
    bb <- st_bbox(poly)                                                                    # bounding box in degrees 
    w <- geosphere::distVincentyEllipsoid(c(bb$xmin, bb$ymin), c(bb$xmax, bb$ymin))        # dimensions in m (within 3% of what I get from ArcGIS; good enough for our purposes)
    h <- geosphere::distVincentyEllipsoid(c(bb$xmin, bb$ymin), c(bb$xmin, bb$ymax))    
@@ -44,25 +44,18 @@
    # cat('*** Zoom = ', zoom, '\n', sep ='')
    
    basemap <- suppressMessages(get_stadiamap(bbox = newbb, maptype = 'stamen_toner_lite', zoom = zoom, messaging = FALSE))     # get the basemap
-   
-   # print(newbb)
-    
+
    map <- ggmap(basemap) +                                                                # plot the basemap with the poly
-      geom_sf(data = poly, aes(), color = 'orange', lwd = 2,fill = NA, inherit.aes = FALSE) +
+      geom_sf(mapping = aes(), data = poly, color = 'orange', lwd = 2,fill = NA, inherit.aes = FALSE) +
+      coord_sf(default = TRUE) +                                                         # suppress annoying "Coordinate system already present" message   **** THIS DOES NOT WORK ****
       theme_void() +
       theme(panel.border = element_rect(color = "black", fill = NA))
-   
-   #################
-   
-   # return(map)      # for testing with zoomtest.R
-   
-   #################
    
    
    png(file <- file.path(paste(tempfile(), '.png', sep = '')), width = 3.2, height = 3.2, units = 'in', res = 300)
    print(map)                                                                           # to a .png
    dev.off()
-
+   
    file <- gsub('\\\\', '/', file)
    file                                                                                 # return the filename
 }
