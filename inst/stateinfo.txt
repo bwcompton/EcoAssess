@@ -1,0 +1,15 @@
+class	state	postal	state_FIPS
+1	Connecticut	CT	09
+2	Delaware	DE	10
+3	District of Columbia	DC	11
+4	Maine	ME	23
+5	Maryland	MD	24
+6	Massachusetts	MA	25
+7	New Hampshire	NH	33
+8	New Jersey	NJ	34
+9	New York	NY	36
+10	Pennsylvania	PA	42
+11	Rhode Island	RI	44
+12	Vermont	VT	50
+13	Virginia	VA	51
+14	West Virginia	WV	54

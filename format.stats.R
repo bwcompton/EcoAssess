@@ -9,7 +9,7 @@
    # B. Compton, 15 Jul 2024 (from make.report)
    
    
-   
+
    x <- stats[layers$which == which, type]
    
    cat(which, type, x, '\n')

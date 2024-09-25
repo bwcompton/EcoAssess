@@ -1,4 +1,4 @@
-'make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info) {
+'make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info, quantiles) {
    
    # make.report
    # Produce PDF report for target area
@@ -13,55 +13,31 @@
    #     poly.proj         and the reprojected target area poly
    #     proj.name         user's project name
    #     proj.info         user's project info
-   # Source data:
-   #     inst/ecoConnect_quantiles.RDS    percentiles of each ecoConnect layer, from ecoconnect.quantiles.R   
+   #     quantiles         percentiles of each ecoConnect layer
    # resultfile:
    #     PDF report
    # B. Compton, 24 Apr 2024
    
    
    
+   xxx <- list(layer.data = layer.data, resultfile = resultfile, layers = layers, poly = poly, poly.proj = poly.proj, proj.name = proj.name, proj.info = proj.info)
+   saveRDS(xxx, 'c:/temp/make.report.data.RDS')
+   # x <- readRDS('c:/temp/make.report.data.RDS'); layer.data <- x$layer.data
+   
    #  cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
+   
+   
    
    source = 'report_template.Rmd'         # markdown template
    t <- Sys.time()
 
-######   saveRDS(layer.data, 'c:/temp/layer.data.RDS')  # just for testing!
 
-   
    stats <- layer.stats(lapply(layer.data, rast))
-   # quantiles <- readRDS('inst/ecoConnect_quantiles.RDS')        # cell-based percentiles
-   quantiles <- readRDS('inst/ecoConnect_quantiles_100_1e5.RDS')  # percentiles of 100 acre blocks
-   
  
    IEI <- format.stats(stats, 'iei', 'mean')
-   IEIq <- format.stats(stats, 'iei', 'qmean')
+   IEIq <- format.stats(stats, 'iei', 'best')
    connect <- format.stats(stats, 'connect', 'mean', quantiles)
-   connectq <- format.stats(stats, 'connect', 'qmean', quantiles)
-   
-   
-   
-   # IEIs <-  round(unlist(stats[layers$which == 'iei']) / 100, 2)
-   # IEI.top <- round((1.01 - IEIs) * 100, 0)
-   # IEI <- paste0(ifelse(IEI.top <= 10, '**', ''), 
-   #               format(IEIs, nsmall = 2), 
-   #               ifelse(IEIs > 0, 
-   #                      ifelse(IEI.top <= 50, paste0(' (top ', IEI.top, '%)'), 
-   #                             paste0(' (bottom ', 101 - IEI.top, '%)')),
-   #                      ''),
-   #               ifelse(IEI.top <= 10, '**', ''))
-   # 
-   # connects <- round((unlist(stats[layers$which == 'connect'])), 0)
-   # connect.top <- colSums(matrix(connects, 100, length(connects), byrow = TRUE) < quantiles)
-   # 
-   # connect <- paste0(ifelse(connect.top <= 10 & connects != 0, '**', ''),
-   #                   connects,
-   #                   ifelse(connects > 0, 
-   #                          ifelse(connect.top <= 50, paste0(' (top ', connect.top, '%)'), 
-   #                                 paste0(' (bottom ', 101 - connect.top, '%)')),
-   #                          ''), 
-   #                   ifelse(connect.top <= 10 & connects != 0, '**', ''))
-   
+   connectq <- format.stats(stats, 'connect', 'best', quantiles)
    
    table <- data.frame(IEI.levels = layers$pretty.names[layers$which == 'iei'],
                        IEI = IEI, IEIq = IEIq,
@@ -71,7 +47,7 @@
    acres <- sum(as.vector(st_area(poly)) * 247.105e-6) 
    acres <- format(round(acres, 1), big.mark = ',')
    date <- sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y'))
-   # session$userData$bbox <- as.list(st_bbox(poly.proj))
+   # session$userData$bbox <- as.list(st_bbox(poly.proj))                                   ************ what was this for? ugg
    
    cat('Time taken to do the math: ', Sys.time() - t, '\n')
    

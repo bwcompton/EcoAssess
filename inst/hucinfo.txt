@@ -1,0 +1,246 @@
+class	HUC8_code	region	subregion	basin	subbasin
+1	05030202	Ohio Region	Upper Ohio	Upper Ohio-Little Kanawha	Upper Ohio-Shade
+2	05030204	Ohio Region	Upper Ohio	Upper Ohio-Little Kanawha	Hocking
+3	05040004	Ohio Region	Muskingum	Muskingum	Muskingum
+4	05050006	Ohio Region	Kanawha	Kanawha	Upper Kanawha
+5	05050008	Ohio Region	Kanawha	Kanawha	Lower Kanawha
+6	05050009	Ohio Region	Kanawha	Kanawha	Coal
+7	05070102	Ohio Region	Big Sandy-Guyandotte	Guyandotte	Lower Guyandotte
+8	05070204	Ohio Region	Big Sandy-Guyandotte	Big Sandy	Big Sandy
+9	05090101	Ohio Region	Middle Ohio	Middle Ohio-Raccoon	Raccoon-Symmes
+10	05090102	Ohio Region	Middle Ohio	Middle Ohio-Raccoon	Twelvepole
+11	05090103	Ohio Region	Middle Ohio	Middle Ohio-Raccoon	Little Scioto-Tygarts
+12	03010107	South Atlantic-Gulf Region	Chowan-Roanoke	Roanoke	Lower Roanoke
+13	05070101	Ohio Region	Big Sandy-Guyandotte	Guyandotte	Upper Guyandotte
+14	05070201	Ohio Region	Big Sandy-Guyandotte	Big Sandy	Tug
+15	05070202	Ohio Region	Big Sandy-Guyandotte	Big Sandy	Upper Levisa
+16	05070203	Ohio Region	Big Sandy-Guyandotte	Big Sandy	Lower Levisa
+17	05100201	Ohio Region	Kentucky-Licking	Kentucky	North Fork Kentucky
+18	05130101	Ohio Region	Cumberland	Upper Cumberland	Upper Cumberland
+19	06010101	Tennessee Region	Upper Tennessee	French Broad-Holston	North Fork Holston
+20	06010102	Tennessee Region	Upper Tennessee	French Broad-Holston	South Fork Holston
+21	06010104	Tennessee Region	Upper Tennessee	French Broad-Holston	Holston
+22	06010205	Tennessee Region	Upper Tennessee	Upper Tennessee	Upper Clinch, Tennessee, Virginia
+23	06010206	Tennessee Region	Upper Tennessee	Upper Tennessee	Powell
+24	01070004	New England Region	Merrimack	Merrimack	Nashua
+25	01070005	New England Region	Merrimack	Merrimack	Concord
+26	01080202	New England Region	Connecticut	Lower Connecticut	Miller
+27	01080203	New England Region	Connecticut	Lower Connecticut	Deerfield
+28	01080204	New England Region	Connecticut	Lower Connecticut	Chicopee
+29	01080205	New England Region	Connecticut	Lower Connecticut	Lower Connecticut
+30	01080206	New England Region	Connecticut	Lower Connecticut	Westfield
+31	01080207	New England Region	Connecticut	Lower Connecticut	Farmington
+32	01090001	New England Region	Massachusetts-Rhode Island Coastal	Massachusetts-Rhode Island Coastal	Charles
+33	01090002	New England Region	Massachusetts-Rhode Island Coastal	Massachusetts-Rhode Island Coastal	Cape Cod
+34	01090003	New England Region	Massachusetts-Rhode Island Coastal	Massachusetts-Rhode Island Coastal	Blackstone
+35	01090004	New England Region	Massachusetts-Rhode Island Coastal	Massachusetts-Rhode Island Coastal	Narragansett
+36	01090005	New England Region	Massachusetts-Rhode Island Coastal	Massachusetts-Rhode Island Coastal	Pawcatuck-Wood
+37	01100001	New England Region	Connecticut Coastal	Connecticut Coastal	Quinebaug
+38	01100002	New England Region	Connecticut Coastal	Connecticut Coastal	Shetucket
+39	01100003	New England Region	Connecticut Coastal	Connecticut Coastal	Thames
+40	01100004	New England Region	Connecticut Coastal	Connecticut Coastal	Quinnipiac
+41	01100005	New England Region	Connecticut Coastal	Connecticut Coastal	Housatonic
+42	01100006	New England Region	Connecticut Coastal	Connecticut Coastal	Saugatuck
+43	02020005	Mid Atlantic Region	Upper Hudson	Upper Hudson	Schoharie
+44	02020006	Mid Atlantic Region	Upper Hudson	Upper Hudson	Middle Hudson
+45	02020007	Mid Atlantic Region	Upper Hudson	Upper Hudson	Rondout
+46	02020008	Mid Atlantic Region	Upper Hudson	Upper Hudson	Hudson-Wappinger
+47	02030101	Mid Atlantic Region	Lower Hudson-Long Island	Lower Hudson	Lower Hudson
+48	02030102	Mid Atlantic Region	Lower Hudson-Long Island	Lower Hudson	Bronx
+49	02030103	Mid Atlantic Region	Lower Hudson-Long Island	Lower Hudson	Hackensack-Passaic
+50	02030104	Mid Atlantic Region	Lower Hudson-Long Island	Lower Hudson	Sandy Hook-Staten Island
+51	02030105	Mid Atlantic Region	Lower Hudson-Long Island	Lower Hudson	Raritan
+52	02030201	Mid Atlantic Region	Lower Hudson-Long Island	Long Island	Northern Long Island
+53	02030202	Mid Atlantic Region	Lower Hudson-Long Island	Long Island	Southern Long Island
+54	02030203	Mid Atlantic Region	Lower Hudson-Long Island	Long Island	Long Island Sound
+55	02040101	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Upper Delaware	Upper Delaware
+56	02040102	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Upper Delaware	East Branch Delaware
+57	02040103	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Upper Delaware	Lackawaxen
+58	02040104	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Upper Delaware	Middle Delaware-Mongaup-Brodhead
+59	02040105	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Upper Delaware	Middle Delaware-Musconetcong
+60	02040106	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Upper Delaware	Lehigh
+61	02040201	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Lower Delaware	Crosswicks-Neshaminy
+62	02040202	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Lower Delaware	Lower Delaware
+63	02040203	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Lower Delaware	Schuylkill
+64	02040204	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Lower Delaware	Delaware Bay
+65	02040205	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Lower Delaware	Brandywine-Christina
+66	02040206	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Lower Delaware	Cohansey-Maurice
+67	02040207	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Lower Delaware	Broadkill-Smyrna
+68	02040301	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Mid Atlantic Coastal	Mullica-Toms
+69	02040302	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Mid Atlantic Coastal	Great Egg Harbor
+70	02040303	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Mid Atlantic Coastal	Chincoteague
+71	02040304	Mid Atlantic Region	Delaware-Mid Atlantic Coastal	Mid Atlantic Coastal	Eastern Lower Delmarva
+72	02050101	Mid Atlantic Region	Susquehanna	Upper Susquehanna	Upper Susquehanna
+73	02050102	Mid Atlantic Region	Susquehanna	Upper Susquehanna	Chenango
+74	02050103	Mid Atlantic Region	Susquehanna	Upper Susquehanna	Owego-Wappasening
+75	02050104	Mid Atlantic Region	Susquehanna	Upper Susquehanna	Tioga
+76	02050105	Mid Atlantic Region	Susquehanna	Upper Susquehanna	Chemung
+77	02050106	Mid Atlantic Region	Susquehanna	Upper Susquehanna	Upper Susquehanna-Tunkhannock
+78	02050107	Mid Atlantic Region	Susquehanna	Upper Susquehanna	Upper Susquehanna-Lackawanna
+79	02050201	Mid Atlantic Region	Susquehanna	West Branch Susquehanna	Upper West Branch Susquehanna
+80	02050202	Mid Atlantic Region	Susquehanna	West Branch Susquehanna	Sinnemahoning
+81	02050203	Mid Atlantic Region	Susquehanna	West Branch Susquehanna	Middle West Branch Susquehanna
+82	02050204	Mid Atlantic Region	Susquehanna	West Branch Susquehanna	Bald Eagle
+83	02050205	Mid Atlantic Region	Susquehanna	West Branch Susquehanna	Pine
+84	02050206	Mid Atlantic Region	Susquehanna	West Branch Susquehanna	Lower West Branch Susquehanna
+85	02050301	Mid Atlantic Region	Susquehanna	Lower Susquehanna	Lower Susquehanna-Penns
+86	02050302	Mid Atlantic Region	Susquehanna	Lower Susquehanna	Upper Juniata
+87	02050303	Mid Atlantic Region	Susquehanna	Lower Susquehanna	Raystown
+88	02050304	Mid Atlantic Region	Susquehanna	Lower Susquehanna	Lower Juniata
+89	02050305	Mid Atlantic Region	Susquehanna	Lower Susquehanna	Lower Susquehanna-Swatara
+90	02050306	Mid Atlantic Region	Susquehanna	Lower Susquehanna	Lower Susquehanna
+91	02060001	Mid Atlantic Region	Upper Chesapeake	Upper Chesapeake	Upper Chesapeake Bay
+92	02060002	Mid Atlantic Region	Upper Chesapeake	Upper Chesapeake	Chester-Sassafras
+93	02060003	Mid Atlantic Region	Upper Chesapeake	Upper Chesapeake	Gunpowder-Patapsco
+94	02060004	Mid Atlantic Region	Upper Chesapeake	Upper Chesapeake	Severn
+95	02060005	Mid Atlantic Region	Upper Chesapeake	Upper Chesapeake	Choptank
+96	02060006	Mid Atlantic Region	Upper Chesapeake	Upper Chesapeake	Patuxent
+97	02070001	Mid Atlantic Region	Potomac	Potomac	South Branch Potomac
+98	02070002	Mid Atlantic Region	Potomac	Potomac	North Branch Potomac
+99	02070003	Mid Atlantic Region	Potomac	Potomac	Cacapon-Town
+100	02070004	Mid Atlantic Region	Potomac	Potomac	Conococheague-Opequon
+101	02070005	Mid Atlantic Region	Potomac	Potomac	South Fork Shenandoah
+102	02070006	Mid Atlantic Region	Potomac	Potomac	North Fork Shenandoah
+103	02070007	Mid Atlantic Region	Potomac	Potomac	Shenandoah
+104	02070008	Mid Atlantic Region	Potomac	Potomac	Middle Potomac-Catoctin
+105	02070009	Mid Atlantic Region	Potomac	Potomac	Monocacy
+106	02070010	Mid Atlantic Region	Potomac	Potomac	Middle Potomac-Anacostia-Occoquan
+107	02070011	Mid Atlantic Region	Potomac	Potomac	Lower Potomac
+108	02080101	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	Lower Chesapeake Bay
+109	02080102	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	Great Wicomico-Piankatank
+110	02080103	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	Rapidan-Upper Rappahannock
+111	02080104	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	Lower Rappahannock
+112	02080105	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	Mattaponi
+113	02080106	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	Pamunkey
+114	02080107	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	York
+115	02080108	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	Lynnhaven-Poquoson
+116	02080109	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	Nanticoke
+117	02080110	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	Tangier
+118	02080111	Mid Atlantic Region	Lower Chesapeake	Lower Chesapeake	Pokomoke-Western Lower Delmarva
+119	02080201	Mid Atlantic Region	Lower Chesapeake	James	Upper James
+120	02080202	Mid Atlantic Region	Lower Chesapeake	James	Maury
+121	02080203	Mid Atlantic Region	Lower Chesapeake	James	Middle James-Buffalo
+122	02080204	Mid Atlantic Region	Lower Chesapeake	James	Rivanna
+123	02080205	Mid Atlantic Region	Lower Chesapeake	James	Middle James-Willis
+124	02080206	Mid Atlantic Region	Lower Chesapeake	James	Lower James
+125	02080207	Mid Atlantic Region	Lower Chesapeake	James	Appomattox
+126	02080208	Mid Atlantic Region	Lower Chesapeake	James	Hampton Roads
+127	03010101	South Atlantic-Gulf Region	Chowan-Roanoke	Roanoke	Upper Roanoke
+128	03010102	South Atlantic-Gulf Region	Chowan-Roanoke	Roanoke	Middle Roanoke
+129	03010103	South Atlantic-Gulf Region	Chowan-Roanoke	Roanoke	Upper Dan
+130	03010104	South Atlantic-Gulf Region	Chowan-Roanoke	Roanoke	Lower Dan
+131	03010105	South Atlantic-Gulf Region	Chowan-Roanoke	Roanoke	Banister
+132	03010106	South Atlantic-Gulf Region	Chowan-Roanoke	Roanoke	Roanoke Rapids
+133	03010201	South Atlantic-Gulf Region	Chowan-Roanoke	Albemarle-Chowan	Nottoway
+134	03010202	South Atlantic-Gulf Region	Chowan-Roanoke	Albemarle-Chowan	Blackwater
+135	03010203	South Atlantic-Gulf Region	Chowan-Roanoke	Albemarle-Chowan	Chowan
+136	03010204	South Atlantic-Gulf Region	Chowan-Roanoke	Albemarle-Chowan	Meherrin
+137	03010205	South Atlantic-Gulf Region	Chowan-Roanoke	Albemarle-Chowan	Albemarle
+138	03040101	South Atlantic-Gulf Region	Pee Dee	Upper Pee Dee	Upper Yadkin
+139	04110003	Great Lakes Region	Southern Lake Erie	Southern Lake Erie	Ashtabula-Chagrin
+140	04120101	Great Lakes Region	Eastern Lake Erie-Lake Erie	Eastern Lake Erie	Chautauqua-Conneaut
+141	05010001	Ohio Region	Allegheny	Allegheny	Upper Allegheny
+142	05010002	Ohio Region	Allegheny	Allegheny	Conewango
+143	05010004	Ohio Region	Allegheny	Allegheny	French
+144	05020001	Ohio Region	Monongahela	Monongahela	Tygart Valley
+145	05020002	Ohio Region	Monongahela	Monongahela	West Fork
+146	05030203	Ohio Region	Upper Ohio	Upper Ohio-Little Kanawha	Little Kanawha
+147	05050001	Ohio Region	Kanawha	Kanawha	Upper New
+148	05050002	Ohio Region	Kanawha	Kanawha	Middle New
+149	05050003	Ohio Region	Kanawha	Kanawha	Greenbrier
+150	05050004	Ohio Region	Kanawha	Kanawha	Lower New
+151	05050005	Ohio Region	Kanawha	Kanawha	Gauley
+152	05050007	Ohio Region	Kanawha	Kanawha	Elk
+153	04120102	Great Lakes Region	Eastern Lake Erie-Lake Erie	Eastern Lake Erie	Cattaraugus
+154	04120103	Great Lakes Region	Eastern Lake Erie-Lake Erie	Eastern Lake Erie	Buffalo-Eighteenmile
+155	04120104	Great Lakes Region	Eastern Lake Erie-Lake Erie	Eastern Lake Erie	Niagara
+156	04130001	Great Lakes Region	Southwestern Lake Ontario	Southwestern Lake Ontario	Oak Orchard-Twelvemile
+157	04130002	Great Lakes Region	Southwestern Lake Ontario	Southwestern Lake Ontario	Upper Genesee
+158	04130003	Great Lakes Region	Southwestern Lake Ontario	Southwestern Lake Ontario	Lower Genesee
+159	05010003	Ohio Region	Allegheny	Allegheny	Middle Allegheny-Tionesta
+160	05010005	Ohio Region	Allegheny	Allegheny	Clarion
+161	05010006	Ohio Region	Allegheny	Allegheny	Middle Allegheny-Redbank
+162	05010007	Ohio Region	Allegheny	Allegheny	Conemaugh
+163	05010008	Ohio Region	Allegheny	Allegheny	Kiskiminetas
+164	05010009	Ohio Region	Allegheny	Allegheny	Lower Allegheny
+165	05020003	Ohio Region	Monongahela	Monongahela	Upper Monongahela
+166	05020004	Ohio Region	Monongahela	Monongahela	Cheat
+167	05020005	Ohio Region	Monongahela	Monongahela	Lower Monongahela
+168	05020006	Ohio Region	Monongahela	Monongahela	Youghiogheny
+169	05030101	Ohio Region	Upper Ohio	Upper Ohio-Beaver	Upper Ohio
+170	05030102	Ohio Region	Upper Ohio	Upper Ohio-Beaver	Shenango
+171	05030103	Ohio Region	Upper Ohio	Upper Ohio-Beaver	Mahoning
+172	05030104	Ohio Region	Upper Ohio	Upper Ohio-Beaver	Beaver
+173	05030105	Ohio Region	Upper Ohio	Upper Ohio-Beaver	Connoquenessing
+174	05030106	Ohio Region	Upper Ohio	Upper Ohio-Beaver	Upper Ohio-Wheeling
+175	05030201	Ohio Region	Upper Ohio	Upper Ohio-Little Kanawha	Little Muskingum-Middle Island
+176	01010002	New England Region	St. John	St. John	Allagash
+177	01010003	New England Region	St. John	St. John	Fish
+178	01010004	New England Region	St. John	St. John	Aroostook
+179	01010005	New England Region	St. John	St. John	Meduxnekeag
+180	01010006	New England Region	St. John	St. John	Headwaters Saint John River
+181	01010007	New England Region	St. John	St. John	Big Black River-Saint John River
+182	01010008	New England Region	St. John	St. John	St. Francis River-Saint John River
+183	01010009	New England Region	St. John	St. John	Little River-Saint John River
+184	01010010	New England Region	St. John	St. John	Becaguimec Stream-Saint John River
+185	01010011	New England Region	St. John	St. John	Keswick River-Saint John River
+186	01020001	New England Region	Penobscot	Penobscot	West Branch Penobscot
+187	01020002	New England Region	Penobscot	Penobscot	East Branch Penobscot
+188	01020003	New England Region	Penobscot	Penobscot	Mattawamkeag
+189	01020004	New England Region	Penobscot	Penobscot	Piscataquis
+190	01020005	New England Region	Penobscot	Penobscot	Lower Penobscot
+191	01030001	New England Region	Kennebec	Kennebec	Upper Kennebec
+192	01030002	New England Region	Kennebec	Kennebec	Dead
+193	01030003	New England Region	Kennebec	Kennebec	Lower Kennebec
+194	01040001	New England Region	Androscoggin	Androscoggin	Upper Androscoggin
+195	01040002	New England Region	Androscoggin	Androscoggin	Lower Androscoggin
+196	01050001	New England Region	Maine Coastal	Maine Coastal	St. Croix
+197	01050002	New England Region	Maine Coastal	Maine Coastal	Maine Coastal
+198	01050003	New England Region	Maine Coastal	Maine Coastal	St. George-Sheepscot
+199	01050004	New England Region	Maine Coastal	Maine Coastal	Passamaquoddy Bay-Bay of Fundy
+200	01060001	New England Region	Saco	Saco	Presumpscot
+201	01060002	New England Region	Saco	Saco	Saco
+202	01060003	New England Region	Saco	Saco	Piscataqua-Salmon Falls
+203	01070001	New England Region	Merrimack	Merrimack	Pemigewasset
+204	01070002	New England Region	Merrimack	Merrimack	Winnipesaukee River
+205	01070003	New England Region	Merrimack	Merrimack	Contoocook
+206	01070006	New England Region	Merrimack	Merrimack	Merrimack River
+207	01080101	New England Region	Connecticut	Upper Connecticut	Upper Connecticut
+208	01080102	New England Region	Connecticut	Upper Connecticut	Passumpsic
+209	01080103	New England Region	Connecticut	Upper Connecticut	Waits
+210	01080104	New England Region	Connecticut	Upper Connecticut	Upper Connecticut-Mascoma
+211	01080105	New England Region	Connecticut	Upper Connecticut	White
+212	01080106	New England Region	Connecticut	Upper Connecticut	Black-Ottauquechee
+213	01080107	New England Region	Connecticut	Upper Connecticut	West
+214	01080201	New England Region	Connecticut	Lower Connecticut	Middle Connecticut
+215	02020001	Mid Atlantic Region	Upper Hudson	Upper Hudson	Upper Hudson
+216	02020002	Mid Atlantic Region	Upper Hudson	Upper Hudson	Sacandaga
+217	02020003	Mid Atlantic Region	Upper Hudson	Upper Hudson	Hudson-Hoosic
+218	02020004	Mid Atlantic Region	Upper Hudson	Upper Hudson	Mohawk
+219	04140101	Great Lakes Region	Southeastern Lake Ontario	Southeastern Lake Ontario	Irondequoit-Ninemile
+220	04140102	Great Lakes Region	Southeastern Lake Ontario	Southeastern Lake Ontario	Salmon-Sandy
+221	04140201	Great Lakes Region	Southeastern Lake Ontario	Oswego	Seneca
+222	04140202	Great Lakes Region	Southeastern Lake Ontario	Oswego	Oneida
+223	04140203	Great Lakes Region	Southeastern Lake Ontario	Oswego	Oswego
+224	04150101	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Northeastern Lake Ontario	Black
+225	04150102	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Northeastern Lake Ontario	Chaumont-Perch
+226	04150302	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	St. Lawrence	Oswegatchie
+227	04150303	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	St. Lawrence	Indian
+228	04150304	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	St. Lawrence	Grass
+229	04150305	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	St. Lawrence	Raquette
+230	04150306	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	St. Lawrence	St. Regis
+231	04150307	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	St. Lawrence	Salmon
+232	04150308	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	St. Lawrence	Chateaugay-English
+233	04150309	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	St. Lawrence	Headwaters St. Lawrence River
+234	04150310	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	St. Lawrence	Raisin River-St. Lawrence River
+235	04150401	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Lake Champlain-Richelieu River	Mettawee River
+236	04150402	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Lake Champlain-Richelieu River	Otter Creek
+237	04150403	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Lake Champlain-Richelieu River	Winooski River
+238	04150404	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Lake Champlain-Richelieu River	Ausable River
+239	04150405	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Lake Champlain-Richelieu River	Lamoille River
+240	04150406	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Lake Champlain-Richelieu River	Saranac River
+241	04150407	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Lake Champlain-Richelieu River	Missiquoi River
+242	04150408	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Lake Champlain-Richelieu River	Lake Champlain
+243	04150409	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Lake Champlain-Richelieu River	Richelieu River
+244	04150500	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	St. Francois River	St. Francois River
+245	04150600	Great Lakes Region	Northeastern Lake Ontario-Lake Ontario-St. Lawrence	Chaudiere River	Chaudiere River
