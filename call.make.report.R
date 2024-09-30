@@ -11,13 +11,13 @@
    
    
    cat('In call.make.report...\n')
-   cat('***** quantiles exists? ', exists(quantiles), '\n', sep = '')
+   cat('***** quantiles exists? ', exists('quantiles'), '\n', sep = '')
    
    
    making.report <- showNotification('Generating report...', duration = NULL, closeButton = FALSE, session = session)
    
    
-   if(!exists(quantiles))
+   if(!exists('quantiles'))
       quantiles <<- readRDS('inst/ecoConnect_quantiles.RDS')      # region-wide percentiles, from ecoConnect.quantiles. Set GLOBALLY because it's nice to share.
    
    

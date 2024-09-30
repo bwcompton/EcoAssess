@@ -11,6 +11,8 @@
    
 
    x <- stats[layers$which == which, type]
+
+
    
    cat(which, type, x, '\n')
    

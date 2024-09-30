@@ -1,14 +1,20 @@
-'layer.stats' <- function(layer.data, best.prob = 0.5) {
+'layer.stats' <- function(grid, statehuc, area, best.prob = 0.5) {
    
    # layer.stats
    # Get stats from ecoConnect and IEI data
    # Arguments:
-   #     layer.data      layer data from get.WCS.data
-   #     best.prob       proportion of target area to take mean of for "best," probably either 0.5 for top 50% or 0.75 for top 25%
+   #     grid           raster of layer, clipped to polygon and shindex
+   #     statehuc       state and huc numbers
+   #     area           area of project area (acres)
+   #     best.prob      proportion of target area to take mean of for "best," probably either 0.5 for top 50% or 0.75 for top 25%
    # Result:
    #     data frame of stats corresponding to elements of layer.data, with columns mean and best (mean of top quartile)
    # B. Compton, 9 May 2024
    
+   
+   plot(grid)
+   Sys.sleep(1)
+   return(1)
    
    
    'quartile.mean' <- function(x) mean(x[x > quantile(x, prob = best.prob, na.rm = TRUE)], na.rm = TRUE)       # mean of top quartile

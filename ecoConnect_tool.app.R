@@ -52,9 +52,10 @@ source('get.shapefile.R')
 source('draw.poly.R')
 source('call.make.report.R')
 source('make.report.R')
-source('make.report.maps.R')
+source('get.statehuc.R')
 source('layer.stats.R')
 source('format.stats.R')
+source('make.report.maps.R')
 ##source('addPADUS.R')     # dropped
 source('addBoundaries.R')
 source('addUserBasemap.R')
@@ -64,14 +65,14 @@ source('addUserBasemap.R')
 home <- c(-75, 42)            # center of NER (approx)
 zoom <- 6 
 
+# Layers on GeoServer (4 ecoConnect layers, 4 IEI layers, and the state-HuC index)
 layers <- data.frame(
-   which = c('connect', 'connect', 'connect', 'connect', 'iei', 'iei', 'iei', 'iei'),
-   workspaces = c('ecoConnect', 'ecoConnect', 'ecoConnect', 'ecoConnect', 'IEI', 'IEI', 'IEI', 'IEI'),
-   server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest', 'iei_regional', 'iei_state', 'iei_ecoregion', 'iei_huc6'),
-   #   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'IEI (region)', 'IEI (state)', 'IEI (ecoregion)', 'IEI (watershed)'),
-   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'Region', 'State', 'Ecoregion', 'Watershed'),
+   which = c('connect', 'connect', 'connect', 'connect', 'iei', 'iei', 'iei', 'iei', 'shindex'),
+   workspaces = c('ecoConnect', 'ecoConnect', 'ecoConnect', 'ecoConnect', 'IEI', 'IEI', 'IEI', 'IEI', 'ecoConnect'),
+   server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest', 'iei_regional', 'iei_state', 'iei_ecoregion', 'iei_huc6', 'shindex'),
+   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'Region', 'State', 'Ecoregion', 'Watershed', ''),
    radio.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests',
-                   'Regional', 'State', 'Ecoregion', 'Watershed'))
+                   'Regional', 'State', 'Ecoregion', 'Watershed', ''))
 
 full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)       # we'll need these for addWMSTiles
 
