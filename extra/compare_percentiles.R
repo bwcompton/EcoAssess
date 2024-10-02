@@ -4,17 +4,17 @@
 
 
 
-postfix = 'n1e5_dsl00'
+postfix = 'new1e5'
 if(postfix != '')
    postfix <- paste0('_', postfix)
 
 
-colors <- c('red', 'orange', 'green', 'blue', 'purple', 'gray')
-acres <- format(10^(0:5), big.mark = ',', scientific = FALSE)
+colors <- c('red', 'orange', 'green', 'blue', 'purple', 'black', 'gray')
+acres <- format(10^(0:6), big.mark = ',', scientific = FALSE)
 
 
 x <- readRDS(paste0('x:/LCC/GIS/Final/ecoRefugia/ecoConnect_final/ecoConnect_quantiles', postfix, '.RDS'))
-x <- x$quantiles.full[1, , , , ]         # size, system, all vs best, percentile
+x <- x$full[1, , , , ]         # size, system, all vs best, percentile
 x <- x[, 1, 1, ]                         # size, percentile
 
 plot(x[1, ], 1:100, col = colors[1], ty = 'l', lwd = 2, xlim = c(0, 100), xlab = 'Mean ecoConnect for block', ylab = 'Percentile',

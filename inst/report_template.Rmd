@@ -24,7 +24,7 @@ params:
   table.IEIq: NA
   table.connect.levels: NA
   table.connect: NA
-  table.connectq: NA
+  table.connect.best: NA
   path: ''
   bold: 0
   left: ''
@@ -61,7 +61,7 @@ all cells each ecological system. https://umassdsl.org/DSLdocs//DSL_documentatio
 **Score** | **`r params$table.connect.levels[1]`** | **`r params$table.connect.levels[2]`** | **`r params$table.connect.levels[3]`** | **`r params$table.connect.levels[4]`**
 ---|---|---|---|---
 mean | `r params$table.connect[1]` | `r params$table.connect[2]` | `r params$table.connect[3]` | `r params$table.connect[4]`
-best | `r params$table.connectq[1]` | `r params$table.connectq[2]` | `r params$table.connectq[3]` | `r params$table.connectq[4]`
+best | `r params$table.connect.best[1]` | `r params$table.connect.best[2]` | `r params$table.connect.best[3]` | `r params$table.connect.best[4]`
 
 _ecoConnect_ provides a multi-scale, ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is 
 independent of pre-defined conservation cores, connecting points with high IEI throughout the landscape based on ecological 

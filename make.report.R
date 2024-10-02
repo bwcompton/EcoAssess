@@ -31,9 +31,6 @@
    source = 'report_template.Rmd'         # markdown template
    t <- Sys.time()
    
-   states <- read.table('inst/stateinfo.txt', header = TRUE, sep = '\t')  #  *********** we'll read these from RDS instead
-   hucs <- read.table('inst/hucinfo.txt', header = TRUE, sep = '\t')
-   
    
    
    area <- sum(as.vector(st_area(poly)) * 247.105e-6) 
@@ -41,20 +38,24 @@
    poly.rast <- rasterize(poly.proj, rast(layer.data$shindex)) * 0 + 1        # raster version of polygon, 1 inside, NA outside
    poly.rast[is.na(shindex)] <- NA                                            # clip poly.rast with shindex to remove subtidal. We'll use this ask the mask in layer.stats
    
-   statehuc <- get.statehuc(shindex * poly.rast, states, hucs)                # look up state(s) and HUC(s) from shindex, clipped to poly
+   statehuc <- get.statehuc(shindex * poly.rast, quantiles$stateinfo, 
+                            quantiles$hucinfo)                                # look up state(s) and HUC(s) from shindex, clipped to poly
    
    print(summary(poly.rast))
-   stats <- lapply(layer.data[-length(layer.data)], function(x) layer.stats(rast(x) * poly.rast, statehuc, area))
+   stats <- do.call(rbind.data.frame, lapply(layer.data[-length(layer.data)], function(x) layer.stats(rast(x) * poly.rast, statehuc, area)))
    
-   IEI <- format.stats(stats, 'iei', 'mean')
-   IEIq <- format.stats(stats, 'iei', 'best')
-   connect <- format.stats(stats, 'connect', 'mean', quantiles)
-   connectq <- format.stats(stats, 'connect', 'best', quantiles)
+   size.factors <- interpolate.size(area, quantiles)
+   
+   IEI <- format.stats.iei(stats, 'mean')
+   IEIq <- format.stats.iei(stats, 'best')
+   
+   connect <- format.stats.connect(stats, 'mean', quantiles, statehuc, size.factors)
+   connect.best <- format.stats.connect(stats, 'best', quantiles, statehuc, size.factors)
    
    table <- data.frame(IEI.levels = layers$pretty.names[layers$which == 'iei'],
                        IEI = IEI, IEIq = IEIq,
                        connect.levels = layers$pretty.names[layers$which == 'connect'],
-                       connect = connect, connectq = connectq)
+                       connect = connect, connect.best = connect.best)
    
    acres <- format(round(area, 1), big.mark = ',')
    date <- sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y'))
@@ -76,10 +77,10 @@
    
    t1 <- Sys.time()
    
-   tempReport <- file.path(tempdir(), source)                                    # copy to temp directory so it'll work on the server
+   tempReport <- file.path(tempdir(), source)                                 # copy to temp directory so it'll work on the server
    file.copy(paste0('inst/', source), tempReport, overwrite = TRUE)
    
-   z <- rmarkdown::render(tempReport, output_file = resultfile,                      # knit in child environment
+   z <- rmarkdown::render(tempReport, output_file = resultfile,               # knit in child environment
                           params = params,
                           envir = new.env(parent = globalenv()),
                           quiet = TRUE)
