@@ -1,43 +1,51 @@
-'format.stats.connect' <- function(stats, type, quantiles, statehuc, size.factors) {
+'format.stats.connect' <- function(x, system, type, quantiles, statehuc, size.factors) {
    
-   # Format ecoConnect stats for make.report
+   # Format one row of ecoConnect stats for make.report
    # Arguments:
-   #     stats       statistics data frame, from layer.stats
+   #     x           statistics data frame, from layer.stats
+   #     system      name of system
    #     type        statistic type, either 'mean' or 'best' (for mean of top quartile)
    #     quantiles   list of sampled percentiles for full, state, and huc. (connect only)
    #                 Each has 5 dimensions:
    #                    1. region (1 for full, 14 for state, and 245 for huc)
    #                    2. block size (1, 10, ... 1e6 acres)
+   #       
    #                    3. system
    #                    4. all or best
    #                    5. percentile
    #     statehuc    list of state id, huc id, formatted state name(s), formatted HUC id(s) (connect only)
    #     size.factors   indices and blend of block sizes to interpolate target area size
-   # B. Compton, 2 Oct 2024 (from format.stats)
-   
-   
-   stats <<-stats; type <<- type; quantiles <<- quantiles; statehuc <<- statehuc; size.factors <<- size.factors
-   return()
+   # B. Compton, 2-3 Oct 2024 (from format.stats)
    
    
    
-   x <- stats[layers$which == 'connect', type]
+   'bold' <- function(x, pctile) {                                                                       # give score and percentile, format percentiles in top 10% in boldface
+      if(x > 0) {
+         z <- if(pctile >= 51)
+            paste0('top ', 101 - pctile, '%') 
+         else
+            paste0('bottom ', pctile, '%')
+         
+         if(pctile >= 91)
+            paste0('**', z, '**')
+         else
+            z
+      }
+      else
+         '' 
+   }
    
-   cat('ecoConnect', type, x, '\n')
    
+   fact <- matrix(size.factors$factor, 2, 100)                                                           # size factors as a conforming matrix
+   sys <- tolower(ifelse(system == 'Floodplain forests', 'floodplains', system))                         # 🙄
+   q <- list()
+   q$full <- sum(x >= c(0, (colSums(quantiles$full[1, size.factors$index, sys, type, ] * fact))[-100]))                  # percentiles
+   q$state <- sum(x >= c(0, (colSums(quantiles$state[statehuc$state, size.factors$index, sys, type, ] * fact))[-100]))
+   q$huc <- sum(x >= c(0, (colSums(quantiles$huc[statehuc$huc, size.factors$index, sys, type, ] * fact))[-100]))
    
-   
-   pctile <- colSums(matrix(x, 100, length(x), byrow = TRUE) >= rbind(0, quantiles[-100,]))        # connect is xx.x, with looked-up percentiles
-
-   
-   
-   x <- round(x, 0)                                                                                # report ecoConnect as 2 digits, xx
-   z <- paste0(ifelse(pctile >= 91, '**', ''),
-               gsub(' ', '', format(x, nsmall = 0, justify = 'none')),                             # ecoConnect as xx
-               ifelse(x > 0, 
-                      ifelse(pctile >= 51, paste0(' (top ', 101 - pctile, '%)'), 
-                             paste0(' (bottom ', pctile, '%)')),
-                      ''), 
-               ifelse(pctile >= 91, '**', ''))
-   z
+   x <- round(x, 0)                                                                                      # report ecoConnect as 2 digits, xx
+   c(system, type, format(x, nsmall = 0, justify = 'none'), 
+     bold(x, q$full),
+     bold(x, q$state),
+     bold(x, q$huc))
 }

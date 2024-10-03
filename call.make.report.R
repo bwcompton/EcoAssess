@@ -11,8 +11,7 @@
    
    
    cat('In call.make.report...\n')
-   cat('***** quantiles exists? ', exists('quantiles'), '\n', sep = '')
-   
+
    
    making.report <- showNotification('Generating report...', duration = NULL, closeButton = FALSE, session = session)
    

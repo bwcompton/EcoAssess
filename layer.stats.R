@@ -20,7 +20,7 @@
    
    'best.mean' <- function(x) mean(x[x > quantile(x, prob = best.prob, na.rm = TRUE)], na.rm = TRUE)       # mean of "best", either top quartile or top half
    
-   z <- data.frame(mean = unlist(lapply(grid, function(y) mean(as.array(y), na.rm = TRUE))),
+   z <- data.frame(all = unlist(lapply(grid, function(y) mean(as.array(y), na.rm = TRUE))),
                    best = unlist(lapply(grid, function(y) best.mean(as.array(y)))))
    
    z[is.na(z)] <- 0         # NaN to 0

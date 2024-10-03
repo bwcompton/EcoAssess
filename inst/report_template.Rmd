@@ -21,10 +21,16 @@ params:
   acres: NA
   table.IEI.levels: NA
   table.IEI: NA
-  table.IEIq: NA
+  table.IEI.best: NA
   table.connect.levels: NA
-  table.connect: NA
-  table.connect.best: NA
+  table.connect1: NA
+  table.connect2: NA
+  table.connect3: NA
+  table.connect4: NA
+  table.connect5: NA
+  table.connect6: NA
+  table.connect7: NA
+  table.connect8: NA
   path: ''
   bold: 0
   left: ''
@@ -46,8 +52,8 @@ The project area is `r params$acres` acres.
 
 **Score** | **`r params$table.IEI.levels[1]`** | **`r params$table.IEI.levels[2]`** | **`r params$table.IEI.levels[3]`** | **`r params$table.IEI.levels[4]`**
 ---|---|---|---|---
-mean | `r params$table.IEI[1]` | `r params$table.IEI[2]` | `r params$table.IEI[3]` | `r params$table.IEI[4]`
-best | `r params$table.IEIq[1]` | `r params$table.IEIq[2]` | `r params$table.IEIq[3]` | `r params$table.IEIq[4]`
+`r params$table.IEI[1]` | `r params$table.IEI[2]` | `r params$table.IEI[3]` | `r params$table.IEI[5]` | `r params$table.IEI[5]`
+`r params$table.IEI.best[1]` | `r params$table.IEI.best[2]` | `r params$table.IEI.best[3]` | `r params$table.IEI.best[4]` | `r params$table.IEI.best[5]`
 
 
 The _Index of Ecological Integrity_ (IEI), is an assessment of ecological integrity---the ability of a site to support 
@@ -58,10 +64,19 @@ all cells each ecological system. https://umassdsl.org/DSLdocs//DSL_documentatio
 
 ### ecoConnect
 
-**Score** | **`r params$table.connect.levels[1]`** | **`r params$table.connect.levels[2]`** | **`r params$table.connect.levels[3]`** | **`r params$table.connect.levels[4]`**
----|---|---|---|---
-mean | `r params$table.connect[1]` | `r params$table.connect[2]` | `r params$table.connect[3]` | `r params$table.connect[4]`
-best | `r params$table.connect.best[1]` | `r params$table.connect.best[2]` | `r params$table.connect.best[3]` | `r params$table.connect.best[4]`
+**`r params$table.connect.levels[1]`** | **`r params$table.connect.levels[2]`** | **`r params$table.connect.levels[3]`** | **`r params$table.connect.levels[4]`** | **`r params$table.connect.levels[5]`** | **`r params$table.connect.levels[6]`**
+---|---|---|---|---|---
+`r params$table.connect1[1]` | `r params$table.connect1[2]` | `r params$table.connect1[3]` | `r params$table.connect1[4]` | `r params$table.connect1[5]`  | `r params$table.connect1[6]` 
+`r params$table.connect2[1]` | `r params$table.connect2[2]` | `r params$table.connect2[3]` | `r params$table.connect2[4]` | `r params$table.connect2[5]`  | `r params$table.connect2[6]` 
+`r params$table.connect3[1]` | `r params$table.connect3[2]` | `r params$table.connect3[3]` | `r params$table.connect3[4]` | `r params$table.connect3[5]`  | `r params$table.connect3[6]` 
+`r params$table.connect4[1]` | `r params$table.connect4[2]` | `r params$table.connect4[3]` | `r params$table.connect4[4]` | `r params$table.connect4[5]`  | `r params$table.connect4[6]` 
+`r params$table.connect5[1]` | `r params$table.connect5[2]` | `r params$table.connect5[3]` | `r params$table.connect5[4]` | `r params$table.connect5[5]`  | `r params$table.connect5[6]` 
+`r params$table.connect6[1]` | `r params$table.connect6[2]` | `r params$table.connect6[3]` | `r params$table.connect6[4]` | `r params$table.connect6[5]`  | `r params$table.connect6[6]` 
+`r params$table.connect7[1]` | `r params$table.connect7[2]` | `r params$table.connect7[3]` | `r params$table.connect7[4]` | `r params$table.connect7[5]`  | `r params$table.connect7[6]` 
+`r params$table.connect8[1]` | `r params$table.connect8[2]` | `r params$table.connect8[3]` | `r params$table.connect8[4]` | `r params$table.connect8[5]`  | `r params$table.connect8[6]` 
+
+
+
 
 _ecoConnect_ provides a multi-scale, ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is 
 independent of pre-defined conservation cores, connecting points with high IEI throughout the landscape based on ecological 
