@@ -2,14 +2,14 @@ This web tool provides access to landscape ecological models that estimate ecolo
 the contribution to regional connectivity of every location in the northeastern United States.
 It is intended to help conservation practitioners strategically conserve land that supports viable 
 ecosystems and wildlife populations. You can view Indices of Ecological Integrity (IEI) and ecoConnect across the
-northeast or produce reports for designated project areas (e.g., parcels) summarizing IEI and ecoConnect.
+Northeast or produce reports for designated project areas (e.g., parcels) summarizing IEI and ecoConnect. 
 
 The **center** pane displays maps of IEI and ecoConnect and provides tools for navigation
 - drag the map to pan
 - click **+** and **&#x2212;** to zoom, or use your mouse's scroll wheel
 - type an address or location in the locate bar at the bottom right. This can be a full street address, the name of a town (for example "spruce creek pa"), or a latitude and longitude (for example, "42.3923, -72.3448")
 
-The **right** pane allows selected layers to display and controls how they are displayed
+The **right** pane provides tools that select layers to display and control how they are displayed
 - click **>** to collapse the right panel, making more room for the map
 - select one of the four scalings for the Index of Ecological Integrity (IEI), or one of the four
 ecoConnect layers
@@ -19,15 +19,16 @@ paths for regional connectivity
 - turn off layers or set layer opacity to 0% to focus on the basemap
 - select one of the four choices of basemap: *Simple map* - a plain map of roads and place names (best for
 display with layers),
-*Open Street Map* - A crowdsourced map with more detail, *Topo* - USGS topographic maps, or *Imagery* - aerial photographs from USGS
+*Open Street Map* - a crowdsourced map with more detail, *Topo* - USGS topographic maps, or *Imagery* - aerial orthophotos from USGS
 - turn on state and county boundaries
-- upload a polygon shapefile to use as an additional basemap of, for instance, parcels or protected open space. This shapefile cna't be huge---protected open space for a county or parcels for a town are about the limit
+- upload a polygon shapefile to use as an additional basemap of, for instance, parcels or protected land. This shapefile can't be huge---not more than parcels for a town or protected land for a county.
+- toggle display to use your full screen
 
 The **left** pane includes a tool for producing reports for specific sites (e.g., parcels) as well as links to documentation
 - click **<** to collapse the panel
 - click Draw to draw a polygon delineating your project area, or
-- click Upload to upload a shapefile of your project area (or a zipped shapefile), and then
-- click Get report. You'll have an opportunity to provide a project name and description, then you can download a PDF report to your computer.
+- click Upload to upload a shapefile (or a zipped shapefile) of your project area, and then
+- click Get report. You'll have an opportunity to provide a project name and description, and then download a PDF report. All drawn or uploaded polygons are merged and assessed as a single project. 
 - click Restart to clear drawn polygons or uploaded shapefiles and start over
 
 **Your data**. No data are retained on our servers. We use secure https, so data are encrypted between your computer and our servers. Reports you request may be saved on your computer, depending on your browser settings. When you close your browser, all user data, including drawn polygons, uploaded shapefiles, and reports are immediately deleted from our servers. 

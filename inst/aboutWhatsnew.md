@@ -9,10 +9,15 @@
 uploading open space or parcels for the vicinity of project areas. These files can't be huge, but
 open space for a county or parcels for a town generally work fine. Open space for an entire state 
 is definitely too much. (We tried adding PAD-US as an open space layer, but the way that USGS 
-chose to serve these data makes the app horribly sluggish, so we added user basemaps instead).
+chose to serve these data made the app horribly sluggish, so we added user basemaps instead).
 
 ##### Report changes
-- 
+- ecoConnect percentiles are now reported relative to the entire region, the state, and the HUC 8 watershed
+- Percentiles for ecoConnect are now based on sampling of random squares of varying sizes (1, 10, ... 1,000,000 
+acres) across the region, and reported percentiles are interpolated from the two nearest sizes. This removes 
+the confounding effect of project area size.
+- Change the layout of the table, rearrange sections of the report, and improve descriptions
+- Include state name and HUC 8 watershed id in report
 
 ##### Other changes
 - The full screen toggle has been moved to the bottom of the right panel, to make more space
@@ -23,3 +28,7 @@ on small screens for layers
 - The version number and "What's new" have been added. We'll drop these for the final rollout, but
 wanted to keep Beta users updated about what's changed
 - The project name (if supplied) is now used as the report filename, after scrubbing illegal characters.
+
+##### Bug fixes
+- Polygon clipping failure gave incorrect scores
+- Crash when project area was too small; introduced minimum of 1 acre

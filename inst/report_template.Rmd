@@ -19,6 +19,8 @@ params:
   proj.info: ''
   date: ''
   acres: NA
+  state: NA
+  huc: NA
   table.IEI.levels: NA
   table.IEI: NA
   table.IEI.best: NA
@@ -46,7 +48,7 @@ subtitle <- paste0('**ecoConnect tool report**, ', params$date)
 
 `r params$proj.info`
 
-The project area is `r params$acres` acres.
+The project area is `r params$acres` acres in `r params$state`, `r params$huc`
 
 ### Index of ecological Integrity
 
@@ -56,39 +58,39 @@ The project area is `r params$acres` acres.
 `r params$table.IEI.best[1]` | `r params$table.IEI.best[2]` | `r params$table.IEI.best[3]` | `r params$table.IEI.best[4]` | `r params$table.IEI.best[5]`
 
 
-The _Index of Ecological Integrity_ (IEI), is an assessment of ecological integrity---the ability of a site to support 
-biodiversity and ecosystem processes over the long term, based on landscape models combining several integrity metrics. IEI is 
-estimated at four scales, ranking each site within the entire northeastern United States (Region), its state (State), its 
-TNC terrestrial ecoregion (Ecoregion), and its HUC 6 watershed (Watershed). IEI is scaled from 0.01 to 1.0 in percentiles for 
-all cells each ecological system. https://umassdsl.org/DSLdocs//DSL_documentation_iei.pdf
-
 ### ecoConnect
 
-**`r params$table.connect.levels[1]`** | **`r params$table.connect.levels[2]`** | **`r params$table.connect.levels[3]`** | **`r params$table.connect.levels[4]`** | **`r params$table.connect.levels[5]`** | **`r params$table.connect.levels[6]`**
----|---|---|---|---|---
-`r params$table.connect1[1]` | `r params$table.connect1[2]` | `r params$table.connect1[3]` | `r params$table.connect1[4]` | `r params$table.connect1[5]`  | `r params$table.connect1[6]` 
-`r params$table.connect2[1]` | `r params$table.connect2[2]` | `r params$table.connect2[3]` | `r params$table.connect2[4]` | `r params$table.connect2[5]`  | `r params$table.connect2[6]` 
-`r params$table.connect3[1]` | `r params$table.connect3[2]` | `r params$table.connect3[3]` | `r params$table.connect3[4]` | `r params$table.connect3[5]`  | `r params$table.connect3[6]` 
-`r params$table.connect4[1]` | `r params$table.connect4[2]` | `r params$table.connect4[3]` | `r params$table.connect4[4]` | `r params$table.connect4[5]`  | `r params$table.connect4[6]` 
-`r params$table.connect5[1]` | `r params$table.connect5[2]` | `r params$table.connect5[3]` | `r params$table.connect5[4]` | `r params$table.connect5[5]`  | `r params$table.connect5[6]` 
-`r params$table.connect6[1]` | `r params$table.connect6[2]` | `r params$table.connect6[3]` | `r params$table.connect6[4]` | `r params$table.connect6[5]`  | `r params$table.connect6[6]` 
-`r params$table.connect7[1]` | `r params$table.connect7[2]` | `r params$table.connect7[3]` | `r params$table.connect7[4]` | `r params$table.connect7[5]`  | `r params$table.connect7[6]` 
-`r params$table.connect8[1]` | `r params$table.connect8[2]` | `r params$table.connect8[3]` | `r params$table.connect8[4]` | `r params$table.connect8[5]`  | `r params$table.connect8[6]` 
+| **`r params$table.connect.levels[1]`** | **`r params$table.connect.levels[2]`** | **`r params$table.connect.levels[3]`** | **`r params$table.connect.levels[4]`** | **`r params$table.connect.levels[5]`** | **`r params$table.connect.levels[6]`** |
+| ---|---|---:|---|---|---|
+| `r params$table.connect1[1]` | `r params$table.connect1[2]` | `r params$table.connect1[3]` | `r params$table.connect1[4]` | `r params$table.connect1[5]`  | `r params$table.connect1[6]` |
+|      | `r params$table.connect2[2]` | `r params$table.connect2[3]` | `r params$table.connect2[4]` | `r params$table.connect2[5]`  | `r params$table.connect2[6]` |
+| `r params$table.connect3[1]` | `r params$table.connect3[2]` | `r params$table.connect3[3]` | `r params$table.connect3[4]` | `r params$table.connect3[5]`  | `r params$table.connect3[6]` |
+|      | `r params$table.connect4[2]` | `r params$table.connect4[3]` | `r params$table.connect4[4]` | `r params$table.connect4[5]`  | `r params$table.connect4[6]` |
+| `r params$table.connect5[1]` | `r params$table.connect5[2]` | `r params$table.connect5[3]` | `r params$table.connect5[4]` | `r params$table.connect5[5]`  | `r params$table.connect5[6]` |
+|      | `r params$table.connect6[2]` | `r params$table.connect6[3]` | `r params$table.connect6[4]` | `r params$table.connect6[5]`  | `r params$table.connect6[6]` |
+| `r params$table.connect7[1]` | `r params$table.connect7[2]` | `r params$table.connect7[3]` | `r params$table.connect7[4]` | `r params$table.connect7[5]`  | `r params$table.connect7[6]` |
+|      | `r params$table.connect8[2]` | `r params$table.connect8[3]` | `r params$table.connect8[4]` | `r params$table.connect8[5]`  | `r params$table.connect8[6]` |
 
 
+**_Note_**: For both IEI and ecoConnect, reported scores for "all" are the mean scores for the entire
+project area, while scores for "best" are the mean scores for cells in the top quartile
+(25%) within the project area. Scores in the top 10% are in bold. 
 
 
-_ecoConnect_ provides a multi-scale, ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is 
+The **_Index of Ecological Integrity_** (IEI), is an assessment of ecological integrity---the ability of a site to support 
+biodiversity and ecosystem processes over the long term, based on landscape models combining several integrity metrics. IEI is 
+estimated at four scales, ranking each site within the entire northeastern United States, its state, its 
+TNC terrestrial ecoregion, and its HUC 6 watershed. IEI is scaled from 0.01 to 1.0 in percentiles for 
+all cells each ecological system. https://umassdsl.org/DSLdocs//DSL_documentation_iei.pdf
+
+
+**_ecoConnect_** provides a multi-scale, ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is 
 independent of pre-defined conservation cores, connecting points with high IEI throughout the landscape based on ecological 
 setting, development, roads, and bridges. For a given ecosystem, it gives a measure of each site's contribution to regional 
-connectivity. ecoConnect is scaled from 0 to 100 for each ecosystem group. https://umassdsl.org/data/ecoConnect
+connectivity. The ecoConnect score is compared in percentiles with the rest of the region, state, or HUC 8 watershed. For project
+areas that cross state or watershed boundaries, percentiles are based on the sites majority state or watershed, listed first.
+https://umassdsl.org/data/ecoConnect
 
-&nbsp;
-
-**_Note_**: **For both IEI and ecoConnect**, reported scores for "mean" are the mean scores for all
-cells in the project area, while scores for "best" are the mean scores for cells in the top quartile
-(25%) within the project area. Percentiles ("top" or "bottom") are based on comparisons with a large
-sample of random 100-acre squares across the Northeast. Scores in the top 10% are in bold.
 
 ![](`r params$left`) ![](`r params$right`)
 

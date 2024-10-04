@@ -21,16 +21,15 @@
    h <- as.numeric(names(sort(table(huc), decreasing = TRUE)))
    z <- list(state = s[1], huc = h[1])
    
-   z$state.txt <- switch(min(length(s), 3),                                # Pretty formatted list of states (3 is the most possible in the NER, but we'll play it safe)
-                         states$state[s[1]],
-                         paste(states$state[s[1:2]], collapse = ' and '),
-                         paste(paste(states$state[s[-length(s)]], collapse = ', '), states$state[s[length(s)]], sep = ', and ')
-   )
+   z$state.text <- switch(min(length(s), 3),                                # Pretty formatted list of states (3 is the most possible in the NER, but we'll play it safe)
+                          states$state[s[1]],
+                          paste(states$state[s[1:2]], collapse = ' and '),
+                          paste(paste(states$state[s[-length(s)]], collapse = ', '), states$state[s[length(s)]], sep = ', and '))
    
-   z$HUC8_code.txt <- switch(min(length(h), 3),                                  # Pretty formatted list of hucs
-                             hucs$HUC8_code[h[1]],
-                             paste(hucs$HUC8_code[h[1:2]], collapse = ' and '),
-                             paste(paste(hucs$HUC8_code[h[-length(h)]], collapse = ', '), hucs$HUC8_code[h[length(h)]], sep = ', and ')
-   )
+   z$huc.text <- paste0('HUC 8 watershed', (ifelse(length(h) > 1, 's ', ' ')), 
+                        switch(min(length(h), 3),                                  # Pretty formatted list of hucs
+                               sprintf('%08d', hucs$HUC8_code[h[1]]),
+                               paste(sprintf('%08d', hucs$HUC8_code[h[1:2]]), collapse = ' and '),
+                               paste(paste(hucs$HUC8_code[h[-length(h)]], collapse = ', '), sprintf('%08d', hucs$HUC8_code[h[length(h)]]), sep = ', and ')))
    z
 }

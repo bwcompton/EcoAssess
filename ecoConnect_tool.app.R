@@ -47,6 +47,7 @@ plan('multisession')
 
 
 source('modalHelp.R')
+source('error.message.R')
 source('get.WCS.data.R')
 source('get.shapefile.R')
 source('draw.poly.R')
@@ -103,6 +104,8 @@ aboutTool <- includeMarkdown('inst/aboutTool.md')
 aboutecoConnect <- includeMarkdown('inst/aboutEcoConnect.md')
 aboutIEI <- includeMarkdown('inst/aboutIEI.md')
 aboutWhatsNew <- includeMarkdown('inst/aboutWhatsnew.md')
+
+osm_email <- readChar(f <- 'www/osm_email.txt', file.info(f)$size)
 
 
 
@@ -230,12 +233,7 @@ server <- function(input, output, session) {
       if(GET(WCSserver)$status_code != 200) stop()
    }, 
    error = function(e) {      # ping our GeoServer
-      showModal(modalDialog(
-         title = 'Error', 
-         includeMarkdown('inst/errorGeoServer.md'),
-         footer = modalButton('OK'),
-         easyClose = TRUE
-      ))
+      error.message('GeoServer')
       shinyjs::disable('drawPolys')
       shinyjs::disable('uploadShapefile')
    })
@@ -247,14 +245,14 @@ server <- function(input, output, session) {
    observeEvent(input$aboutIEI, {
       modalHelp(aboutIEI, 'About the Index of Ecological Integrity', size = 'l')})
    observeEvent(input$whatsNew, {
-      modalHelp(aboutWhatsNew, 'What\'s new in this version?')})
+      modalHelp(aboutWhatsNew, 'What\'s new in this version?', size = 'l')})
    
    
    output$map <- renderLeaflet({                                                    # ----- Draw static parts of Leaflet map
       leaflet('map',
               options = leafletOptions(maxZoom = 16)) |>
          addScaleBar(position = 'bottomleft') |>
-         osmGeocoder(position = 'bottomright', email = 'bcompton@umass.edu') |>
+         osmGeocoder(position = 'bottomright', email = osm_email) |>
          setView(lng = home[1], lat = home[2], zoom = zoom)
    })
    
@@ -353,12 +351,7 @@ server <- function(input, output, session) {
          shinyjs::enable('restart')
       },
       error = function(e) {
-         showModal(modalDialog(
-            title = 'Error',
-            includeMarkdown('inst/errorShapefile.md'),
-            footer = modalButton('OK'),
-            easyClose = TRUE
-         ))
+         error.message('Shapefile')
          shinyjs::enable('drawPolys')                 # bad shapefile: do a restart
          shinyjs::enable('uploadShapefile')
          shinyjs::disable('restart')
@@ -402,12 +395,7 @@ server <- function(input, output, session) {
          updateCheckboxInput('show.usermap', value = TRUE, session = getDefaultReactiveDomain())
       }, 
       error = function(e) {
-         showModal(modalDialog(
-            title = 'Error',
-            includeMarkdown('inst/errorShapefile.md'),
-            footer = modalButton('OK'),
-            easyClose = TRUE
-         ))
+         error.message('Shapefile')
       })
    })
    
@@ -428,15 +416,15 @@ server <- function(input, output, session) {
       session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
       
       bbarea <- (session$userData$bbox$xmax - session$userData$bbox$xmin) * (session$userData$bbox$ymax - session$userData$bbox$ymin) * 247.105e-6
-      if(bbarea > 1e6) {
-         showModal(modalDialog(
-            title = 'Error', 
-            includeMarkdown('inst/errorToobig.md'),
-            footer = modalButton('OK'),
-            easyClose = TRUE
-         ))
+      if(bbarea < 1) {         
+         error.message('Toosmall')
          return()
       }
+      if(bbarea > 1e6) {
+         error.message('Toobig')
+         return()
+      }
+      
       
       showModal(modalDialog(                          # --- Modal input to get project name and description
          textInput('proj.name', 'Project name', value = input$proj.name, width = '100%',

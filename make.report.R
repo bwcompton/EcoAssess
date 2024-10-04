@@ -81,8 +81,8 @@
    cat('Time taken to make right map: ', Sys.time() - t1, '\n')
    
    
-   params <- c(proj.name = proj.name, proj.info = proj.info, acres = acres, date = date, path = getwd(), bold = 1, 
-               table = table, left = left, right = right)
+   params <- c(proj.name = proj.name, proj.info = proj.info, acres = acres, state = statehuc$state.text, huc = statehuc$huc.text, 
+               date = date, path = getwd(), bold = 1, table = table, left = left, right = right)
    
    
    t1 <- Sys.time()
