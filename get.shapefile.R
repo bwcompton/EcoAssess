@@ -4,12 +4,12 @@
    # Process uploaded shapefile
    # Arguments:
    #     shapefile      uploaded shapefile (or .zip containing shapefile)
-   #     merge          if TRUE, buffer 0.5 m to remove slivers and dissolve
+   #     merge          if TRUE, dissolve (I'm no longer buffering to remove slivers, as it leads to trouble)
    # Result:
    #     processed sf polygon
    # B. Compton, 7 May 2024
    
-
+   
    
    if(is.null(shapefile))
       stop('No shapefile')
@@ -31,8 +31,7 @@
    
    poly <- suppressWarnings(st_read(dsn, quiet = TRUE))
    if(merge)
-      poly <- st_buffer(poly, 0.5) |>        # buffer 0.5 m to remove slivers
-      st_union()                             # and dissolve
+      poly <- st_union(poly)                                         # dissolve
    
    st_transform(poly, '+proj=longlat +datum=WGS84')
 }
