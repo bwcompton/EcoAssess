@@ -28,13 +28,8 @@
    
    
    
-   source = 'report_template.Rmd'         # markdown template
+   source = 'report_template.Rmd'                                             # markdown template
    t <- Sys.time()
-   
-   # dimnames(quantiles$full)$layers[4] <- 'floodplain forests'           ########### temp fix
-   # dimnames(quantiles$state)$layers[4] <- 'floodplain forests'
-   # dimnames(quantiles$huc)$layers[4] <- 'floodplain forests'
-   # 
    
    
    area <- sum(as.vector(st_area(poly)) * 247.105e-6) 

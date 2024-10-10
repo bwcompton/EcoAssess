@@ -1,4 +1,4 @@
-**Beta version 0.2.0 (July 30, 2024)**
+**Beta version 0.2.0 (October 4, 2024)**
 
 ##### New features
 - Zipped shapefiles may now be uploaded

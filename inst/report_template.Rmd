@@ -52,7 +52,7 @@ The project area is `r params$acres` acres in `r params$state`, `r params$huc`
 
 ### Index of ecological Integrity
 
-**Score** | **`r params$table.IEI.levels[1]`** | **`r params$table.IEI.levels[2]`** | **`r params$table.IEI.levels[3]`** | **`r params$table.IEI.levels[4]`**
+**Type** | **`r params$table.IEI.levels[1]`** | **`r params$table.IEI.levels[2]`** | **`r params$table.IEI.levels[3]`** | **`r params$table.IEI.levels[4]`**
 ---|---|---|---|---
 `r params$table.IEI[1]` | `r params$table.IEI[2]` | `r params$table.IEI[3]` | `r params$table.IEI[5]` | `r params$table.IEI[5]`
 `r params$table.IEI.best[1]` | `r params$table.IEI.best[2]` | `r params$table.IEI.best[3]` | `r params$table.IEI.best[4]` | `r params$table.IEI.best[5]`
