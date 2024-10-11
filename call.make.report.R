@@ -1,4 +1,4 @@
-'call.make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info, quick, params, session) {
+'call.make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info, session) {
    
    # call.make.report
    # cover function to call make.report in the future
@@ -26,7 +26,7 @@
    }, seed = TRUE)                                           
    
    then(report.promise, onFulfilled = function(x) {
-  #    cat('\n*** report.promise has been fulfilled!\n')
+      cat('\n*** report.promise has been fulfilled!\n')
       removeNotification(making.report, session = session)
    })
 }

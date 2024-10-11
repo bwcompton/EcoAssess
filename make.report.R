@@ -1,4 +1,4 @@
-'make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info, quantiles) {
+'make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info, quantiles, session) {
    
    # make.report
    # Produce PDF report for target area
@@ -18,14 +18,13 @@
    #     PDF report
    # B. Compton, 24 Apr 2024
    
-   
+
    
    xxx <- list(layer.data = layer.data, resultfile = resultfile, layers = layers, poly = poly, poly.proj = poly.proj, proj.name = proj.name, proj.info = proj.info, quantiles = quantiles)
    saveRDS(xxx, 'inst/zzz_make.report.data.RDS')
    # x <- readRDS('inst/zzz_make.report.data.RDS'); layer.data <- x$layer.data; resultfile <- x$resultfile; layers <- x$layers; poly <- x$poly; poly.proj <- x$poly.proj; proj.name <- x$proj.name; proj.info <- x$proj.info; quantiles <- x$quantiles
    
    #  cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
-   
    
    
    source = 'report_template.Rmd'                                             # markdown template
@@ -75,9 +74,14 @@
    right <- make.report.maps(poly, 5, minsize = 60000)
    cat('Time taken to make right map: ', Sys.time() - t1, '\n')
    
+   cells <- sum(as.vector(poly.rast), na.rm = TRUE)
+   if(cells == 0) {                                         # ***************** really want to throw an error here!
+      return(NULL)
+   }
+      
    
    params <- c(proj.name = proj.name, proj.info = proj.info, acres = acres, state = statehuc$state.text, huc = statehuc$huc.text, 
-               date = date, path = getwd(), bold = 1, table = table, left = left, right = right)
+               date = date, path = getwd(), bold = 1, table = table, left = left, right = right, ttt = cells)
    
    
    t1 <- Sys.time()

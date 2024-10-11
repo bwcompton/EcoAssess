@@ -37,6 +37,7 @@ params:
   bold: 0
   left: ''
   right: ''
+  ttt: ''
 ---
 ```{r include = FALSE}
 knitr::opts_chunk$set(dev="cairo_pdf")
@@ -49,6 +50,9 @@ subtitle <- paste0('**ecoConnect tool report**, ', params$date)
 `r params$proj.info`
 
 The project area is `r params$acres` acres in `r params$state`, `r params$huc`
+
+
+It has `r params$ttt` cells
 
 ### Index of ecological Integrity
 

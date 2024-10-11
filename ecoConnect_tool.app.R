@@ -415,11 +415,21 @@ server <- function(input, output, session) {
       session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', type = 'proj') # project to match downloaded rasters
       session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
       
-      bbarea <- (session$userData$bbox$xmax - session$userData$bbox$xmin) * (session$userData$bbox$ymax - session$userData$bbox$ymin) * 247.105e-6
-      if(bbarea < 1) {         
+      
+      poly.area <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
+      cat('\n\narea = ', poly.area, ' acres\n', sep = '')
+      
+      #st_write(session$userData$poly.proj, 'C:/GIS/GIS/sample_parcels/debug/ab1.shp')
+      #st_write(st_buffer(session$userData$poly.proj, -15), 'C:/GIS/GIS/sample_parcels/debug/ab2.shp')
+      
+      
+      if(poly.area < 5) {         
          error.message('Toosmall')
          return()
       }
+      
+      bbarea <- (session$userData$bbox$xmax - session$userData$bbox$xmin) * (session$userData$bbox$ymax - session$userData$bbox$ymin) * 247.105e-6
+      
       if(bbarea > 1e6) {
          error.message('Toobig')
          return()

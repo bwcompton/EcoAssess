@@ -1,1 +1,1 @@
-Project area is too small---it must be at least 1 acre.
+Project area is too small---it must be at least 5 acres.
