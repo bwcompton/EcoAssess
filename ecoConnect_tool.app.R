@@ -202,7 +202,7 @@ ui <- page_sidebar(
                          choiceValues = c('Stadia.StamenTonerLite', 'OpenStreetMap.Mapnik', 'USGS.USTopo', 'USGS.USImagery')),
             hr(),
             checkboxInput('show.boundaries', label = 'Show states and counties', value = FALSE),
-            checkboxInput('show.usermap', label = 'Show user basemap', value = FALSE),                          # ...........................
+            checkboxInput('show.usermap', label = 'Show user basemap', value = FALSE),
             span(actionButton('upload.usermap', 'Upload user basemap'),
                  tooltip(bs_icon('info-circle'), usermapTooltip))
             
@@ -283,7 +283,7 @@ server <- function(input, output, session) {
       disable('opacity')
    })
    
-   observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap,   # ----- Draw dynamic parts of Leaflet map           ........................
+   observeEvent(list(input$connect.layer, input$iei.layer, input$show.basemap,   # ----- Draw dynamic parts of Leaflet map
                      input$opacity, input$autoscale, input$ecoConnectDisplay, input$show.boundaries,
                      input$show.usermap), {
                         if(length(session$userData$show.layer) != 0 && session$userData$show.layer == 'none')
@@ -369,12 +369,12 @@ server <- function(input, output, session) {
       
       leafletProxy('map') |>
          removeDrawToolbar(clearFeatures = TRUE) |>
-         clearGroup(group = 'targetArea')                                                  # <<<<<<<<<<<<<<<<<<< I think this will also clear user basemap!
+         clearGroup(group = 'targetArea')
    })
    
    
    
-   observeEvent(input$upload.usermap, {              # ----- Upload map button for user basemap                ..................................................
+   observeEvent(input$upload.usermap, {              # ----- Upload map button for user basemap
       # do modal dialog to get shapefile
       showModal(modalDialog(
          title = 'Select shapefile to upload',
@@ -385,7 +385,7 @@ server <- function(input, output, session) {
       ))
    })
    
-   observeEvent(input$user.shapefile, {               # --- Have uploaded shapefile for user basemap                ..................................................
+   observeEvent(input$user.shapefile, {               # --- Have uploaded shapefile for user basemap
       tryCatch({
          session$userData$userPoly <- get.shapefile(input$user.shapefile, merge = FALSE)
          leafletProxy('map') |>
@@ -411,10 +411,13 @@ server <- function(input, output, session) {
          session$userData$poly <- geojsonio::geojson_sf(jsonlite::toJSON(input$map_draw_all_features, auto_unbox = TRUE))  #    drawn poly as sf
       
       session$userData$saved <- list(input$proj.name, input$proj.info)
-      session$userData$poly <- st_make_valid(session$userData$poly)    # attempt to fix bad shapefiles
+      
+      sf_use_s2(FALSE)                                                     # need to turn off s2 before fixing shapefiles to avoid crashes on intersections
+      session$userData$poly <- st_make_valid(session$userData$poly)        # attempt to fix bad shapefiles
+      sf_use_s2(TRUE)
+      
       session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', type = 'proj') # project to match downloaded rasters
       session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
-      
       
       poly.area <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
       cat('\n\narea = ', poly.area, ' acres\n', sep = '')
