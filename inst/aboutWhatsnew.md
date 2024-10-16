@@ -31,4 +31,7 @@ wanted to keep Beta users updated about what's changed
 
 ##### Bug fixes
 - Polygon clipping failure gave incorrect scores
-- Crash when project area was too small; introduced minimum of 1 acre
+- Crashed when project area was too small; introduced minimum of 1 acre
+- Some project area polygons were distorted; fixed
+- Prevent error from project area polygon with crossing lines
+- Now catches errors caused by project area outside of Northeast, or in the ocean or estuarine rivers
