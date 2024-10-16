@@ -33,6 +33,7 @@ library(future)
 library(promises)
 library(ggmap)
 library(ggplot2)
+library(ggspatial)
 #library(fs)               # apparently not using
 #library(sfext)            # not using?
 library(httr)              # for pinging GeoServer
@@ -62,6 +63,7 @@ source('make.report.maps.R')
 ##source('addPADUS.R')     # dropped
 source('addBoundaries.R')
 source('addUserBasemap.R')
+source('annotation-scale.R')        # Ethan's new version. Delete this line and local function when PR https://github.com/paleolimbot/ggspatial/pull/129 is accepted
 
 
 

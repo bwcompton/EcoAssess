@@ -20,6 +20,8 @@
    
    
    
+   source('annotation-scale.R')        # Ethan's new version. Delete this line and local function when PR https://github.com/paleolimbot/ggspatial/pull/129 is accepted
+   
    register_stadiamaps(x <- readChar(f <- 'www/stadia_api.txt', file.info(f)$size))       # register Stadia API key
    
    bb <- st_bbox(poly)                                                                    # bounding box in degrees 
@@ -44,11 +46,20 @@
    # cat('*** Zoom = ', zoom, '\n', sep ='')
    
    basemap <- suppressMessages(get_stadiamap(bbox = newbb, maptype = 'stamen_toner_lite', zoom = zoom, messaging = FALSE))     # get the basemap
-
-   map <- suppressMessages(ggmap(basemap) +                                               # plot the basemap with the poly, and don't print the goddamn "Coordinate system already present" blather
-      geom_sf(mapping = aes(), data = poly, color = 'orange', lwd = 2,fill = NA, inherit.aes = FALSE) +
-      theme_void() +
-      theme(panel.border = element_rect(color = "black", fill = NA)))
+   
+   # xxx <- list(basemap = basemap, poly = poly) ################ debugging code
+   # saveRDS(xxx, 'inst/make.map.RDS')
+   # xxx <- readRDS('inst/make.map.RDS')
+   # basemap <- xxx$basemap; poly <- xxx$poly
+   
+   
+   map <- suppressMessages(
+      ggmap(basemap) +                                               # plot the basemap with the poly, and don't print the goddamn "Coordinate system already present" blather
+         geom_sf(mapping = aes(), data = poly, color = 'orange', lwd = 2, fill = NA, inherit.aes = FALSE) +
+         theme_void() +
+         theme(panel.border = element_rect(color = "black", fill = NA)) + 
+         annotation_scale(style = 'line', width_hint = 0.15, location = 'bl', unit_category = 'imperial')
+   )
    
    png(file <- file.path(paste(tempfile(), '.png', sep = '')), width = 3.2, height = 3.2, units = 'in', res = 300)
    print(map)                                                                           # to a .png
