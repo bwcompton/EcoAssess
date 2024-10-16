@@ -74,14 +74,9 @@
    right <- make.report.maps(poly, 5, minsize = 60000)
    cat('Time taken to make right map: ', Sys.time() - t1, '\n')
    
-   cells <- sum(as.vector(poly.rast), na.rm = TRUE)
-   if(cells == 0) {                                         # ***************** really want to throw an error here!
-      return(NULL)
-   }
-      
-   
+
    params <- c(proj.name = proj.name, proj.info = proj.info, acres = acres, state = statehuc$state.text, huc = statehuc$huc.text, 
-               date = date, path = getwd(), bold = 1, table = table, left = left, right = right, ttt = cells)
+               date = date, path = getwd(), bold = 1, table = table, left = left, right = right)
    
    
    t1 <- Sys.time()
