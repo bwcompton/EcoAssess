@@ -33,7 +33,7 @@
    
    area <- sum(as.vector(st_area(poly)) * 247.105e-6) 
    shindex <- rast(layer.data$shindex)                                        # read the state-huc index/mask
-   poly.rast <- rasterize(vect(poly.proj), rast(layer.data$shindex)) * 0 + 1        # raster version of polygon, 1 inside, NA outside
+   poly.rast <- rasterize(vect(poly.proj), rast(layer.data$shindex)) * 0 + 1  # raster version of polygon, 1 inside, NA outside
    poly.rast[is.na(shindex)] <- NA                                            # clip poly.rast with shindex to remove subtidal. We'll use this ask the mask in layer.stats
    
    statehuc <- get.statehuc(shindex * poly.rast, quantiles$stateinfo, 

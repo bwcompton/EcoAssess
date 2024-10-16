@@ -70,12 +70,12 @@ zoom <- 6
 
 # Layers on GeoServer (4 ecoConnect layers, 4 IEI layers, and the state-HuC index)
 layers <- data.frame(
-   which = c('connect', 'connect', 'connect', 'connect', 'iei', 'iei', 'iei', 'iei', 'shindex'),
-   workspaces = c('ecoConnect', 'ecoConnect', 'ecoConnect', 'ecoConnect', 'IEI', 'IEI', 'IEI', 'IEI', 'ecoConnect'),
-   server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest', 'iei_regional', 'iei_state', 'iei_ecoregion', 'iei_huc6', 'shindex'),
-   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'Region', 'State', 'Ecoregion', 'Watershed', ''),
+   which = c('connect', 'connect', 'connect', 'connect', 'iei', 'iei', 'iei', 'iei', 'shindex', 'template'),
+   workspaces = c('ecoConnect', 'ecoConnect', 'ecoConnect', 'ecoConnect', 'IEI', 'IEI', 'IEI', 'IEI', 'ecoConnect', 'ecoConnect'),
+   server.names = c('Forest_fowet', 'Ridgetop', 'Nonfo_wet', 'LR_floodplain_forest', 'iei_regional', 'iei_state', 'iei_ecoregion', 'iei_huc6', 'shindex', 'template'),
+   pretty.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests', 'Region', 'State', 'Ecoregion', 'Watershed', '', ''),
    radio.names = c('Forests', 'Ridgetops', 'Wetlands', 'Floodplain forests',
-                   'Regional', 'State', 'Ecoregion', 'Watershed', ''))
+                   'Regional', 'State', 'Ecoregion', 'Watershed', '', ''))
 
 full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)       # we'll need these for addWMSTiles
 
@@ -426,7 +426,7 @@ server <- function(input, output, session) {
       #st_write(st_buffer(session$userData$poly.proj, -15), 'C:/GIS/GIS/sample_parcels/debug/ab2.shp')
       
       
-      if(poly.area < 5) {         
+      if(poly.area < 1) {         
          error.message('Toosmall')
          return()
       }
@@ -438,47 +438,71 @@ server <- function(input, output, session) {
          return()
       }
       
+      # here====
+      # Read template to make sure we're in landscape and we have enough cells
+      l <- layers$which == 'template'
       
-      showModal(modalDialog(                          # --- Modal input to get project name and description
-         textInput('proj.name', 'Project name', value = input$proj.name, width = '100%',
-                   placeholder = 'Project name for report'),
-         textAreaInput('proj.info', 'Project description', value = input$proj.info, 
-                       width = '100%', rows = 6, placeholder = 'Optional project description'),
-         footer = tagList(
-            show_spinner(),
-            span(disabled(downloadButton('do.report', 'Generate report')), tooltip(bs_icon('info-circle'), generateReportTooltip)),
-            actionButton('cancel.report', 'Cancel')
-         )
-      ))
+      cat('Trying to read...\n')
+      template <- tryCatch({get.WCS.data(WCSserver, layers$workspaces[l], layers$server.names[l], session$userData$bbox)},
+                           warning = function(e) {
+                              error.message('ReadFail')
+                           }) 
       
-      
-      # -- Download data while user is typing project info
-      
-      xxpoly <<- session$userData$poly
-      xxpoly.proj <<- session$userData$poly.proj
-      #  st_write(session$userData$poly, 'C:/GIS/GIS/sample_parcels/name.shp')  # save drawn poly as shapefile
-      
-      # cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n', sep = '')
-      t <- Sys.time()
-      downloading <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
-      
-      
-      session$userData$the.promise <- future_promise({
-         #cat('*** PID ', Sys.getpid(), ' is working in the future...\n', sep = '')
-         get.WCS.data(WCSserver, layers$workspaces, layers$server.names, session$userData$bbox)    # ----- Download data in the future  
-      }, seed = TRUE) 
-      then(session$userData$the.promise, onFulfilled = function(x) {
-         #   cat('*** The promise has been fulfilled!\n')
-         enable('do.report')
-         hide_spinner()
-         removeNotification(downloading)
-      }) 
-      session$userData$time <- Sys.time() - t
-      NULL
+      if(!is.null(template)) {                           # if we successfully read raster data,
+         x <- rast(template$template)
+         cells <- sum(as.vector(rasterize(vect(session$userData$poly.proj), x) * x), na.rm = TRUE)          # number of good data cells we've read
+         
+         plot(rasterize(vect(session$userData$poly.proj), x) * x)  ############# temp
+         cat('We read ', cells ,' cells\n', sep = '')              ############# temp
+         
+         
+         if(cells < 2) 
+            error.message('NoCells')
+         
+         else {
+            
+            showModal(modalDialog(                       # --- Modal input to get project name and description
+               textInput('proj.name', 'Project name', value = input$proj.name, width = '100%',
+                         placeholder = 'Project name for report'),
+               textAreaInput('proj.info', 'Project description', value = input$proj.info, 
+                             width = '100%', rows = 6, placeholder = 'Optional project description'),
+               footer = tagList(
+                  show_spinner(),
+                  span(disabled(downloadButton('do.report', 'Generate report')), tooltip(bs_icon('info-circle'), generateReportTooltip)),
+                  actionButton('cancel.report', 'Cancel')
+               )
+            ))
+            
+            
+            # -- Download data while user is typing project info
+            
+            xxpoly <<- session$userData$poly
+            xxpoly.proj <<- session$userData$poly.proj
+            #  st_write(session$userData$poly, 'C:/GIS/GIS/sample_parcels/name.shp')  # save drawn poly as shapefile
+            
+            # cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n', sep = '')
+            t <- Sys.time()
+            downloading <- showNotification('Downloading data...', duration = NULL, closeButton = FALSE)
+            
+            
+            session$userData$the.promise <- future_promise({
+               #cat('*** PID ', Sys.getpid(), ' is working in the future...\n', sep = '')
+               get.WCS.data(WCSserver, layers$workspaces, layers$server.names, session$userData$bbox)    # ----- Download data in the future  
+            }, seed = TRUE) 
+            then(session$userData$the.promise, onFulfilled = function(x) {
+               #   cat('*** The promise has been fulfilled!\n')
+               enable('do.report')
+               hide_spinner()
+               removeNotification(downloading)
+            }) 
+            session$userData$time <- Sys.time() - t
+            NULL
+         }
+      }
    })
    
    
-   observeEvent(input$cancel.report, {                            # --- Cancel button from report dialog. Go back to previous values
+   observeEvent(input$cancel.report, {                   # --- Cancel button from report dialog. Go back to previous values
       removeModal()
       updateTextInput(inputId = 'proj.name', value = session$userData$saved[[1]])
       updateTextInput(inputId = 'proj.info', value = session$userData$saved[[2]])
@@ -498,7 +522,7 @@ server <- function(input, output, session) {
       },
       content = function(localfile) {
          removeModal()   
-         session$userData$the.promise %...>%                      # when data downloading promise is fulfilled, make the report in the future
+         session$userData$the.promise %...>%             # when data downloading promise is fulfilled, make the report in the future
             call.make.report(., localfile, layers, session$userData$poly, session$userData$poly.proj, 
                              gsub('\\\\', '/', input$proj.name), input$proj.info, session = getDefaultReactiveDomain())       
       })
