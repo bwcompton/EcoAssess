@@ -1,4 +1,4 @@
-**Beta version 0.2.0 (October 4, 2024)**
+**Beta version 0.2.0 (October 16, 2024)**
 
 ##### New features
 - Zipped shapefiles may now be uploaded
@@ -18,6 +18,7 @@ acres) across the region, and reported percentiles are interpolated from the two
 the confounding effect of project area size.
 - Change the layout of the table, rearrange sections of the report, and improve descriptions
 - Include state name and HUC 8 watershed id in report
+- Added scalebars to maps in report
 
 ##### Other changes
 - The full screen toggle has been moved to the bottom of the right panel, to make more space

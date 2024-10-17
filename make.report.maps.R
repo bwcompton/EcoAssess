@@ -58,7 +58,7 @@
          geom_sf(mapping = aes(), data = poly, color = 'orange', lwd = 2, fill = NA, inherit.aes = FALSE) +
          theme_void() +
          theme(panel.border = element_rect(color = "black", fill = NA)) + 
-         annotation_scale(style = 'line', width_hint = 0.15, location = 'bl', unit_category = 'imperial')
+         annotation_scale(style = 'line', width_hint = 0.2, location = 'bl', unit_category = 'imperial')
    )
    
    png(file <- file.path(paste(tempfile(), '.png', sep = '')), width = 3.2, height = 3.2, units = 'in', res = 300)
