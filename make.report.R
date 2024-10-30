@@ -20,8 +20,8 @@
    
 
    
-   xxx <- list(layer.data = layer.data, resultfile = resultfile, layers = layers, poly = poly, poly.proj = poly.proj, proj.name = proj.name, proj.info = proj.info, quantiles = quantiles)
-   saveRDS(xxx, 'inst/zzz_make.report.data.RDS')
+   #xxx <- list(layer.data = layer.data, resultfile = resultfile, layers = layers, poly = poly, poly.proj = poly.proj, proj.name = proj.name, proj.info = proj.info, quantiles = quantiles)
+   #saveRDS(xxx, 'inst/zzz_make.report.data.RDS')
    # x <- readRDS('inst/zzz_make.report.data.RDS'); layer.data <- x$layer.data; resultfile <- x$resultfile; layers <- x$layers; poly <- x$poly; poly.proj <- x$poly.proj; proj.name <- x$proj.name; proj.info <- x$proj.info; quantiles <- x$quantiles
    
    #  cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
@@ -39,7 +39,7 @@
    statehuc <- get.statehuc(shindex * poly.rast, quantiles$stateinfo, 
                             quantiles$hucinfo)                                # look up state(s) and HUC(s) from shindex, clipped to poly
    stats <- do.call(rbind.data.frame, lapply(layer.data[-length(layer.data)], function(x) layer.stats(rast(x) * poly.rast, statehuc, area)))
-   size.factors <- interpolate.size(area, quantiles)
+   size.factors <- interpolate.size(area, as.numeric(dimnames(quantiles$full)$acres))
    
    
    IEI <- format.stats.iei(stats$all[layers$which == 'iei'], 'all')          # format 2 IEI rows in stats table

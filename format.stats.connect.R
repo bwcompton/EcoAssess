@@ -23,7 +23,7 @@
    # B. Compton, 2-3 Oct 2024 (from format.stats)
    
    
-  # x<<-x;system<<-system;type<<-type;quantiles<<-quantiles;statehuc<<-statehuc;size.factors<<-size.factors;return()
+   #x<<-x;xxsystem<<-system;type<<-type;quantiles<<-quantiles;statehuc<<-statehuc;size.factors<<-size.factors;return()
    
    
    'fmt.percentile' <- function(x, pctile) {                                                             # give score and percentile, format percentiles in top 10% in boldface
