@@ -29,9 +29,9 @@
    
    dsn <- paste(uploaddir, shapefile$name[grep(pattern="*.shp$", shapefile$name)], sep="/")
    
-   poly <- suppressWarnings(st_read(dsn, quiet = TRUE))
+   poly <- suppressWarnings(sf::st_read(dsn, quiet = TRUE))
    if(merge)
-      poly <- st_union(poly)                                         # dissolve
+      poly <- sf::st_union(poly)                                         # dissolve
    
-   st_transform(poly, '+proj=longlat +datum=WGS84')
+   sf::st_transform(poly, '+proj=longlat +datum=WGS84')
 }

@@ -8,13 +8,16 @@
 
 
 
-libraries <- c('shiny', 'bslib', 'bsicons', 'shinyjs', 'shinybusy', 'shinyWidgets', 'htmltools', 'markdown', 
-               'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'terra', 'sf', 'future', 'promises', 'ggmap', 
+# libraries <- c('shiny', 'bslib', 'bsicons', 'shinyjs', 'shinybusy', 'shinyWidgets', 'htmltools', 'markdown',
+#                'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'terra', 'sf', 'future', 'promises', 'ggmap',
+#                'ggplot2', 'httr')
+libraries <- c('shiny', 'bslib', 'bsicons', 'shinyjs', 'shinybusy', 'shinyWidgets', 'htmltools', 'markdown',
+               'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'future', 'promises',
                'ggplot2', 'httr')
 source('loadlibs.R')
 loadlibs(libraries)  # get loading times for libraries (for development)
 
-
+if(FALSE) {
 library(shiny)
 library(bslib)
 library(bsicons)
@@ -26,20 +29,16 @@ library(markdown)
 library(leaflet)
 library(leaflet.extras)
 library(leaflet.lagniappe)
-library(terra)
-library(sf)
-#library(lwgeom)           # apparently not using
+##### library(terra)
+#####library(sf)
 library(future)
 library(promises)
-library(ggmap)
+##### library(ggmap)
 library(ggplot2)
 library(ggspatial)
-#library(fs)               # apparently not using
-#library(sfext)            # not using?
 library(httr)              # for pinging GeoServer
-###### library(geosphere)
 ###library(leaflet.esri)      # test, for PAD-US. It sucks
-
+}
 
 
 
@@ -414,15 +413,15 @@ server <- function(input, output, session) {
       
       session$userData$saved <- list(input$proj.name, input$proj.info)
       
-      sf_use_s2(FALSE)                                                     # need to turn off s2 before fixing shapefiles to avoid crashes on intersections
-      session$userData$poly <- st_make_valid(session$userData$poly)        # attempt to fix bad shapefiles
-      sf_use_s2(TRUE)
+      sf::sf_use_s2(FALSE)                                                 # need to turn off s2 before fixing shapefiles to avoid crashes on intersections
+      session$userData$poly <- sf::st_make_valid(session$userData$poly)    # attempt to fix bad shapefiles
+      sf::sf_use_s2(TRUE)
       
-      session$userData$poly.proj <- st_transform(session$userData$poly, 'epsg:3857', type = 'proj') # project to match downloaded rasters
-      session$userData$bbox <- as.list(st_bbox(session$userData$poly.proj))
+      session$userData$poly.proj <- sf::st_transform(session$userData$poly, 'epsg:3857', type = 'proj') # project to match downloaded rasters
+      session$userData$bbox <- as.list(sf::st_bbox(session$userData$poly.proj))
       
-      poly.area <- sum(as.vector(st_area(session$userData$poly)) * 247.105e-6)
-      cat('\n\narea = ', poly.area, ' acres\n', sep = '')
+      poly.area <- sum(as.vector(sf::st_area(session$userData$poly)) * 247.105e-6)
+      #cat('\n\narea = ', poly.area, ' acres\n', sep = '')
       
       #st_write(session$userData$poly.proj, 'C:/GIS/GIS/sample_parcels/debug/ab1.shp')
       #st_write(st_buffer(session$userData$poly.proj, -15), 'C:/GIS/GIS/sample_parcels/debug/ab2.shp')
@@ -440,22 +439,22 @@ server <- function(input, output, session) {
          return()
       }
       
-      # here====
+      
       # Read template to make sure we're in landscape and we have enough cells
       l <- layers$which == 'template'
       
-      cat('Trying to read...\n')
+      #cat('Trying to read...\n')
       template <- tryCatch({get.WCS.data(WCSserver, layers$workspaces[l], layers$server.names[l], session$userData$bbox)},
                            warning = function(e) {
                               error.message('ReadFail')
                            }) 
       
       if(!is.null(template)) {                           # if we successfully read raster data,
-         x <- rast(template$template)
-         cells <- sum(as.vector(rasterize(vect(session$userData$poly.proj), x) * x), na.rm = TRUE)          # number of good data cells we've read
+         x <- terra::rast(template$template)
+         cells <- sum(as.vector(terra::rasterize(terra:vect(session$userData$poly.proj), x) * x), na.rm = TRUE)          # number of good data cells we've read
          
-         plot(rasterize(vect(session$userData$poly.proj), x) * x)  ############# temp
-         cat('We read ', cells ,' cells\n', sep = '')              ############# temp
+         #plot(terra::rasterize(terra::vect(session$userData$poly.proj), x) * x)  ############# temp
+         #cat('We read ', cells ,' cells\n', sep = '')              ############# temp
          
          
          if(cells < 2) 

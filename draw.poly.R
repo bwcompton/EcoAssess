@@ -8,7 +8,7 @@
    
 
    
-   box <- as.list(st_bbox(poly))
+   box <- as.list(sf::st_bbox(poly))
    leafletProxy('map', data = poly) |>
       addPolygons(group = 'targetArea', weight = 4, color = 'purple', fillOpacity = 0) |>
       fitBounds(lat1 = box$ymin, lat2 = box$ymax, lng1 = box$xmin, lng2 = box$xmax)

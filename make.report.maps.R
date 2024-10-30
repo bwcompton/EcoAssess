@@ -22,9 +22,9 @@
    
    source('annotation-scale.R')        # Ethan's new version. Delete this line and local function when PR https://github.com/paleolimbot/ggspatial/pull/129 is accepted
    
-   register_stadiamaps(x <- readChar(f <- 'www/stadia_api.txt', file.info(f)$size))       # register Stadia API key
+   ggmap::register_stadiamaps(x <- readChar(f <- 'www/stadia_api.txt', file.info(f)$size))# register Stadia API key
    
-   bb <- st_bbox(poly)                                                                    # bounding box in degrees 
+   bb <- sf::st_bbox(poly)                                                                    # bounding box in degrees 
    w <- geosphere::distVincentyEllipsoid(c(bb$xmin, bb$ymin), c(bb$xmax, bb$ymin))        # dimensions in m (within 3% of what I get from ArcGIS; good enough for our purposes)
    h <- geosphere::distVincentyEllipsoid(c(bb$xmin, bb$ymin), c(bb$xmin, bb$ymax))    
    
@@ -45,7 +45,7 @@
    # cat('*** Final size = ', size, ' m\n', sep = '')
    # cat('*** Zoom = ', zoom, '\n', sep ='')
    
-   basemap <- suppressMessages(get_stadiamap(bbox = newbb, maptype = 'stamen_toner_lite', zoom = zoom, messaging = FALSE))     # get the basemap
+   basemap <- suppressMessages(ggmap::get_stadiamap(bbox = newbb, maptype = 'stamen_toner_lite', zoom = zoom, messaging = FALSE))     # get the basemap
    
    # xxx <- list(basemap = basemap, poly = poly) ################ debugging code
    # saveRDS(xxx, 'inst/make.map.RDS')
@@ -54,7 +54,7 @@
    
    
    map <- suppressMessages(
-      ggmap(basemap) +                                               # plot the basemap with the poly, and don't print the goddamn "Coordinate system already present" blather
+      ggmap::ggmap(basemap) +                                  # plot the basemap with the poly, and don't print the goddamn "Coordinate system already present" blather
          geom_sf(mapping = aes(), data = poly, color = 'orange', lwd = 2, fill = NA, inherit.aes = FALSE) +
          theme_void() +
          theme(panel.border = element_rect(color = "black", fill = NA)) + 
