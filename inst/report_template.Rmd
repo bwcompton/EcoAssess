@@ -21,6 +21,7 @@ params:
   acres: NA
   state: NA
   huc: NA
+  footnote: NA
   table.IEI.levels: NA
   table.IEI: NA
   table.IEI.best: NA
@@ -48,11 +49,11 @@ subtitle <- paste0('**ecoConnect tool report**, ', params$date)
 
 `r params$proj.info`
 
-The project area is `r params$acres` acres in `r params$state`, `r params$huc`
+The project area is `r params$acres` acres in `r params$state`, `r params$huc``r params$footnote`
 
 ### Index of ecological Integrity
 
-**Type** | **`r params$table.IEI.levels[1]`** | **`r params$table.IEI.levels[2]`** | **`r params$table.IEI.levels[3]`** | **`r params$table.IEI.levels[4]`**
+**Focus** | **`r params$table.IEI.levels[1]`** | **`r params$table.IEI.levels[2]`** | **`r params$table.IEI.levels[3]`** | **`r params$table.IEI.levels[4]`**
 ---|---|---|---|---
 `r params$table.IEI[1]` | `r params$table.IEI[2]` | `r params$table.IEI[3]` | `r params$table.IEI[5]` | `r params$table.IEI[5]`
 `r params$table.IEI.best[1]` | `r params$table.IEI.best[2]` | `r params$table.IEI.best[3]` | `r params$table.IEI.best[4]` | `r params$table.IEI.best[5]`
@@ -73,8 +74,7 @@ The project area is `r params$acres` acres in `r params$state`, `r params$huc`
 
 
 **_Note_**: For both IEI and ecoConnect, reported scores for "all" are the mean scores for the entire
-project area, while scores for "best" are the mean scores for cells in the top quartile
-(25%) within the project area. Scores in the top 10% are in bold. 
+project area, while scores for "best" are the mean scores for the top 50% of cells in the project area. Scores in the top 10% are in bold. 
 
 
 The **_Index of Ecological Integrity_** (IEI), is an assessment of ecological integrity---the ability of a site to support 
@@ -86,10 +86,9 @@ all cells each ecological system. https://umassdsl.org/DSLdocs//DSL_documentatio
 
 **_ecoConnect_** provides a multi-scale, ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is 
 independent of pre-defined conservation cores, connecting points with high IEI throughout the landscape based on ecological 
-setting, development, roads, and bridges. For a given ecosystem, it gives a measure of each site's contribution to regional 
-connectivity. Percentiles for the ecoConnect score are based on comparison with scores of random squares in the rest of the region, state, and HUC 8 watershed. 
-For project areas that cross state or watershed boundaries, percentiles are based on the site's majority state or watershed, listed first.
-https://umassdsl.org/data/ecoConnect
+setting, development, roads, and bridges. It gives a measure of each site's importance for regional connectivity for a given ecosystem. 
+Percentiles for the ecoConnect score are based on comparison with scores of random squares in the rest of the 
+region, state, and HUC 8 watershed. https://umassdsl.org/data/ecoConnect
 
 
 ![](`r params$left`) ![](`r params$right`)

@@ -8,16 +8,16 @@
 
 
 
+# # libraries <- c('shiny', 'bslib', 'bsicons', 'shinyjs', 'shinybusy', 'shinyWidgets', 'htmltools', 'markdown',
+# #                'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'terra', 'sf', 'future', 'promises', 'ggmap',
+# #                'ggplot2', 'httr')                                                                                        # full list
 # libraries <- c('shiny', 'bslib', 'bsicons', 'shinyjs', 'shinybusy', 'shinyWidgets', 'htmltools', 'markdown',
-#                'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'terra', 'sf', 'future', 'promises', 'ggmap',
-#                'ggplot2', 'httr')
-libraries <- c('shiny', 'bslib', 'bsicons', 'shinyjs', 'shinybusy', 'shinyWidgets', 'htmltools', 'markdown',
-               'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'future', 'promises',
-               'ggplot2', 'httr')
-source('loadlibs.R')
-loadlibs(libraries)  # get loading times for libraries (for development)
+#                'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'future', 'promises',
+#                'ggplot2', 'httr')                                                                                          # sans terra, sf, ggmap
+# source('loadlibs.R')
+# loadlibs(libraries)  # get loading times for libraries (for development)
 
-if(FALSE) {
+
 library(shiny)
 library(bslib)
 library(bsicons)
@@ -29,18 +29,15 @@ library(markdown)
 library(leaflet)
 library(leaflet.extras)
 library(leaflet.lagniappe)
-##### library(terra)
-#####library(sf)
+library(terra)
+library(sf)
 library(future)
 library(promises)
-##### library(ggmap)
+library(ggmap)
 library(ggplot2)
 library(ggspatial)
 library(httr)              # for pinging GeoServer
 ###library(leaflet.esri)      # test, for PAD-US. It sucks
-}
-
-
 
 
 plan('multisession')
@@ -121,7 +118,7 @@ ui <- page_sidebar(
    tags$head(tags$script(src = 'matomo_heartbeat.js')),     # turn on heartbeat timer
    tags$script(src = 'matomo_events.js'),                   # track popups and help text
    
-   title = 'ecoConnect tool (dev version)',
+   title = 'EcoAssess (beta version)',
    
    sidebar = 
       sidebar(
@@ -155,7 +152,7 @@ ui <- page_sidebar(
             actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
             p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener noreferrer">UMass DSL home page</a>')),
             br(),
-            span('Version 0.2.0', actionLink('whatsNew', label = 'What\'s new?')),
+            span('Version 0.3.0', actionLink('whatsNew', label = 'What\'s new?')),
             br(),
             tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
          ),
@@ -423,8 +420,8 @@ server <- function(input, output, session) {
       poly.area <- sum(as.vector(sf::st_area(session$userData$poly)) * 247.105e-6)
       #cat('\n\narea = ', poly.area, ' acres\n', sep = '')
       
-      #st_write(session$userData$poly.proj, 'C:/GIS/GIS/sample_parcels/debug/ab1.shp')
-      #st_write(st_buffer(session$userData$poly.proj, -15), 'C:/GIS/GIS/sample_parcels/debug/ab2.shp')
+      #sf::st_write(session$userData$poly.proj, 'C:/GIS/GIS/sample_parcels/debug/ab1.shp')
+      #sf::st_write(sf::st_buffer(session$userData$poly.proj, -15), 'C:/GIS/GIS/sample_parcels/debug/ab2.shp')
       
       
       if(poly.area < 1) {         
@@ -451,7 +448,7 @@ server <- function(input, output, session) {
       
       if(!is.null(template)) {                           # if we successfully read raster data,
          x <- terra::rast(template$template)
-         cells <- sum(as.vector(terra::rasterize(terra:vect(session$userData$poly.proj), x) * x), na.rm = TRUE)          # number of good data cells we've read
+         cells <- sum(as.vector(terra::rasterize(terra::vect(session$userData$poly.proj), x) * x), na.rm = TRUE)          # number of good data cells we've read
          
          #plot(terra::rasterize(terra::vect(session$userData$poly.proj), x) * x)  ############# temp
          #cat('We read ', cells ,' cells\n', sep = '')              ############# temp
@@ -479,7 +476,7 @@ server <- function(input, output, session) {
             
             xxpoly <<- session$userData$poly
             xxpoly.proj <<- session$userData$poly.proj
-            #  st_write(session$userData$poly, 'C:/GIS/GIS/sample_parcels/name.shp')  # save drawn poly as shapefile
+            #  sf::st_write(session$userData$poly, 'C:/GIS/GIS/sample_parcels/name.shp')  # save drawn poly as shapefile
             
             # cat('*** PID ', Sys.getpid(), ' asking to download data in the future...\n', sep = '')
             t <- Sys.time()

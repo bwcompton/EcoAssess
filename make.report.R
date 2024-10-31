@@ -27,6 +27,7 @@
    #  cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
    
    
+   
    source = 'report_template.Rmd'                                                            # markdown template
    #t <- Sys.time()
    
@@ -46,7 +47,7 @@
    IEI.best <- format.stats.iei(stats$best[layers$which == 'iei'], 'best') 
    
    connect <- data.frame(matrix(NA, 8, 6))                                                   # and 8 ecoConnect rows
-   names(connect) <- c('System', 'Type', 'Score', 'Region', 'State', 'Watershed')
+   names(connect) <- c('System', 'Focus', 'Score', 'Region', 'State', 'Watershed')
    systems <- layers$pretty.names[layers$which == 'connect']
    systems.server <- layers$server.names[layers$which == 'connect']
    type <- c('all', 'best')
@@ -76,6 +77,7 @@
    
 
    params <- c(proj.name = proj.name, proj.info = proj.info, acres = acres, state = statehuc$state.text, huc = statehuc$huc.text, 
+               footnote = statehuc$footnote.text,
                date = date, path = getwd(), bold = 1, table = table, left = left, right = right)
    
    
