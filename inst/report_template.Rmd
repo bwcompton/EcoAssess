@@ -41,7 +41,7 @@ params:
 ---
 ```{r include = FALSE}
 knitr::opts_chunk$set(dev="cairo_pdf")
-subtitle <- paste0('**ecoConnect tool report**, ', params$date)
+subtitle <- paste0('EcoAssess report (beta), ', params$date)
 ```
 
 ## `r ifelse(params$proj.name == '', subtitle, params$proj.name)`
@@ -87,7 +87,8 @@ all cells each ecological system. https://umassdsl.org/DSLdocs//DSL_documentatio
 **_ecoConnect_** provides a multi-scale, ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is 
 independent of pre-defined conservation cores, connecting points with high IEI throughout the landscape based on ecological 
 setting, development, roads, and bridges. It gives a measure of each site's importance for regional connectivity for a given ecosystem. 
-Percentiles for the ecoConnect score are based on comparison with scores of random squares in the rest of the 
+Percentiles^[Percentiles are expected to be somewhat different in the final version.] for the ecoConnect score are based on comparison 
+with scores of random squares in the rest of the 
 region, state, and HUC 8 watershed. https://umassdsl.org/data/ecoConnect
 
 
