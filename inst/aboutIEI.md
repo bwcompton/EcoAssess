@@ -1,4 +1,4 @@
-﻿The Index of Ecological Integrity (IEI), is a product of the Conservation Assessment and Prioritization System (CAPS), an 
+The Index of Ecological Integrity (IEI), is a product of the Conservation Assessment and Prioritization System (CAPS), an 
 ecosystem-based approach for assessing the ecological integrity of land and water and subsequently identifying and 
 prioritizing areas for habitat and biodiversity conservation. It has been used by conservation practitioners for over 15 years 
 to target areas for protection as a component of strategic land conservation.
@@ -23,15 +23,21 @@ Massachusetts Office of Energy and Environmental Affairs, Massachusetts Audubon 
 The Trustees of Reservations. Coastal metrics were developed in collaboration with the Massachusetts Office of Coastal Zone 
 Management.*
 
-How IEI works: 
-<a href="https://umasscaps.org/about/index.html" target="_blank" rel="noopener 
-noreferrer"> brief description</a> (of the closely-related Massachusetts version)
- | <a href="https://umassdsl.org/DSLdocs//DSL_documentation_iei.pdf" target="_blank" rel="noopener 
-noreferrer"> detailed description</a>
 
+<a href="https://umassdsl.org/DSLdocs/DSL_documentation_iei.pdf" target="_blank" rel="noopener 
+noreferrer">How IEI works</a>
+
+<a href="https://umasscaps.org/about/index.html" target="_blank" rel="noopener 
+noreferrer">Description of the closely-related Massachusetts version</a>
+
+<a href="https://umassdsl.org/DSLdocs/DSL_documentation_integrity.pdf" target="_blank" rel="noopener 
+noreferrer">Technical report</a>
 
 Published manuscript:
  <a href="https://doi.org/10.1007/s10980-018-0653-9" target="_blank" rel="noopener noreferrer">DOI</a>
  | <a href="https://umassdsl.org/DSLdocs/McGarigal_2018_LandEco.pdf" target="_blank" rel="noopener 
 noreferrer">PDF</a> (submitted version)
  | <a href="https://umassdsl.webgis1.com/hesk/index.php?a=add&catid=3" target="_blank" rel="noopener noreferrer"> request PDF of published paper</a>
+
+
+<a href="https://umassdsl.org/data/IEI" target="_blank" rel="noopener noreferrer">IEI home page</a>
