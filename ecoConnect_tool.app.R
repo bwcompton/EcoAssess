@@ -8,16 +8,6 @@
 
 
 
-# # libraries <- c('shiny', 'bslib', 'bsicons', 'shinyjs', 'shinybusy', 'shinyWidgets', 'htmltools', 'markdown',
-# #                'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'terra', 'sf', 'future', 'promises', 'ggmap',
-# #                'ggplot2', 'httr')                                                                                        # full list
-# libraries <- c('shiny', 'bslib', 'bsicons', 'shinyjs', 'shinybusy', 'shinyWidgets', 'htmltools', 'markdown',
-#                'leaflet', 'leaflet.extras', 'leaflet.lagniappe', 'future', 'promises',
-#                'ggplot2', 'httr')                                                                                          # sans terra, sf, ggmap
-# source('loadlibs.R')
-# loadlibs(libraries)  # get loading times for libraries (for development)
-
-
 library(shiny)
 library(bslib)
 library(bsicons)
@@ -303,8 +293,6 @@ server <- function(input, output, session) {
                                           options = WMSTileOptions(opacity = input$opacity / 100, styles = style)) |>
                               addUserBasemap(input$show.usermap, session$userData$userPoly) |>
                               addBoundaries(input$show.boundaries)
-                           
-                           
                         }
                      })
    
@@ -527,5 +515,3 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
-
-
