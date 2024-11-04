@@ -40,4 +40,4 @@ noreferrer">PDF</a> (submitted version)
  | <a href="https://umassdsl.webgis1.com/hesk/index.php?a=add&catid=3" target="_blank" rel="noopener noreferrer"> request PDF of published paper</a>
 
 
-<a href="https://umassdsl.org/data/IEI" target="_blank" rel="noopener noreferrer">IEI home page</a>
+<a href="https://umassdsl.org/index-of-ecological-integrity-iei/" target="_blank" rel="noopener noreferrer">IEI home page</a>

@@ -1,4 +1,4 @@
-'layer.stats' <- function(grid, statehuc, area, best.prob = 0.5) {
+'layer.stats' <- function(grid, statehuc, area, best.prob = 0.75) {
    
    # layer.stats
    # Get stats from ecoConnect and IEI data
