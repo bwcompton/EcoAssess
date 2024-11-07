@@ -18,10 +18,10 @@
    #     PDF report
    # B. Compton, 24 Apr 2024
    
-
    
-   #xxx <- list(layer.data = layer.data, resultfile = resultfile, layers = layers, poly = poly, poly.proj = poly.proj, proj.name = proj.name, proj.info = proj.info, quantiles = quantiles)
-   #saveRDS(xxx, 'inst/zzz_make.report.data.RDS')
+   
+   # xxx <- list(layer.data = layer.data, resultfile = resultfile, layers = layers, poly = poly, poly.proj = poly.proj, proj.name = proj.name, proj.info = proj.info, quantiles = quantiles)
+   # saveRDS(xxx, 'inst/zzz_make.report.data.RDS')
    # x <- readRDS('inst/zzz_make.report.data.RDS'); layer.data <- x$layer.data; resultfile <- x$resultfile; layers <- x$layers; poly <- x$poly; poly.proj <- x$poly.proj; proj.name <- x$proj.name; proj.info <- x$proj.info; quantiles <- x$quantiles
    
    #  cat('*** PID ', Sys.getpid(), ' is writing the report in the future [inside make.report]...\n', sep = '')
@@ -39,7 +39,9 @@
    
    statehuc <- get.statehuc(shindex * poly.rast, quantiles$stateinfo, 
                             quantiles$hucinfo)                                               # look up state(s) and HUC(s) from shindex, clipped to poly
-   stats <- do.call(rbind.data.frame, lapply(layer.data[-length(layer.data)], function(x) layer.stats(terra::rast(x) * poly.rast, statehuc, area)))
+   stats <- do.call(rbind.data.frame, lapply(1:sum(layers$which %in% c('iei', 'connect')), 
+                                             function(i) layer.stats(terra::rast(layer.data[[i]]) * poly.rast, statehuc, area, best.prob = layers$best.prob[i])))
+   rownames(stats) <- names(layer.data)[layers$which %in% c('iei', 'connect')]
    size.factors <- interpolate.size(area, as.numeric(dimnames(quantiles$full)$acres))
    
    
@@ -54,13 +56,13 @@
    for(i in 1:length(systems))
       for(j in 1:2)
          connect[(i - 1) * 2 + j, ] <- format.stats.connect(stats[systems.server[i], type[j]], systems[i], type[j], quantiles, statehuc, size.factors)
-
+   
    
    table <- list(IEI.levels = layers$pretty.names[layers$which == 'iei'],
-                       IEI = IEI, IEI.best = IEI.best,
-                       connect.levels = names(connect),
-                       connect1 = connect[1, ], connect2 = connect[2, ], connect3 = connect[3, ], connect4 = connect[4, ],
-                       connect5 = connect[5, ], connect6 = connect[6, ], connect7 = connect[7, ], connect8 = connect[8,])
+                 IEI = IEI, IEI.best = IEI.best,
+                 connect.levels = names(connect),
+                 connect1 = connect[1, ], connect2 = connect[2, ], connect3 = connect[3, ], connect4 = connect[4, ],
+                 connect5 = connect[5, ], connect6 = connect[6, ], connect7 = connect[7, ], connect8 = connect[8,])
    
    acres <- format(round(area, 1), big.mark = ',')
    date <- sub(' 0', ' ', format(Sys.Date(), '%B %d, %Y'))
@@ -75,7 +77,7 @@
    right <- make.report.maps(poly, 5, minsize = 60000)
    #cat('Time taken to make right map: ', Sys.time() - t1, '\n')
    
-
+   
    params <- c(proj.name = proj.name, proj.info = proj.info, acres = acres, state = statehuc$state.text, huc = statehuc$huc.text, 
                footnote = statehuc$footnote.text,
                date = date, path = getwd(), bold = 1, table = table, left = left, right = right)

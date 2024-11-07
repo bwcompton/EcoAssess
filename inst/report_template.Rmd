@@ -74,22 +74,24 @@ The project area is `r params$acres` acres in `r params$state`, `r params$huc``r
 
 
 **_Note_**: For both IEI and ecoConnect, reported scores for "all" are the mean scores for the entire
-project area, while scores for "best" are the mean scores for the top 50% of cells in the project area. Scores in the top 10% are in bold. 
+project area. For IEI, scores for "best" are the mean scores for the top 50% of cells in the project area, while for ecoConnect,
+"best" is the mean of the top 25%. Scores in the top 10% are in bold. 
+<!-- More about scoring, regions, and percentiles: --> 
 
 
 The **_Index of Ecological Integrity_** (IEI), is an assessment of ecological integrity---the ability of a site to support 
 biodiversity and ecosystem processes over the long term, based on landscape models combining several integrity metrics. IEI is 
 estimated at four scales, ranking each site within the entire northeastern United States, its state, its 
 TNC terrestrial ecoregion, and its HUC 6 watershed. IEI is scaled from 0.01 to 1.0 in percentiles for 
-all cells each ecological system. https://umassdsl.org/DSLdocs//DSL_documentation_iei.pdf
+all cells each ecological system. More about IEI: https://umassdsl.org/data/index-of-ecological-integrity/
 
 
 **_ecoConnect_** provides a multi-scale, ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is 
 independent of pre-defined conservation cores, connecting points with high IEI throughout the landscape based on ecological 
 setting, development, roads, and bridges. It gives a measure of each site's importance for regional connectivity for a given ecosystem. 
-Percentiles^[Percentiles are expected to be somewhat different in the final version.] for the ecoConnect score are based on comparison 
+Percentiles for the ecoConnect score are based on comparison 
 with scores of random squares in the rest of the 
-region, state, and HUC 8 watershed. https://umassdsl.org/data/ecoConnect
+region, state, and HUC 8 watershed. More about ecoConnect: https://umassdsl.org/data/ecoConnect
 
 
 ![](`r params$left`) ![](`r params$right`)

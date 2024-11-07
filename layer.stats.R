@@ -1,4 +1,4 @@
-'layer.stats' <- function(grid, statehuc, area, best.prob = 0.75) {
+'layer.stats' <- function(grid, statehuc, area, best.prob) {
    
    # layer.stats
    # Get stats from ecoConnect and IEI data
@@ -6,7 +6,7 @@
    #     grid           raster of layer, clipped to polygon and shindex
    #     statehuc       state and huc numbers
    #     area           area of project area (acres)
-   #     best.prob      proportion of target area to take mean of for "best," probably either 0.5 for top 50% or 0.75 for top 25%
+   #     best.prob      proportion of target area to take mean of for "best," use 0.5 for top 50% or 0.75 for top 25%
    # Result:
    #     data frame of stats corresponding to elements of layer.data, with columns mean and best (mean of top quartile)
    # B. Compton, 9 May 2024
