@@ -15,6 +15,7 @@ geometry:
 fontsize: 12pt 
 urlcolor: blue
 params:
+  version: NA
   proj.name: ''
   proj.info: ''
   date: ''
@@ -41,7 +42,7 @@ params:
 ---
 ```{r include = FALSE}
 knitr::opts_chunk$set(dev="cairo_pdf")
-subtitle <- paste0('EcoAssess report (beta), ', params$date)
+subtitle <- paste0('EcoAssess report, ', params$date)
 ```
 
 ## `r ifelse(params$proj.name == '', subtitle, params$proj.name)`
@@ -49,7 +50,8 @@ subtitle <- paste0('EcoAssess report (beta), ', params$date)
 
 `r params$proj.info`
 
-The project area is `r params$acres` acres in `r params$state`, `r params$huc``r params$footnote`
+The project area is `r params$acres` acres in `r params$state`, `r params$huc``r params$footnote`.
+Underlying models and data are version `r params$version`.
 
 ### Index of ecological Integrity
 
@@ -80,10 +82,13 @@ project area. For IEI, scores for "best" are the mean scores for the top 50% of 
 
 
 The **_Index of Ecological Integrity_** (IEI), is an assessment of ecological integrity---the ability of a site to support 
-biodiversity and ecosystem processes over the long term, based on landscape models combining several integrity metrics. IEI is 
-estimated at four scales, ranking each site within the entire northeastern United States, its state, its 
-TNC terrestrial ecoregion, and its HUC 6 watershed. IEI is scaled from 0.01 to 1.0 in percentiles for all cells each in ecological system. 
-More about IEI: https://umassdsl.org/data/index-of-ecological-integrity/
+biodiversity and ecosystem processes over the long term, based on landscape models combining several integrity metrics. 
+IEI is scaled four ways: regionally, such that each point is compared with others in the same ecological system across the entire northeast, 
+as well as by state, TNC terrestrial ecoregion, and HUC 6 watershed. With these latter scalings the comparison is to other points in the same 
+ecosystem and the same subregion (state, ecoregion, or watershed), which is useful when working in relatively developed areas where regional 
+IEI is low.
+IEI is scaled from 0.01 to 1.0 by percentile for all cells in each ecological system and subregion. 
+More about IEI: https://umassdsl.org/data/index-of-ecological-integrity
 
 **_ecoConnect_** provides a multi-scale, ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is 
 independent of pre-defined conservation cores, connecting points with high IEI throughout the landscape based on ecological 

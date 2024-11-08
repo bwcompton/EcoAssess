@@ -32,7 +32,7 @@
                                paste(sprintf('%08d', hucs$HUC8_code[h[1:2]]), collapse = ' and '),
                                paste(paste(hucs$HUC8_code[h[-length(h)]], collapse = ', '), sprintf('%08d', hucs$HUC8_code[h[length(h)]]), sep = ', and ')))
    z$footnote.text <- ifelse((length(s) > 1) | (length(h) > 1),
-                             '^[For project areas that cross state or watershed boundaries, percentiles are based on the site\'s majority state or watershed, listed first.]',
+                             '^[For project areas that cross state or watershed boundaries, ecoConnect percentiles are based on the site\'s majority state or watershed, listed first.]',
                              '')
    z
 }

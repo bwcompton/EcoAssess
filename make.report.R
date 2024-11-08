@@ -1,4 +1,4 @@
-'make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info, quantiles, session) {
+'make.report' <- function(layer.data, resultfile, layers, poly, poly.proj, proj.name, proj.info, quantiles, version = 1) {
    
    # make.report
    # Produce PDF report for target area
@@ -14,6 +14,7 @@
    #     proj.name         user's project name
    #     proj.info         user's project info
    #     quantiles         percentiles of each ecoConnect layer
+   #     version           integer version number for report, indicating changes in underlying data or models
    # resultfile:
    #     PDF report
    # B. Compton, 24 Apr 2024
@@ -78,7 +79,7 @@
    #cat('Time taken to make right map: ', Sys.time() - t1, '\n')
    
    
-   params <- c(proj.name = proj.name, proj.info = proj.info, acres = acres, state = statehuc$state.text, huc = statehuc$huc.text, 
+   params <- c(version = version, proj.name = proj.name, proj.info = proj.info, acres = acres, state = statehuc$state.text, huc = statehuc$huc.text, 
                footnote = statehuc$footnote.text,
                date = date, path = getwd(), bold = 1, table = table, left = left, right = right)
    

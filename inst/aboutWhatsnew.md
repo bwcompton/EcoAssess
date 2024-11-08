@@ -1,4 +1,4 @@
-**Beta version 0.3.0 (October 31🎃, 2024)**
+**Beta version 0.3.0 (November 8, 2024)**
 
 ##### New features
 - Zipped shapefiles may now be uploaded as an alternative to component files
@@ -29,12 +29,11 @@ on small screens for layers
 - "ecoConnect scaling" is now called "ecoConnect display"
 - ecoConnect display and Layer opacity are now disabled when corresponding layers aren't selected
 - Tooltips and About this site have been updated for clarity and to describe new features
-- The version number and "What's new" have been added. We'll drop these for the final rollout, but
-wanted to keep Beta users updated about what's changed
+- The version number and "What's new" have been added to keep Beta users updated about what's changed
 - The project name (if supplied) is now used as the report filename, after scrubbing illegal characters
-- The app has been provisionally renamed to "EcoAssess"
+- The app has been renamed to "EcoAssess"
 - We've added a new 
-<a href="https://umassdsl.org/index-of-ecological-integrity-iei/" target="_blank" rel="noopener 
+<a href="https://umassdsl.org/index-of-ecological-integrity/" target="_blank" rel="noopener 
 noreferrer">IEI home page</a>
 to the DSL website
 
