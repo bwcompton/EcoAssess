@@ -82,9 +82,8 @@ project area. For IEI, scores for "best" are the mean scores for the top 50% of 
 The **_Index of Ecological Integrity_** (IEI), is an assessment of ecological integrity---the ability of a site to support 
 biodiversity and ecosystem processes over the long term, based on landscape models combining several integrity metrics. IEI is 
 estimated at four scales, ranking each site within the entire northeastern United States, its state, its 
-TNC terrestrial ecoregion, and its HUC 6 watershed. IEI is scaled from 0.01 to 1.0 in percentiles for 
-all cells each ecological system. More about IEI: https://umassdsl.org/data/index-of-ecological-integrity/
-
+TNC terrestrial ecoregion, and its HUC 6 watershed. IEI is scaled from 0.01 to 1.0 in percentiles for all cells each in ecological system. 
+More about IEI: https://umassdsl.org/data/index-of-ecological-integrity/
 
 **_ecoConnect_** provides a multi-scale, ecosystem-based estimate of regional connectivity throughout the Northeast. ecoConnect is 
 independent of pre-defined conservation cores, connecting points with high IEI throughout the landscape based on ecological 

@@ -15,7 +15,7 @@ is definitely too much.
 - Percentiles for ecoConnect are now based on sampling of random squares of varying sizes (1, 10, ... 1,000,000 
 acres) across the region, and reported percentiles are interpolated from the two nearest sizes. This removes 
 the confounding effect of project area size.
-- "All" and "best" are now called "focus," and best for IEI is now based on the top 50% of cells
+- "All" and "best" are now in a field called "focus," and best for IEI is now based on the top 50% of cells
 while best for ecoConnect is for the top 25%
 - Changed the layout of the table, rearranged sections of the report, and improved descriptions
 - Included state name and HUC 8 watershed id in report
