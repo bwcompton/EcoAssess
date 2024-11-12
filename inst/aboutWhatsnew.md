@@ -1,3 +1,7 @@
+**Version 1.0.0 (November 12, 2024)**
+
+- Version rollover for public release. No additional changes---beta is performing well so far.
+
 **Beta version 0.3.0 (November 8, 2024)**
 
 ##### New features
@@ -28,8 +32,8 @@ while best for ecoConnect is for the top 25%
 on small screens for layers
 - "ecoConnect scaling" is now called "ecoConnect display"
 - ecoConnect display and Layer opacity are now disabled when corresponding layers aren't selected
-- Tooltips and About this site have been updated for clarity and to describe new features
-- The version number and "What's new" have been added to keep Beta users updated about what's changed
+- Tooltips and "About this site" have been updated for clarity and to describe new features
+- Added version number and "What's new" 
 - The project name (if supplied) is now used as the report filename, after scrubbing illegal characters
 - The app has been renamed to "EcoAssess"
 - We've added a new 
@@ -38,8 +42,13 @@ noreferrer">IEI home page</a>
 to the DSL website
 
 ##### Bug fixes and robustness
-- Polygon clipping failure gave incorrect scores
+- Polygon clipping failure gave incorrect scores; fixed
 - Crashed when project area was too small; introduced minimum of 1 acre
 - Some project area polygons were distorted; fixed
 - Polygon with crossing lines caused a crash; fixed
 - Now catches errors caused by project area outside of Northeast, or in the ocean or estuarine rivers
+
+
+**Beta version 0.2.0 (July 17, 2024)**
+
+- Initial public beta release

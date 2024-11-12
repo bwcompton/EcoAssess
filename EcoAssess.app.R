@@ -109,7 +109,7 @@ ui <- page_sidebar(
    tags$head(tags$script(src = 'matomo_heartbeat.js')),     # turn on heartbeat timer
    tags$script(src = 'matomo_events.js'),                   # track popups and help text
    
-   title = 'EcoAssess (beta version)',
+   title = 'EcoAssess',
    
    sidebar = 
       sidebar(
@@ -143,7 +143,7 @@ ui <- page_sidebar(
             actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
             p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener noreferrer">UMass DSL home page</a>')),
             br(),
-            span('Version 0.3.0', actionLink('whatsNew', label = 'What\'s new?')),
+            span('Version 1.0.0', actionLink('whatsNew', label = 'What\'s new?')),
             br(),
             tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
          ),
