@@ -97,6 +97,10 @@ aboutWhatsNew <- includeMarkdown('inst/aboutWhatsnew.md')
 osm_email <- readChar(f <- 'www/osm_email.txt', file.info(f)$size)
 
 
+tipped <- function(text, tooltip, delay = 300)                                            # display text with a tooltip
+   span(text, tooltip(bs_icon('info-circle'), tooltip, options = list(delay = delay)))
+
+
 
 # User interface ---------------------
 ui <- page_sidebar(
@@ -118,22 +122,17 @@ ui <- page_sidebar(
          use_busy_spinner(spin = 'fading-circle', position = 'bottom-left'),
          
          card(
-            span(HTML('<h5 style="display: inline-block;">Project area report</h5>'),
-                 tooltip(bs_icon('info-circle'), projectAreaToolTip)),
+            tipped(HTML('<h5 style="display: inline-block;">Project area report</h5>'), projectAreaToolTip),
             
-            span(span(actionButton('drawPolys', 'Draw'),
-                      tooltip(bs_icon('info-circle'), drawTooltip),
-                      HTML('&nbsp;'), HTML('or&nbsp;')),
-                 
-                 span(actionButton('uploadShapefile', 'Upload'),
-                      tooltip(bs_icon('info-circle'), uploadTooltip))
+            span(
+               tipped(actionButton('drawPolys', 'Draw'), drawTooltip),
+               HTML('&nbsp;or&nbsp;'),
+               tipped(actionButton('uploadShapefile', 'Upload'), uploadTooltip),
             ),
             
-            span(span(actionButton('getReport', 'Get report'),
-                      tooltip(bs_icon('info-circle'), getReportTooltip)),
-                 
-                 span(actionButton('restart', 'Restart'),
-                      tooltip(bs_icon('info-circle'), restartTooltip))
+            span(
+               tipped(actionButton('getReport', 'Get report'), getReportTooltip),
+               tipped(actionButton('restart', 'Restart'), restartTooltip)
             )
          ),
          
@@ -143,7 +142,7 @@ ui <- page_sidebar(
             actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
             p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener noreferrer">UMass DSL home page</a>')),
             br(),
-            span('Version 1.0.0', actionLink('whatsNew', label = 'What\'s new?')),
+            span('Version 1.0.1', actionLink('whatsNew', label = 'What\'s new?')),
             br(),
             tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
          ),
@@ -156,44 +155,38 @@ ui <- page_sidebar(
          width = 280,
          
          card(
-            radioButtons('iei.layer', label = span(HTML('<h5 style="display: inline-block;">IEI layers</h5>'), 
-                                                   tooltip(bs_icon('info-circle'), ieiTooltip)), 
+            radioButtons('iei.layer', label = tipped(HTML('<h5 style="display: inline-block;">IEI layers</h5>'), ieiTooltip), 
                          choiceNames = layers$radio.names[layers$which == 'iei'],
                          choiceValues = full.layer.names[layers$which == 'iei'],
                          selected = character(0))
          ),
          
          card( 
-            radioButtons('connect.layer', label = span(HTML('<h5 style="display: inline-block;">ecoConnect layers</h5>'), 
-                                                       tooltip(bs_icon('info-circle'), connectTooltip)), 
+            radioButtons('connect.layer', label = tipped(HTML('<h5 style="display: inline-block;">ecoConnect layers</h5>'), connectTooltip), 
                          choiceNames = layers$radio.names[layers$which == 'connect'],
                          choiceValues = full.layer.names[layers$which == 'connect']),
             
-            sliderTextInput('ecoConnectDisplay', span(HTML('<h5 style="display: inline-block;">ecoConnect display</h5>'), 
-                                                      tooltip(bs_icon('info-circle'), ecoConnectDisplayTooltip)), 
+            sliderTextInput('ecoConnectDisplay', tipped(HTML('<h5 style="display: inline-block;">ecoConnect display</h5>'), ecoConnectDisplayTooltip), 
                             choices = c('local', 'medium', 'regional'))
             
          ),
          
          card(
             
-            sliderInput('opacity', span(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), 
-                                        tooltip(bs_icon('info-circle'), opacityTooltip)), 
+            sliderInput('opacity', tipped(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), opacityTooltip), 
                         0, 100, post = '%', value = 60, ticks = FALSE),
             
             actionButton('no.layers', 'Turn off layers')
          ),
          
          card(
-            radioButtons('show.basemap', span(HTML('<h5 style="display: inline-block;">Basemap</h5>'),
-                                              tooltip(bs_icon('info-circle'), basemapTooltip)),
+            radioButtons('show.basemap', tipped(HTML('<h5 style="display: inline-block;">Basemap</h5>'), basemapTooltip),
                          choiceNames = c('Simple map', 'Open Street Map', 'Topo map', 'Imagery'),
                          choiceValues = c('Stadia.StamenTonerLite', 'OpenStreetMap.Mapnik', 'USGS.USTopo', 'USGS.USImagery')),
             hr(),
             checkboxInput('show.boundaries', label = 'Show states and counties', value = FALSE),
             checkboxInput('show.usermap', label = 'Show user basemap', value = FALSE),
-            span(actionButton('upload.usermap', 'Upload user basemap'),
-                 tooltip(bs_icon('info-circle'), usermapTooltip))
+            tipped(actionButton('upload.usermap', 'Upload user basemap'), usermapTooltip)
             
          ),
          
@@ -455,7 +448,7 @@ server <- function(input, output, session) {
                              width = '100%', rows = 6, placeholder = 'Optional project description'),
                footer = tagList(
                   show_spinner(),
-                  span(disabled(downloadButton('do.report', 'Generate report')), tooltip(bs_icon('info-circle'), generateReportTooltip)),
+                  tipped(disabled(downloadButton('do.report', 'Generate report')), generateReportTooltip),
                   actionButton('cancel.report', 'Cancel')
                )
             ))
