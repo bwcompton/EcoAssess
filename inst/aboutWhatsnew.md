@@ -1,6 +1,6 @@
 **Version 1.0.1 (November 21, 2024)**
 
-- add 300 ms delay to tooltips so they don't pop up so eagerly
+- Aeddd a 300 ms delay to tooltips so they don't pop up so eagerly
 
 **Version 1.0.0 (November 12, 2024)**
 
