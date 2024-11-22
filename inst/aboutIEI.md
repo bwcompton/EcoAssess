@@ -24,14 +24,11 @@ The Trustees of Reservations. Coastal metrics were developed in collaboration wi
 Management.*
 
 
-<a href="https://umassdsl.org/DSLdocs/DSL_documentation_iei.pdf" target="_blank" rel="noopener 
-noreferrer">How IEI works</a>
+<a href="https://umassdsl.org/DSLdocs/DSL_documentation_iei.pdf" target="_blank" rel="noopener">How IEI works</a>
 
-<a href="https://umasscaps.org/about/index.html" target="_blank" rel="noopener 
-noreferrer">Description of the closely-related Massachusetts version</a>
+<a href="https://umasscaps.org/about/index.html" target="_blank" rel="noopener">Description of the closely-related Massachusetts version</a>
 
-<a href="https://umassdsl.org/DSLdocs/DSL_documentation_integrity.pdf" target="_blank" rel="noopener 
-noreferrer">Technical report</a>
+<a href="https://umassdsl.org/DSLdocs/DSL_documentation_integrity.pdf" target="_blank" rel="noopener">Technical report</a>
 
 Published manuscript:
  <a href="https://doi.org/10.1007/s10980-018-0653-9" target="_blank" rel="noopener noreferrer">DOI</a>
@@ -40,4 +37,4 @@ noreferrer">PDF</a> (submitted version)
  | <a href="https://umassdsl.webgis1.com/hesk/index.php?a=add&catid=3" target="_blank" rel="noopener noreferrer"> request PDF of published paper</a>
 
 
-<a href="https://umassdsl.org/index-of-ecological-integrity/" target="_blank" rel="noopener noreferrer">IEI home page</a>
+<a href="https://umassdsl.org/index-of-ecological-integrity/" target="_blank" rel="noopener">IEI home page</a>

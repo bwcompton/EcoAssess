@@ -35,4 +35,4 @@ programs.*
 <a href="https://landeco.umass.edu/web/lcc/dsl/ecoconnect/dsl_documentation_ecoConnect.pdf" target="_blank" rel="noopener 
 noreferrer">How ecoConnect works</a>
 
-<a href="https://umassdsl.org/data/ecoConnect" target="_blank" rel="noopener noreferrer">ecoConnect home page</a>
+<a href="https://umassdsl.org/data/ecoConnect" target="_blank" rel="noopener">ecoConnect home page</a>

@@ -36,7 +36,7 @@ We use <a href="https://matomo.org/" target="_blank" rel="noopener noreferrer">M
 tool to collect general information on site visits. We do not use cookies.
 
 This website and the underlying models were developed by the 
-<a href="https://umassdsl.org" target="_blank" rel="noopener noreferrer">Designing Sustainable Landscapes</a> 
+<a href="https://umassdsl.org" target="_blank" rel="noopener">Designing Sustainable Landscapes</a> 
 team at the University of Massachsetts Amherst. Funding was provided by USGS Northeast Climate Adaptation Science 
 Center and the intramural research program of the U.S. Department of Agriculture, National Institute of Food and 
 Agriculture, McIntire-Stennis and Renewable Resources Extension Act (RREA) programs.
