@@ -1,3 +1,7 @@
+**Version 1.0.2 (January 9, 2025)**
+
+- Respond more robustly to a crashed GeoServer.
+
 **Version 1.0.1 (November 21, 2024)**
 
 - Added a 300 ms delay to tooltips so they don't pop up so eagerly
