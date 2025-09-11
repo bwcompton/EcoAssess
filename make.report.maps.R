@@ -24,7 +24,7 @@
    
    ggmap::register_stadiamaps(x <- readChar(f <- 'www/stadia_api.txt', file.info(f)$size))# register Stadia API key
    
-   bb <- sf::st_bbox(poly)                                                                    # bounding box in degrees 
+   bb <- sf::st_bbox(poly)                                                                # bounding box in degrees 
    w <- geosphere::distVincentyEllipsoid(c(bb$xmin, bb$ymin), c(bb$xmax, bb$ymin))        # dimensions in m (within 3% of what I get from ArcGIS; good enough for our purposes)
    h <- geosphere::distVincentyEllipsoid(c(bb$xmin, bb$ymin), c(bb$xmin, bb$ymax))    
    

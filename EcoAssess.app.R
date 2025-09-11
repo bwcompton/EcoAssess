@@ -26,6 +26,7 @@ library(promises)
 library(ggmap)
 library(ggplot2)
 library(ggspatial)
+### library(geosphere)              # don't want to attch this, as it masks `span`, but sure need to install it!
 library(httr)              # for pinging GeoServer
 ###library(leaflet.esri)      # test, for PAD-US. It sucks
 
