@@ -1,3 +1,8 @@
+**Version 1.1.0 (January 29, 2026)**
+
+- We finally have our own GeoServer up and running. This version falls back to a second GeoServer
+  if the first one is down, so this app is now far more reliable.
+
 **Version 1.0.2 (January 9, 2025)**
 
 - Respond more robustly to a crashed GeoServer.

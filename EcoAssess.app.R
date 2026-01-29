@@ -26,8 +26,8 @@ library(promises)
 library(ggmap)
 library(ggplot2)
 library(ggspatial)
-### library(geosphere)              # don't want to attch this, as it masks `span`, but sure need to install it!
-library(httr)              # for pinging GeoServer
+### library(geosphere)        # don't want to attch this, as it masks `span`, but sure need to install it!
+library(httr)                 # for pinging GeoServer
 ###library(leaflet.esri)      # test, for PAD-US. It sucks
 
 
@@ -69,9 +69,10 @@ layers <- data.frame(
 
 full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)       # we'll need these for addWMSTiles
 
-WMSserver <- 'https://umassdsl.webgis1.com/geoserver/wms'                     # our WMS server for drawing maps
-WCSserver <- 'https://umassdsl.webgis1.com/geoserver/'                        # our WCS server for downloading data
-
+geoserver <- list(
+   primary = 'https://umassdsl.webgis1.com/geoserver/',                       # AcuGIS WMS (add 'wms') and WCS server
+   fallback = 'https://marsh01.ecs.umass.edu/geoserver/'                      # MassMarsh WMS (add 'wms') and WCS server (currently fallback, as it's slow without SSD RAID)
+)
 
 
 # tool tips
@@ -143,7 +144,7 @@ ui <- page_sidebar(
             actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
             p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener">UMass DSL home page</a>')),
             br(),
-            span('Version 1.0.2', actionLink('whatsNew', label = 'What\'s new?')),
+            span('Version 1.1.0', actionLink('whatsNew', label = 'What\'s new?')),
             br(),
             tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
          ),
@@ -212,14 +213,28 @@ server <- function(input, output, session) {
    #bs_themer()                                 # uncomment to select a new theme
    #  print(getDefaultReactiveDomain())
    
+   
    tryCatch({
-      if(GET(WCSserver)$status_code != 200) stop()
+      if(GET(geoserver$primary)$status_code != 200) stop()                          # ----- Ping our GeoServer
+      session$userData$geoserver <- geoserver$primary
    }, 
-   error = function(e) {      # ping our GeoServer
-      error.message('GeoServer')
-      shinyjs::disable('drawPolys')
-      shinyjs::disable('uploadShapefile')
+   error = function(e) {
+      message('Primary failed')
+      tryCatch({
+         if(GET(geoserver$fallback)$status_code != 200) stop()
+         session$userData$geoserver <- geoserver$fallback
+      }, 
+      error = function(e) {                                                         #      if fallback fails too, throw an error
+         message('Fallback failed')
+         error.message('GeoServer')
+         shinyjs::disable('drawPolys')
+         shinyjs::disable('uploadShapefile')
+      })
    })
+   
+   
+   message('Using ', session$userData$geoserver)
+   
    
    observeEvent(input$aboutTool, {
       modalHelp(aboutTool, 'About this site', size = 'l')})
@@ -274,7 +289,7 @@ server <- function(input, output, session) {
                            addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
                            removeTiles(layerId = 'dsl.layers') |>
                            addUserBasemap(input$show.usermap, session$userData$userPoly) |>
-                           addBoundaries(input$show.boundaries)
+                           addBoundaries(input$show.boundaries, session$userData$geoserver)
                         else {
                            if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')                 # if ecoConnect, use scaled style
                               style <- paste0(sub('.*:', '', session$userData$show.layer), 
@@ -284,10 +299,10 @@ server <- function(input, output, session) {
                            
                            leafletProxy('map') |>
                               addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
-                              addWMSTiles(WMSserver, layerId = 'dsl.layers', layers = session$userData$show.layer,
+                              addWMSTiles(paste0(session$userData$geoserver, 'wms'), layerId = 'dsl.layers', layers = session$userData$show.layer,
                                           options = WMSTileOptions(opacity = input$opacity / 100, styles = style)) |>
                               addUserBasemap(input$show.usermap, session$userData$userPoly) |>
-                              addBoundaries(input$show.boundaries)
+                              addBoundaries(input$show.boundaries, session$userData$geoserver)
                         }
                      })
    
@@ -424,7 +439,7 @@ server <- function(input, output, session) {
       l <- layers$which == 'template'
       
       #cat('Trying to read...\n')
-      template <- tryCatch({get.WCS.data(WCSserver, layers$workspaces[l], layers$server.names[l], session$userData$bbox)},
+      template <- tryCatch({get.WCS.data(session$userData$geoserver, layers$workspaces[l], layers$server.names[l], session$userData$bbox)},
                            warning = function(e) {
                               error.message('ReadFail')
                            }) 
@@ -468,7 +483,7 @@ server <- function(input, output, session) {
             
             session$userData$the.promise <- future_promise({
                #cat('*** PID ', Sys.getpid(), ' is working in the future...\n', sep = '')
-               get.WCS.data(WCSserver, layers$workspaces, layers$server.names, session$userData$bbox)    # ----- Download data in the future  
+               get.WCS.data(session$userData$geoserver, layers$workspaces, layers$server.names, session$userData$bbox)    # ----- Download data in the future  
             }, seed = TRUE) 
             then(session$userData$the.promise, onFulfilled = function(x) {
                #   cat('*** The promise has been fulfilled!\n')

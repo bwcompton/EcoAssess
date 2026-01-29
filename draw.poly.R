@@ -8,7 +8,7 @@
    
 
    
-   poly <- st_zm(poly)
+   poly <- st_zm(polyd)
    box <- as.list(sf::st_bbox(poly))
    leafletProxy('map', data = poly) |>
       addPolygons(group = 'targetArea', weight = 4, color = 'purple', fillOpacity = 0) |>
