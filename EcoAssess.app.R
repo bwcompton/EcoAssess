@@ -144,7 +144,7 @@ ui <- page_sidebar(
             actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
             p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener">UMass DSL home page</a>')),
             br(),
-            span('Version 1.1.0', actionLink('whatsNew', label = 'What\'s new?')),
+            span('Version 1.1.1', actionLink('whatsNew', label = 'What\'s new?')),
             br(),
             tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
          ),

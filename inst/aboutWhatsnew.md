@@ -1,3 +1,7 @@
+**Version 1.1.1 (February 12, 2026)**
+
+- Fix a bug that prevented uploading shapefiles.
+
 **Version 1.1.0 (January 29, 2026)**
 
 - We finally have our own GeoServer up and running. This version falls back to a second GeoServer
