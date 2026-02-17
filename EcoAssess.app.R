@@ -144,7 +144,7 @@ ui <- page_sidebar(
             actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
             p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener">UMass DSL home page</a>')),
             br(),
-            span('Version 1.1.1', actionLink('whatsNew', label = 'What\'s new?')),
+            span('Version 1.1.2', actionLink('whatsNew', label = 'What\'s new?')),
             br(),
             tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
          ),
@@ -217,12 +217,14 @@ server <- function(input, output, session) {
    tryCatch({
       if(GET(geoserver$primary)$status_code != 200) stop()                          # ----- Ping our GeoServer
       session$userData$geoserver <- geoserver$primary
+      session$userData$using <- 'GeoServer 1'
    }, 
    error = function(e) {
       message('Primary failed')
       tryCatch({
          if(GET(geoserver$fallback)$status_code != 200) stop()
          session$userData$geoserver <- geoserver$fallback
+         session$userData$using <- 'GeoServer 2'
       }, 
       error = function(e) {                                                         #      if fallback fails too, throw an error
          message('Fallback failed')
@@ -300,7 +302,8 @@ server <- function(input, output, session) {
                            leafletProxy('map') |>
                               addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
                               addWMSTiles(paste0(session$userData$geoserver, 'wms'), layerId = 'dsl.layers', layers = session$userData$show.layer,
-                                          options = WMSTileOptions(opacity = input$opacity / 100, styles = style)) |>
+                                          options = WMSTileOptions(opacity = input$opacity / 100, styles = style),
+                                          attribution = session$userData$using) |>
                               addUserBasemap(input$show.usermap, session$userData$userPoly) |>
                               addBoundaries(input$show.boundaries, session$userData$geoserver)
                         }

@@ -1,3 +1,7 @@
+**Version 1.1.2 (February 17, 2026)**
+
+- In attribution line, display which GeoServer is being used.
+
 **Version 1.1.1 (February 12, 2026)**
 
 - Fix a bug that prevented uploading shapefiles.
