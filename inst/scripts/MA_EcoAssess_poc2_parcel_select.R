@@ -45,7 +45,9 @@ debounce_ms <- 300           # collapse rapid pan/zoom events
 # Default over Warwick (BC's home turf -- sparse, the easy case). Spectrum to
 # test: suburban Concord c(-71.349, 42.460); realistic land-trust town
 # Petersham c(-72.189, 42.487); extreme/unrealistic Cambridge c(-71.106, 42.375).
-home      <- c(-72.34, 42.68)     # Warwick
+# home       <- c(-72.34, 42.68)     # Warwick
+home       <- c(-72.189, 42.487)   # Petersham
+# home      <- c(-71.349, 42.460)  # Concord
 home_zoom <- 15                   # match `trigger` so parcels show on load
 
 unselected_style <- list(color = 'purple', weight = 1, fillOpacity = 0)
@@ -79,30 +81,40 @@ if (!id_field %in% fields_avail)
 # in the dump, not the source SR. This one-shot report prints the real source
 # WKID + a sample coord before and after transform so we work from facts.
 
-reported_crs <- FALSE
 fetch_bbox <- function(xmin, ymin, xmax, ymax) {
    env <- st_as_sfc(st_bbox(c(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax),
                             crs = 4326))
    p <- arc_select(parcel_layer, fields = id_field, filter_geom = env)
    if (is.null(p) || nrow(p) == 0) return(NULL)
-
-   if (!reported_crs) {
-      reported_crs <<- TRUE
-      src <- st_crs(p)
-      pt0 <- suppressWarnings(st_coordinates(st_centroid(st_geometry(p)[1]))[1, ])
-      p4  <- st_transform(p, 4326)
-      pt1 <- suppressWarnings(st_coordinates(st_centroid(st_geometry(p4)[1]))[1, ])
-      message('=== SOURCE CRS from arc_select (before transform) ===')
-      message('  ', format(src)[1], '  EPSG: ',
-              ifelse(is.na(src$epsg), '<none>', src$epsg))
-      message(sprintf('  sample centroid  src: %s', paste(round(pt0, 3), collapse = ', ')))
-      message(sprintf('  sample centroid 4326: %s', paste(round(pt1, 6), collapse = ', ')))
-      message('=====================================================')
-   }
    st_transform(p, 4326)        # EPSG code, NOT a proj4 datum string
 }
 if (!exists('fetch_bbox_C'))            # global, a la readMVT::read.tile.C
    fetch_bbox_C <<- memoise(fetch_bbox)
+
+# One-shot source-CRS probe (offset diagnosis). UN-memoised + at startup so it
+# prints EVERY launch -- the memoised fetch short-circuits on a warm cache and
+# would otherwise skip the report (which is why run 2 showed no block).
+local({
+   d   <- 0.003                                   # ~250 m box around `home`
+   env <- st_as_sfc(st_bbox(c(xmin = home[1] - d, ymin = home[2] - d,
+                              xmax = home[1] + d, ymax = home[2] + d), crs = 4326))
+   pr <- tryCatch(arc_select(parcel_layer, fields = id_field, filter_geom = env),
+                  error = function(e) NULL)
+   if (is.null(pr) || !nrow(pr)) {
+      message('CRS probe: no parcels within ~250 m of `home`; move `home` over parcels.')
+   } else {
+      src <- st_crs(pr)
+      c0  <- suppressWarnings(st_coordinates(st_centroid(st_geometry(pr)[1]))[1, ])
+      c1  <- suppressWarnings(st_coordinates(st_centroid(
+                st_geometry(st_transform(pr, 4326))[1]))[1, ])
+      message('=== SOURCE CRS from arc_select (before transform) ===')
+      message('  ', format(src)[1], '  EPSG: ',
+              ifelse(is.na(src$epsg), '<none>', src$epsg))
+      message(sprintf('  sample centroid  src: %s', paste(round(c0, 3), collapse = ', ')))
+      message(sprintf('  sample centroid 4326: %s', paste(round(c1, 6), collapse = ', ')))
+      message('=====================================================')
+   }
+})
 
 
 # ---- Grid helpers -----------------------------------------------------------

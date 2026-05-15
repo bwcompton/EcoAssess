@@ -91,19 +91,20 @@ Pattern lifted from `DEPMEP.app.R` + `readMVT::read.viewport.tiles`, minus MVT:
   + overlay toggles + opacity; reset project area.
 - Q-B (decision 13) — **resolved 2026-05-15**: GitHub Actions, deferred until
   the app is in good shape.
-- PoC dedup — **largely resolved 2026-05-15** (PoC run 1): per-cell grid
-  (one ESRI round-trip per cell) is **dead** — fetch is latency-bound, so it
-  was unusably slow. Answer is a **smart hybrid**: cell ledger records only
-  *coverage*; uncovered viewport → ONE fetch of the missing cells' strip
-  (naive speed); revisiting covered ground → zero fetches (instant). PoC run 2
-  to confirm it beats naive on realistic towns.
-- **PoC open (run 2)**: pick `trigger` (BC leaning 15); confirm parcel ID
-  field; judge smart-hybrid vs naive on realistic towns (Petersham default,
-  not Cambridge — unrealistic); decide if box/lasso multi-select is wanted
-  (shift-drag currently does nothing useful — see design note below).
-- **Selection must be local.** Confirmed: re-fetching a clicked parcel from
-  ESRI is unacceptably slow. Keep every fetched geometry in a per-session
-  store; selection is an in-memory lookup. Carries into the real app design.
+- PoC dedup — **RESOLVED 2026-05-15** (run 2). **Smart-hybrid grid is the
+  approach.** Run-2 numbers: Petersham first ~580–660 ms (naive ~640, but
+  2960 ms on a slow-fetch run); Concord ~1000 ms; grid revisit near-instant.
+  Comparable to naive on first visit, far better on revisit, no downside.
+  Naive kept only as a comparison baseline. `trigger` = 15.
+- **Selection must be local.** Confirmed: in-memory store → selection is
+  instant. BC's UX point: selection latency matters *more* than display
+  latency (users expect an immediate click response). Design constraint.
+- **CRS source WKID — still open.** proj4→EPSG fix removed the 30 m E and
+  halved the N error (~10 m → ~5 m N). One-shot CRS report didn't fire (lived
+  inside the memoised fetch; warm cache skipped it) → moved to an un-memoised
+  startup probe. Next session: read the printed source WKID to settle whether
+  the ~5 m residual is NAD83/WGS84 (~1–2 m) + ArcGIS quantization, or partly
+  an artifact of BC's 4326-vs-26986 comparison (which itself reprojects).
 
 ## Risks
 
@@ -111,28 +112,38 @@ Pattern lifted from `DEPMEP.app.R` + `readMVT::read.viewport.tiles`, minus MVT:
   red herring. Mitigated by config constants + startup check + graceful
   degradation + daily monitor. Residual risk: silent schema/field-name
   changes (already bit us once).
-- **Dense-town performance** at the chosen `trigger` zoom — PoC must verify.
-  Fetch latency is the dominant cost (instrumented in PoC). If render also
-  bites in dense areas, `leafgl::addGlPolygons` (WebGL) is the scalability
-  lever — noted, not yet needed.
-- **CRS / datum correctness — elevated.** PoC shapefile export came out
-  ~10 m N / ~30 m E. Proximate cause: `st_transform()` with the proj4 datum
-  string `'+proj=longlat +datum=WGS84'` selects a different PROJ pipeline
-  than EPSG:4326 under PROJ 6+/GDAL 3. **`get.shapefile.R:36` in the
-  production regional app uses the same string** — latent offset risk there
-  too (may be self-consistent within that app and thus unnoticed; needs a
-  look, BC to judge). PoC now reports the source WKID to pin down the true
-  ESRI SR. A 30 m parcel shift is unacceptable for the MA renewable-siting
-  subsidy use case.
+- **Dense-town render cost — confirmed real.** Run-2 instrumentation
+  overturned the fetch-only assumption: Concord render was ~2140 ms while
+  fetch was ~1000 ms. `leafgl::addGlPolygons` (WebGL) is now a **planned
+  optimization lever for the real app**, not just a noted one. ESRI fetch
+  also has high variance (one Petersham run 2960 ms) — argues for the grid
+  cache + the daily warm-up ping.
+- **CRS / datum correctness — improved, not closed.** Original ~10 m N /
+  ~30 m E. proj4 datum string `'+proj=longlat +datum=WGS84'` vs EPSG:4326
+  under PROJ 6+/GDAL 3 was the main culprit: EPSG fix removed the 30 m E and
+  halved N to ~5 m. Residual ~5 m N still under investigation (see CRS source
+  WKID item under Open questions). **`get.shapefile.R:36` in the production
+  regional app uses the same proj4 string** — latent offset risk there too
+  (may be self-consistent and unnoticed; BC to judge whether worth a look). A
+  multi-metre parcel shift is unacceptable for the MA renewable-siting
+  subsidy use case, so the residual must be explained before real-app work.
 - **Scattered-parcel bbox limit** is a UX sharp edge (easy to click two far
   parcels); needs a clear, specific error message.
 
 ## Design notes / parked ideas
 
-- **Box / lasso multi-select.** Clicking parcels one-by-one is fine for a
-  few; selecting many adjacent parcels (common in conservation) wants a
-  rubber-band box → `st_intersects`. Shift-drag is currently dead (boxZoom
-  disabled). Candidate enhancement; prototype if BC wants it.
+- **Box / lasso multi-select** — **parked 2026-05-15** (BC's call):
+  click-to-toggle is enough; users expect to pick only a handful of parcels.
+  Shift-drag is free (boxZoom disabled) if revisited. Easy to add later via
+  rubber-band box → `st_intersects`.
+
+## Process conventions
+
+- Roadmap is BC-owned; this plan + work log are Claude-maintained (BC may
+  edit). Keep them current each session.
+- **Commits: no sign-off / no `Co-Authored-By` trailer.** Commit (do **not**
+  push) as an end-of-session safety net — guards against RStudio-save
+  clobbering. Match the repo's terse message style.
 
 ## Data sources
 

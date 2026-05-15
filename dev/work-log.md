@@ -74,7 +74,22 @@
   EPSG:26986 (NAD83 SP) — NAD83→WGS84 in MA is ~1 m, so the ~30 m offset
   points at the proj4 datum string, not the source SR. CRS report now prints
   source WKID + sample coord before/after transform to confirm.
-- **Next**: BC re-runs — confirm smart-hybrid beats naive on realistic towns,
-  re-check shapefile offset against authoritative parcels (paste the printed
-  `=== SOURCE CRS ===` block if still off), decide whether box-select is
-  wanted.
+- **PoC run 2 (BC).** Results:
+  - Smart-hybrid grid validated: Petersham first ~580–660 ms (naive ~640,
+    one slow-fetch run 2960 ms); Concord ~1000 ms; **grid revisit
+    near-instant**. Grid is the approach; naive kept as baseline only.
+  - Instrumentation overturned the fetch-only assumption: **Concord render
+    ~2140 ms** > fetch ~1000 ms. → `leafgl` elevated to a planned lever.
+    ESRI fetch high-variance (2960 ms outlier).
+  - Selection **instant** (local store works). BC: selection latency matters
+    more than display latency — design constraint.
+  - Offset: proj4→EPSG fix removed 30 m E, halved N (~10 → ~5 m N). `=== SOURCE
+    CRS ===` block didn't print — it was inside the memoised fetch; warm cache
+    skipped it. → moved to an un-memoised **startup probe** (prints every
+    launch). Residual ~5 m N still to explain next session.
+  - Box-select: **not needed now** (BC) — click-to-toggle is enough; parked.
+  - Standing instruction: **commits not signed** (no Co-Authored-By trailer).
+- **Checkpoint commit** (no sign-off, not pushed) — end of week.
+- **Next**: BC reruns, reads the startup `=== SOURCE CRS ===` block; we settle
+  the ~5 m residual (datum vs ArcGIS quantization vs comparison artifact),
+  then move toward real-app work (mode infra / `cfg`).
