@@ -151,6 +151,15 @@
   bit-perfect regional (only the page title sources from cfg in WS2; rest
   of the UI deltas come in WS 4). Smoke test: open at `?regional=false` and
   the title should read "Massachusetts EcoAssess"; otherwise identical.
-- **Next**: BC smoke-tests this; if the regional default still looks right
-  and `?regional=false` flips the title, on to WS 4 (switch field, boundary
-  label, parcel + POS UI controls).
+- **Hit a closure-scope gotcha**: `make.ui()` couldn't find `tipped()` even
+  though `tipped` is defined at top of `EcoAssess.app.R`. Cause: when RStudio
+  (or `runApp`) sources `app.R` into a session-isolated app environment,
+  top-level defs land there — but `source('make.ui.R')` with default
+  `local = FALSE` puts `make.ui` in `globalenv()` instead, so its closure
+  doesn't see the app-env tipped/tooltips/layers. Fix: `source(..., local =
+  TRUE)` on `make.ui.R` only (the other two new files don't reference
+  app-locals). Existing self-contained helpers (`get.shapefile`, `draw.poly`,
+  etc.) didn't hit this — they reference only base + library symbols.
+- **Next**: BC re-runs and smoke-tests this; if the regional default still
+  looks right and `?regional=false` flips the title, on to WS 4 (switch
+  field, boundary label, parcel + POS UI controls).

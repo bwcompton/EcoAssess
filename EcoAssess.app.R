@@ -53,7 +53,9 @@ source('addUserBasemap.R')
 source('annotation-scale.R')        # Ethan's new version. Delete this line and local function when PR https://github.com/paleolimbot/ggspatial/pull/129 is accepted
 source('resolve.cfg.R')             # mode config resolved from URL query string
 source('switch.url.R')              # URL to switch modes (regional <-> MA)
-source('make.ui.R')                 # build the per-session UI tree from cfg
+source('make.ui.R', local = TRUE)   # local=TRUE so make.ui's closure is this
+                                    # app env -- it references top-level
+                                    # tipped(), tooltips, layers, etc.
 
 
 
