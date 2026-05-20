@@ -35,7 +35,7 @@ trigger     <- 15            # fetch/show parcels at this Leaflet zoom or closer
 max_zoom    <- 19            # PoC only. NOTE: production app caps at 16
                              # (leafletOptions(maxZoom = 16)) -- so either
                              # trigger <= 16, or MA mode raises maxZoom.
-dedup_strategy <- 'naive'    # 'grid' = smart hybrid (one fetch for the missing
+dedup_strategy <- 'grid'     # 'grid' = smart hybrid (one fetch for the missing
                              #   strip, instant when revisiting) | 'naive' (one
                              #   fetch per viewport, every time). Flip to compare.
 grid_deg    <- 0.01          # grid cell size in degrees (~0.8 km E-W in MA).
