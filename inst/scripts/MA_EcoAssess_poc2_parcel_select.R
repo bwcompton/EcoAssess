@@ -71,25 +71,25 @@ if (!id_field %in% fields_avail)
 
 
 # ---- Fetch one bbox of parcels (memoised, shared across users) --------------
-# Returns sf in EPSG:4326, or NULL if empty. Global memoise => one user's fetch
-# serves the others on the shared shinyapps.io session AND throttles the
-# volatile ArcGIS endpoint.
+# Returns sf in the layer's NATIVE source CRS (EPSG:26986 for MassGIS parcels),
+# or NULL if empty. We KEEP the native geometry through the app and transform
+# to 4326 only at the moment of Leaflet addPolygons. That way the shapefile
+# dump exports source-CRS coordinates exactly -- no datum round-trip via 4326,
+# no ArcGIS-reprojection slop on overlay against MassGIS authoritative parcels.
 #
-# CRS diagnosis (shapefile-offset bug): MassGIS native is expected to be
-# EPSG:26986 (NAD83 Mass State Plane). NAD83->WGS84 in MA is ~1 m, NOT the
-# ~30 m we saw -- so the prime suspect is the proj4 datum string formerly used
-# in the dump, not the source SR. This one-shot report prints the real source
-# WKID + a sample coord before and after transform so we work from facts.
+# Global memoise => one user's fetch serves the others on the shared
+# shinyapps.io session AND throttles the volatile ArcGIS endpoint. We re-
+# memoise on every script source (no `if (!exists(...))` guard) so a stale
+# 4326-cache from an earlier rev can't survive this refactor in dev.
 
 fetch_bbox <- function(xmin, ymin, xmax, ymax) {
    env <- st_as_sfc(st_bbox(c(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax),
-                            crs = 4326))
+                            crs = 4326))   # filter envelope; arc_select reprojects
    p <- arc_select(parcel_layer, fields = id_field, filter_geom = env)
    if (is.null(p) || nrow(p) == 0) return(NULL)
-   st_transform(p, 4326)        # EPSG code, NOT a proj4 datum string
+   p                                        # NATIVE CRS; do not transform
 }
-if (!exists('fetch_bbox_C'))            # global, a la readMVT::read.tile.C
-   fetch_bbox_C <<- memoise(fetch_bbox)
+fetch_bbox_C <- memoise(fetch_bbox)
 
 # One-shot source-CRS probe (offset diagnosis). UN-memoised + at startup so it
 # prints EVERY launch -- the memoised fetch short-circuits on a warm cache and
@@ -153,9 +153,10 @@ server <- function(input, output, session) {
    session$userData$fetched  <- character(0)   # grid cell keys covered
    session$userData$drawn    <- character(0)   # parcel ids already on the map
    session$userData$store    <- list()         # id -> sf row, EVERY fetched
-                                               #   geom: lets selection be a
-                                               #   local lookup (no ESRI hit)
-   session$userData$selected <- list()         # id -> sf row (4326)
+                                               #   geom in NATIVE CRS: lets
+                                               #   selection be a local lookup
+                                               #   (no ESRI hit, no datum hop)
+   session$userData$selected <- list()         # id -> sf row (native CRS)
 
    rv <- reactiveValues(sel = 0, fetch = NA, render = NA, select = NA)
 
@@ -172,7 +173,8 @@ server <- function(input, output, session) {
    view <- reactive(list(zoom = input$map_zoom, b = input$map_bounds)) |>
       debounce(debounce_ms)
 
-   # draw only not-already-drawn parcels; stash EVERY geom for instant select
+   # draw only not-already-drawn parcels; stash EVERY geom in NATIVE CRS for
+   # instant select. Transform to 4326 only at the addPolygons call.
    draw_parcels <- function(m, p) {
       if (is.null(p)) return(invisible())
       ids  <- as.character(p[[id_field]])
@@ -180,8 +182,9 @@ server <- function(input, output, session) {
       if (!any(keep)) return(invisible())
       pk <- p[keep, ]; idk <- ids[keep]
       for (i in seq_len(nrow(pk)))
-         session$userData$store[[idk[i]]] <- pk[i, ]
-      addPolygons(m, data = pk, group = 'parcels', layerId = idk,
+         session$userData$store[[idk[i]]] <- pk[i, ]            # native
+      addPolygons(m, data = st_transform(pk, 4326), group = 'parcels',
+                  layerId = idk,
                   color = unselected_style$color, weight = unselected_style$weight,
                   fillOpacity = unselected_style$fillOpacity)
       session$userData$drawn <- c(session$userData$drawn, idk)
@@ -246,19 +249,19 @@ server <- function(input, output, session) {
       } else if (!is.null(sel[[id]])) {
          sel[[id]] <- NULL
       } else {
-         g <- session$userData$store[[id]]               # instant, local
+         g <- session$userData$store[[id]]               # instant, local (native)
          if (is.null(g))                                  # rare fallback only
-            g <- tryCatch(st_transform(arc_select(parcel_layer, fields = id_field,
-                     where = sprintf("%s = '%s'", id_field, id)), 4326),
+            g <- tryCatch(arc_select(parcel_layer, fields = id_field,
+                     where = sprintf("%s = '%s'", id_field, id)),
                      error = function(e) NULL)
-         if (!is.null(g) && nrow(g)) sel[[id]] <- g
+         if (!is.null(g) && nrow(g)) sel[[id]] <- g     # store native
       }
       session$userData$selected <- sel
 
       m <- leafletProxy('map') |> clearGroup('selected')
       if (length(sel)) {
          hl <- do.call(rbind, unname(sel))
-         addPolygons(m, data = hl, group = 'selected',
+         addPolygons(m, data = st_transform(hl, 4326), group = 'selected',
                      layerId = paste0('sel_', names(sel)),
                      color = selected_style$color, weight = selected_style$weight,
                      fillOpacity = selected_style$fillOpacity)
@@ -280,18 +283,19 @@ server <- function(input, output, session) {
    })
 
    # ---- prove the hand-off to the existing project-area machinery ----------
+   # Dump in NATIVE source CRS (EPSG:26986), NOT 4326. No datum hop -> exact
+   # overlay with MassGIS authoritative parcels in ArcGIS, no round-trip slop.
+   # For the real app, the hand-off to getReport will populate poly.proj
+   # directly from native (26986->3857) without the 4326 detour -- same
+   # principle, applied to the analytical path instead of the export.
    observeEvent(input$dump, {
       sel <- session$userData$selected
       if (!length(sel)) { showNotification('Nothing selected.'); return() }
 
-      # exactly what get.shapefile(merge = TRUE) produces: dissolved, lat/long.
-      # EPSG:4326, NOT '+proj=longlat +datum=WGS84' -- the proj4 datum string
-      # picks a different PROJ pipeline and is the prime suspect for the offset.
-      poly <- do.call(rbind, unname(sel)) |>
-         st_union() |>
-         st_transform(4326)
+      poly <- do.call(rbind, unname(sel)) |> st_union()     # already native CRS
 
-      acres <- sum(as.vector(st_area(poly)) * 247.105e-6)   # same factor as app
+      # st_area on 26986 returns m^2 directly (MA-centered LCC; ~1e-4 distortion).
+      acres <- sum(as.vector(st_area(poly)) * 247.105e-6)
       f <- file.path(tempdir(), 'poc_selection.shp')
       st_write(st_sf(geometry = poly), f, delete_dsn = TRUE, quiet = TRUE)
 

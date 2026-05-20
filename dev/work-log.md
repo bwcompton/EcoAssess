@@ -100,3 +100,29 @@
 - **Next**: BC reruns, reads the startup `=== SOURCE CRS ===` block; we settle
   the ~5 m residual (datum vs ArcGIS quantization vs comparison artifact),
   then move toward real-app work (mode infra / `cfg`).
+
+## 2026-05-20
+
+- **Source CRS confirmed EPSG:26986** (NAD83 MA SP) from the startup probe.
+  ~5 m N residual diagnosed as the WGS84 round-trip artifact (sf's NAD83→WGS84
+  + ArcGIS's WGS84→NAD83 don't exactly invert; plus NAD83(2011)/WGS84
+  realization gap). Not our bug — but avoidable by not round-tripping.
+- **CRS fixes on `main`**: replaced proj4 datum string with EPSG:4326 in
+  `get.shapefile.R`, dropped `type='proj'` from the 3857 transform in
+  `EcoAssess.app.R`. BC ran 2+ standard test shapefiles (MA State Plane and
+  NAD83) through deployed vs revised — **identical report results** (sub-pixel
+  for 30 m rasters). Folded in version bump 1.1.2 → 1.1.3, header cleanup,
+  and a whatsnew entry; deployed as v1.1.3.
+- **Cherry-picked onto Massachusetts** as `b58219e` so branches stay in sync.
+- **PoC refactor (change #1)**: parcels now stay in native CRS throughout —
+  `fetch_bbox` returns native, `store` holds native, `selected` holds native;
+  `addPolygons` transforms to 4326 inline. **Dump exports in 26986** for
+  exact overlay with MassGIS authoritative. `st_area` runs on 26986 directly.
+  Dropped the `if(!exists())` guard on `fetch_bbox_C` so dev re-sources can't
+  inherit a stale 4326 cache.
+- **Plan updated**: CRS source-WKID resolved; CRS-correctness risk closed;
+  real-app contract recorded — parcels populate `poly.proj` directly via
+  26986→3857 (no 4326 detour), `poly` via 26986→4326 for area + display.
+- **Next**: BC runs the refactored PoC, verifies the dumped 26986 shapefile
+  overlays MassGIS authoritative pixel-perfectly. Once confirmed, we move on
+  to real-app mode infrastructure (`ui <- function(request)`, `cfg` list).

@@ -99,12 +99,12 @@ Pattern lifted from `DEPMEP.app.R` + `readMVT::read.viewport.tiles`, minus MVT:
 - **Selection must be local.** Confirmed: in-memory store → selection is
   instant. BC's UX point: selection latency matters *more* than display
   latency (users expect an immediate click response). Design constraint.
-- **CRS source WKID — still open.** proj4→EPSG fix removed the 30 m E and
-  halved the N error (~10 m → ~5 m N). One-shot CRS report didn't fire (lived
-  inside the memoised fetch; warm cache skipped it) → moved to an un-memoised
-  startup probe. Next session: read the printed source WKID to settle whether
-  the ~5 m residual is NAD83/WGS84 (~1–2 m) + ArcGIS quantization, or partly
-  an artifact of BC's 4326-vs-26986 comparison (which itself reprojects).
+- CRS source WKID — **RESOLVED 2026-05-20**. Source is **EPSG:26986** (NAD83 MA
+  State Plane) as expected. The ~5 m N residual when exporting to 4326 was the
+  round-trip-via-WGS84 artifact (sf's NAD83→WGS84 + ArcGIS's WGS84→NAD83 don't
+  exactly invert, plus the NAD83(2011)/WGS84 realization gap). Resolved by
+  keeping parcels in native CRS throughout the PoC and dumping shapefiles in
+  26986 — no datum hop, exact overlay with MassGIS authoritative.
 
 ## Risks
 
@@ -118,15 +118,15 @@ Pattern lifted from `DEPMEP.app.R` + `readMVT::read.viewport.tiles`, minus MVT:
   optimization lever for the real app**, not just a noted one. ESRI fetch
   also has high variance (one Petersham run 2960 ms) — argues for the grid
   cache + the daily warm-up ping.
-- **CRS / datum correctness — improved, not closed.** Original ~10 m N /
-  ~30 m E. proj4 datum string `'+proj=longlat +datum=WGS84'` vs EPSG:4326
-  under PROJ 6+/GDAL 3 was the main culprit: EPSG fix removed the 30 m E and
-  halved N to ~5 m. Residual ~5 m N still under investigation (see CRS source
-  WKID item under Open questions). **`get.shapefile.R:36` in the production
-  regional app uses the same proj4 string** — latent offset risk there too
-  (may be self-consistent and unnoticed; BC to judge whether worth a look). A
-  multi-metre parcel shift is unacceptable for the MA renewable-siting
-  subsidy use case, so the residual must be explained before real-app work.
+- **CRS / datum correctness — resolved 2026-05-20.** Three fixes settled it:
+  (1) `get.shapefile.R` and the 3857 transform in `EcoAssess.app.R` now use
+  EPSG codes (deployed in v1.1.3; BC tested against standard shapefiles in
+  MA SP and NAD83 — identical report results). (2) PoC parcels stay in native
+  CRS through the app, transformed to 4326 only at addPolygons. (3) PoC dump
+  writes the native source CRS for exact overlay. **Contract for the real
+  app** (parcels mode): populate `poly.proj` (3857, for raster clipping)
+  *directly* from native 26986; populate `poly` (4326) for area + display.
+  No 26986→4326→3857 detour. The 4326-stored draw/upload paths are unchanged.
 - **Scattered-parcel bbox limit** is a UX sharp edge (easy to click two far
   parcels); needs a clear, specific error message.
 
