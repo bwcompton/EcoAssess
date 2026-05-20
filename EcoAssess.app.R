@@ -120,7 +120,11 @@ ui <- function(request) make.ui(resolve.cfg(request$QUERY_STRING))
 
 # Server -----------------------------
 server <- function(input, output, session) {
-   session$userData$cfg <- resolve.cfg(session$clientData$url_search)   # same cfg the UI saw
+   session$userData$cfg <- isolate(resolve.cfg(session$clientData$url_search))   # same cfg the
+                                                                                 # UI saw. isolate()
+                                                                                 # because url_search
+                                                                                 # is a reactive value
+                                                                                 # and we want it once.
 
    shinyjs::disable('restart')
    shinyjs::disable('getReport')
