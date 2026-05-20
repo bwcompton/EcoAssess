@@ -136,6 +136,19 @@ Pattern lifted from `DEPMEP.app.R` + `readMVT::read.viewport.tiles`, minus MVT:
   click-to-toggle is enough; users expect to pick only a handful of parcels.
   Shift-drag is free (boxZoom disabled) if revisited. Easy to add later via
   rubber-band box → `st_intersects`.
+- **Parcel-union topology** (discovered 2026-05-20). MassGIS parcels have
+  sub-mm slivers along shared boundaries (especially where roads/water
+  bisect). `st_union` on certain combinations throws GEOS's "unable to
+  assign free hole to a shell". Defensive recipe applied in the PoC dump
+  and **required at the real-app union point**:
+  ```r
+  geoms <- st_make_valid(rbind_of_selected_parcels)
+  poly  <- tryCatch(st_union(geoms),
+                    error = function(e) st_union(st_buffer(geoms, 0)))
+  ```
+  Buffer-by-zero re-traces through GEOS's polygon builder and snaps the
+  slivers out. Single-parcel selections don't trigger it (no shared
+  boundary to slip on).
 
 ## Process conventions
 

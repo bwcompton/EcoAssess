@@ -123,6 +123,13 @@
 - **Plan updated**: CRS source-WKID resolved; CRS-correctness risk closed;
   real-app contract recorded — parcels populate `poly.proj` directly via
   26986→3857 (no 4326 detour), `poly` via 26986→4326 for area + display.
-- **Next**: BC runs the refactored PoC, verifies the dumped 26986 shapefile
-  overlays MassGIS authoritative pixel-perfectly. Once confirmed, we move on
+- **Native-CRS dump verified**: BC overlaid the 26986 dump against MassGIS
+  authoritative in ArcGIS — exact alignment. CRS chapter genuinely closed.
+- **New bug found**: `st_union` throws `TopologyException: unable to assign
+  free hole to a shell` on certain 2-parcel combinations where a road
+  bisects one of them. Diagnosed as the well-known MassGIS sliver-along-
+  shared-boundary issue. Fix: `st_make_valid` + `st_union` with a
+  `st_buffer(., 0)` fallback. Applied to PoC dump and recorded in the
+  plan as required behavior at the real-app union point.
+- **Next**: BC retries the problem combination with the fix; if clean, on
   to real-app mode infrastructure (`ui <- function(request)`, `cfg` list).

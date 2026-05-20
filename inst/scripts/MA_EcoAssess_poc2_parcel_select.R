@@ -292,7 +292,21 @@ server <- function(input, output, session) {
       sel <- session$userData$selected
       if (!length(sel)) { showNotification('Nothing selected.'); return() }
 
-      poly <- do.call(rbind, unname(sel)) |> st_union()     # already native CRS
+      # MassGIS parcels carry sub-mm slivers along shared boundaries (esp.
+      # where roads / water bisect), which makes GEOS throw "unable to assign
+      # free hole to a shell" on st_union of certain combinations. Defensive
+      # recipe: st_make_valid first, then st_union, with buffer-by-zero as a
+      # fallback (re-traces the geometry through the polygon builder and snaps
+      # the slivers out). Same recipe will live at the real-app union point.
+      geoms <- st_make_valid(do.call(rbind, unname(sel)))    # already native CRS
+      poly  <- tryCatch(
+         st_union(geoms),
+         error = function(e) {
+            message('st_union failed (', conditionMessage(e),
+                    '); retrying with buffer-by-zero.')
+            st_union(st_buffer(geoms, 0))
+         }
+      )
 
       # st_area on 26986 returns m^2 directly (MA-centered LCC; ~1e-4 distortion).
       acres <- sum(as.vector(st_area(poly)) * 247.105e-6)
