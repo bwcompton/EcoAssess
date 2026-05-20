@@ -133,3 +133,11 @@
   plan as required behavior at the real-app union point.
 - **Next**: BC retries the problem combination with the fix; if clean, on
   to real-app mode infrastructure (`ui <- function(request)`, `cfg` list).
+- **Sliver cause narrowed**: BC re-selected the same 2 parcels from the
+  authoritative MassGIS layer in ArcGIS Desktop, exported a shapefile, and
+  ran it through the production app — succeeded cleanly through both
+  `st_union` (in `get.shapefile.R`) and `st_make_valid` (in `getReport`).
+  → The slivers are an artifact of ArcGIS REST geometry quantization, not
+  inherent to MassGIS data. The PoC's defensive recipe is in the right
+  place. Worth a future spike to see if `arc_select` can request
+  un-quantized geometry and eliminate the issue at source.

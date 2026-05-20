@@ -136,11 +136,14 @@ Pattern lifted from `DEPMEP.app.R` + `readMVT::read.viewport.tiles`, minus MVT:
   click-to-toggle is enough; users expect to pick only a handful of parcels.
   Shift-drag is free (boxZoom disabled) if revisited. Easy to add later via
   rubber-band box → `st_intersects`.
-- **Parcel-union topology** (discovered 2026-05-20). MassGIS parcels have
-  sub-mm slivers along shared boundaries (especially where roads/water
-  bisect). `st_union` on certain combinations throws GEOS's "unable to
-  assign free hole to a shell". Defensive recipe applied in the PoC dump
-  and **required at the real-app union point**:
+- **Parcel-union topology** (discovered 2026-05-20). Parcels fetched via the
+  **ArcGIS REST FeatureServer** (`arc_select`) carry sub-mm slivers along
+  shared boundaries — almost certainly a side effect of REST geometry
+  quantization, since the same parcels exported from the authoritative
+  MassGIS layer in ArcGIS Desktop don't trigger the issue (BC tested via the
+  production app). `st_union` on certain combinations of REST-fetched
+  parcels throws GEOS's "unable to assign free hole to a shell". Defensive
+  recipe applied in the PoC dump and **required at the real-app union point**:
   ```r
   geoms <- st_make_valid(rbind_of_selected_parcels)
   poly  <- tryCatch(st_union(geoms),
@@ -148,7 +151,9 @@ Pattern lifted from `DEPMEP.app.R` + `readMVT::read.viewport.tiles`, minus MVT:
   ```
   Buffer-by-zero re-traces through GEOS's polygon builder and snaps the
   slivers out. Single-parcel selections don't trigger it (no shared
-  boundary to slip on).
+  boundary to slip on). **Future spike**: investigate whether `arc_select`
+  / ArcGIS REST has a parameter to request un-quantized geometry, which
+  would eliminate the slivers at source rather than scrub them after.
 
 ## Process conventions
 
