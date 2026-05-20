@@ -45,10 +45,13 @@ in addition to the existing draw-polygon and upload-shapefile paths.
 
 ## Workstreams / phases
 
-1. **Expanded PoC** (next, see below). Resolves the parcel viewport-fetch +
-   click-select interaction and the dedup strategy. Throwaway code.
-2. **Mode infrastructure**: `ui <- function(request)`, `cfg` list, switch link
-   with state-encoding URL params, Matomo dimension.
+1. **Expanded PoC** — **complete 2026-05-20** (smart-hybrid grid, local-store
+   selection, native-CRS dump, st_union topology defense; all verified by BC).
+2. **Mode infrastructure** — **skeleton in 2026-05-20**: `ui <- function(request)`,
+   `resolve.cfg.R` (URL → cfg), `switch.url.R` (URL builder, not yet wired into
+   UI), `make.ui.R` (extracted UI tree, branches on cfg — currently just title).
+   Remaining: switch *link* in the UI + state-encoding URL params (WS 4),
+   Matomo per-mode dimension (when we touch the Matomo JS).
 3. **Data layer**: config constants; startup checks for parcels + POS modeled
    on the GeoServer ping; graceful degradation paths.
 4. **MA-mode UI deltas**: title; switch field + tooltip; `cfg$boundary_label`

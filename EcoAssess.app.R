@@ -51,6 +51,9 @@ source('make.report.maps.R')
 source('addBoundaries.R')
 source('addUserBasemap.R')
 source('annotation-scale.R')        # Ethan's new version. Delete this line and local function when PR https://github.com/paleolimbot/ggspatial/pull/129 is accepted
+source('resolve.cfg.R')             # mode config resolved from URL query string
+source('switch.url.R')              # URL to switch modes (regional <-> MA)
+source('make.ui.R')                 # build the per-session UI tree from cfg
 
 
 
@@ -105,107 +108,18 @@ tipped <- function(text, tooltip, delay = 300)                                  
 
 
 # User interface ---------------------
-ui <- page_sidebar(
-   theme = bs_theme(bootswatch = 'cerulean', version = 5),   # bslib version defense. Use version_default() to update
-   useShinyjs(),
-   extendShinyjs(script = 'fullscreen.js', functions = c('fullscreen', 'normalscreen', 'is_iOS')),
-   tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "fullscreen.css")),      # turn off dark background for fullscreen
-   
-   tags$head(tags$script(src = 'matomo.js')),               # add Matomo tracking JS
-   tags$head(tags$script(src = 'matomo_heartbeat.js')),     # turn on heartbeat timer
-   tags$script(src = 'matomo_events.js'),                   # track popups and help text
-   
-   title = 'EcoAssess',
-   
-   sidebar = 
-      sidebar(
-         # add_busy_spinner(spin = 'fading-circle', position = 'bottom-left', onstart = TRUE, timeout = 0),   # for debugging
-         add_busy_spinner(spin = 'fading-circle', position = 'bottom-left', onstart = FALSE, timeout = 500),
-         use_busy_spinner(spin = 'fading-circle', position = 'bottom-left'),
-         
-         card(
-            tipped(HTML('<h5 style="display: inline-block;">Project area report</h5>'), projectAreaToolTip),
-            
-            span(
-               tipped(actionButton('drawPolys', 'Draw'), drawTooltip),
-               HTML('&nbsp;or&nbsp;'),
-               tipped(actionButton('uploadShapefile', 'Upload'), uploadTooltip),
-            ),
-            
-            span(
-               tipped(actionButton('getReport', 'Get report'), getReportTooltip),
-               tipped(actionButton('restart', 'Restart'), restartTooltip)
-            )
-         ),
-         
-         card(
-            actionLink('aboutTool', label = 'About this site'),
-            actionLink('aboutecoConnect', label = 'About ecoConnect'),
-            actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
-            p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener">UMass DSL home page</a>')),
-            br(),
-            span('Version 1.1.3', actionLink('whatsNew', label = 'What\'s new?')),
-            br(),
-            tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
-         ),
-         width = 290
-      ),
-   
-   layout_sidebar(
-      sidebar = sidebar(
-         position = 'right', 
-         width = 280,
-         
-         card(
-            radioButtons('iei.layer', label = tipped(HTML('<h5 style="display: inline-block;">IEI layers</h5>'), ieiTooltip), 
-                         choiceNames = layers$radio.names[layers$which == 'iei'],
-                         choiceValues = full.layer.names[layers$which == 'iei'],
-                         selected = character(0))
-         ),
-         
-         card( 
-            radioButtons('connect.layer', label = tipped(HTML('<h5 style="display: inline-block;">ecoConnect layers</h5>'), connectTooltip), 
-                         choiceNames = layers$radio.names[layers$which == 'connect'],
-                         choiceValues = full.layer.names[layers$which == 'connect']),
-            
-            sliderTextInput('ecoConnectDisplay', tipped(HTML('<h5 style="display: inline-block;">ecoConnect display</h5>'), ecoConnectDisplayTooltip), 
-                            choices = c('local', 'medium', 'regional'))
-            
-         ),
-         
-         card(
-            
-            sliderInput('opacity', tipped(HTML('<h5 style="display: inline-block;">Layer opacity</h5>'), opacityTooltip), 
-                        0, 100, post = '%', value = 60, ticks = FALSE),
-            
-            actionButton('no.layers', 'Turn off layers')
-         ),
-         
-         card(
-            radioButtons('show.basemap', tipped(HTML('<h5 style="display: inline-block;">Basemap</h5>'), basemapTooltip),
-                         choiceNames = c('Simple map', 'Open Street Map', 'Topo map', 'Imagery'),
-                         choiceValues = c('Stadia.StamenTonerLite', 'OpenStreetMap.Mapnik', 'USGS.USTopo', 'USGS.USImagery')),
-            hr(),
-            checkboxInput('show.boundaries', label = 'Show states and counties', value = FALSE),
-            checkboxInput('show.usermap', label = 'Show user basemap', value = FALSE),
-            tipped(actionButton('upload.usermap', 'Upload user basemap'), usermapTooltip)
-            
-         ),
-         
-         card(
-            materialSwitch(inputId = 'fullscreen', label = 'Full screen', value = FALSE, 
-                           status = 'default')
-         )
-      ),
-      
-      leafletOutput('map')
-   )
-)
+# Per-session: parse the URL query string -> cfg -> build the UI. Default cfg
+# (no query param) is regional and renders the existing app bit-perfect; only
+# `?regional=false` flips to the Massachusetts version. See resolve.cfg.R for
+# the cfg fields and make.ui.R for the UI tree.
+ui <- function(request) make.ui(resolve.cfg(request$QUERY_STRING))
 
 
 
 # Server -----------------------------
 server <- function(input, output, session) {
+   session$userData$cfg <- resolve.cfg(session$clientData$url_search)   # same cfg the UI saw
+
    shinyjs::disable('restart')
    shinyjs::disable('getReport')
    shinyjs::disable('show.usermap')

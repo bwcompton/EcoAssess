@@ -138,6 +138,19 @@
   ran it through the production app — succeeded cleanly through both
   `st_union` (in `get.shapefile.R`) and `st_make_valid` (in `getReport`).
   → The slivers are an artifact of ArcGIS REST geometry quantization, not
-  inherent to MassGIS data. The PoC's defensive recipe is in the right
-  place. Worth a future spike to see if `arc_select` can request
-  un-quantized geometry and eliminate the issue at source.
+  inherent to MassGIS data. BC further confirmed with an inclusive sweep-
+  select-then-trim from the authoritative layer (any latent slivers in the
+  source would have been captured): still clean. PoC's defensive recipe is
+  in the right place. Worth a future spike to see if `arc_select` can
+  request un-quantized geometry and eliminate the issue at source.
+- **Workstream 2 scaffold (mode infrastructure)**: extracted three new files
+  — `resolve.cfg.R` (URL query → cfg list), `switch.url.R` (URL flipper,
+  not yet wired in UI), `make.ui.R` (entire UI tree as a function of cfg).
+  `EcoAssess.app.R` now reads as `ui <- function(request) make.ui(...)` and
+  the server stashes the same cfg in `session$userData$cfg`. Default URL =
+  bit-perfect regional (only the page title sources from cfg in WS2; rest
+  of the UI deltas come in WS 4). Smoke test: open at `?regional=false` and
+  the title should read "Massachusetts EcoAssess"; otherwise identical.
+- **Next**: BC smoke-tests this; if the regional default still looks right
+  and `?regional=false` flips the title, on to WS 4 (switch field, boundary
+  label, parcel + POS UI controls).
