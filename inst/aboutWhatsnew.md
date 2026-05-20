@@ -1,3 +1,7 @@
+**Version 1.1.3 (May 20, 2026)**
+
+- Modernize coordinate refernce system handling. May have minor effect on scores in rare cases.
+
 **Version 1.1.2 (February 17, 2026)**
 
 - In attribution line, display which GeoServer is being used.

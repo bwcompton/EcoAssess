@@ -1,10 +1,10 @@
-# ecoConnect.tool.app.R - ecoConnect and IEI viewing and reporting tool
+# EcoAssess.app.R - ecoConnect and IEI viewing and reporting tool
 # Before initial deployment on shinyapps.io, need to restart R and:
 #    library(remotes); install_github('https://github.com/elipousson/sfext.git'); install_github('bwcompton/leaflet.lagniappe')
 # YOu'll need to get a Stadia Maps API  key from https://client.stadiamaps.com and save it in www/stadia_api.txt. Make sure 
 # to .gitignore this file!
 
-# B. Compton, 19 Apr
+# B. Compton
 
 
 
@@ -144,7 +144,7 @@ ui <- page_sidebar(
             actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
             p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener">UMass DSL home page</a>')),
             br(),
-            span('Version 1.1.2', actionLink('whatsNew', label = 'What\'s new?')),
+            span('Version 1.1.3', actionLink('whatsNew', label = 'What\'s new?')),
             br(),
             tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
          ),
@@ -415,7 +415,7 @@ server <- function(input, output, session) {
       session$userData$poly <- sf::st_make_valid(session$userData$poly)    # attempt to fix bad shapefiles
       sf::sf_use_s2(TRUE)
       
-      session$userData$poly.proj <- sf::st_transform(session$userData$poly, 'epsg:3857', type = 'proj') # project to match downloaded rasters
+      session$userData$poly.proj <- sf::st_transform(session$userData$poly, 3857) # project to match downloaded rasters
       session$userData$bbox <- as.list(sf::st_bbox(session$userData$poly.proj))
       
       poly.area <- sum(as.vector(sf::st_area(session$userData$poly)) * 247.105e-6)

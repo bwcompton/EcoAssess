@@ -33,5 +33,5 @@
    if(merge)
       poly <- sf::st_union(poly)                                         # dissolve
    
-   sf::st_transform(poly, '+proj=longlat +datum=WGS84')
+   sf::st_transform(poly, 4326)
 }
