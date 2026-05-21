@@ -160,6 +160,38 @@
   TRUE)` on `make.ui.R` only (the other two new files don't reference
   app-locals). Existing self-contained helpers (`get.shapefile`, `draw.poly`,
   etc.) didn't hit this — they reference only base + library symbols.
+
+## 2026-05-21
+
+- **Discussed packaging vs. R/ autoload vs. status quo.** BC chose Option 2
+  (Shiny's `R/` autoloader — convention, not a real package). Did the
+  initial move of helpers into `R/` and deleted the source block — and hit
+  the closure issue again because `tipped` (and tooltips, layers, etc.)
+  were still inline in `app.R`. The closure chain from `R/`'s autoload env
+  doesn't reach app.R's top-level env: siblings, not parent/child.
+- **Resolved by finishing the move.** Pulled all remaining app-level state
+  out of `app.R` into `R/`:
+  - `R/tipped.R` — the `tipped()` helper
+  - `R/app.data.R` — `home`, `zoom`, `layers`, `full.layer.names`,
+    `geoserver`, `osm_email`
+  - `R/load.tooltips.R` — all 12 tooltip + 4 About `includeMarkdown` loads
+  - `R/make.server.R` — entire server body as `make.server(input, output,
+    session)` (body byte-identical to the prior inline version)
+  - `app.R` trimmed to ~46 lines: libraries + `plan()` + `ui <-
+    function(request) make.ui(resolve.cfg(...))` + `server <- make.server`
+    + `shinyApp(ui, server)`.
+- **Closure issue structurally gone.** Everything any helper might need is
+  in the autoloaded `R/` env; `ui` and `server` see it via Shiny's
+  re-parenting. Future helpers added during WS 4 drop into `R/` and just
+  work — no `local = TRUE` boilerplate needed ever again.
+- **`extra_functions/`**: BC moved the not-currently-sourced top-level
+  files (addPADUS, compare_percentiles, loadlibs, make.style, etc.) out
+  of the way so `R/` autoload doesn't pick them up. Kept under version
+  control for now in case anything's needed later.
+- **Next**: BC smoke-tests the refactored app on Massachusetts (default URL
+  + `?regional=false`); if clean, cherry-pick the same refactor to `main`
+  for deployment, then on to WS 4 (switch field, boundary label, parcel
+  + POS UI controls, etc.).
 - **Next**: BC re-runs and smoke-tests this; if the regional default still
   looks right and `?regional=false` flips the title, on to WS 4 (switch
   field, boundary label, parcel + POS UI controls).

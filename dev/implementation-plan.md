@@ -47,9 +47,13 @@ in addition to the existing draw-polygon and upload-shapefile paths.
 
 1. **Expanded PoC** — **complete 2026-05-20** (smart-hybrid grid, local-store
    selection, native-CRS dump, st_union topology defense; all verified by BC).
-2. **Mode infrastructure** — **skeleton in 2026-05-20**: `ui <- function(request)`,
-   `resolve.cfg.R` (URL → cfg), `switch.url.R` (URL builder, not yet wired into
-   UI), `make.ui.R` (extracted UI tree, branches on cfg — currently just title).
+2. **Mode infrastructure** — **scaffolded 2026-05-20, restructured 2026-05-21**:
+   `ui <- function(request)`, `resolve.cfg.R` (URL → cfg), `switch.url.R` (URL
+   builder, not yet wired into UI), `make.ui.R` (UI tree, branches on cfg —
+   currently just title), `make.server.R` (server body, extracted). App now
+   uses Shiny's `R/` autoloader: `app.R` is ~46 lines (down from 426); all
+   helpers, app data, tooltips, and entry points live in `R/`. Closure
+   scoping issue is structurally gone — every helper can see every other.
    Remaining: switch *link* in the UI + state-encoding URL params (WS 4),
    Matomo per-mode dimension (when we touch the Matomo JS).
 3. **Data layer**: config constants; startup checks for parcels + POS modeled
