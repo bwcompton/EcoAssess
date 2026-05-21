@@ -41,6 +41,6 @@ plan('multisession')
 
 
 ui     <- function(request) make.ui(resolve.cfg(request$QUERY_STRING))
-server <- make.server
+server <- function(input, output, session) make.server(input, output, session)
 
 shinyApp(ui, server)
