@@ -169,6 +169,10 @@ Pattern lifted from `DEPMEP.app.R` + `readMVT::read.viewport.tiles`, minus MVT:
 - **Commits: no sign-off / no `Co-Authored-By` trailer.** Commit (do **not**
   push) as an end-of-session safety net — guards against RStudio-save
   clobbering. Match the repo's terse message style.
+- **Commit message formatting: no hard line breaks in the body.** BC reads
+  commits through RStudio and GitHub, both of which wrap long lines
+  themselves. Subject line is short; body paragraphs are one long line each,
+  with blank lines between paragraphs and before bulleted lists.
 
 ## Data sources
 
