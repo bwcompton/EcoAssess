@@ -8,14 +8,13 @@
    # Mode is selected by the `regional` query param; defaults TRUE. Only an
    # explicit `?regional=false` flips to the Massachusetts version.
    #
-   # The in-app switch link may also carry lng / lat / zoom params (see
-   # switch.url) -- when present and valid they become the opening view, so a
-   # switch preserves where the user was. When absent, the map opens at the
-   # mode's home.
+   # The in-app switch link may also carry session state (see switch.url):
+   # lng/lat/zoom (the map view) and layer/display/basemap/opacity/boundaries
+   # (control state). When present they override the defaults, so a switch
+   # preserves where the user was and what they had set (decision 7).
    #
    # cfg drives every UI/server difference between the regional and
-   # Massachusetts versions. Resolved once at session start; never changes
-   # within a session.
+   # Massachusetts versions. Resolved once at session start.
    #
    # Arguments:
    #     query_string   the URL query string after `?` (may be NULL or empty)
@@ -27,6 +26,8 @@
    #        boundary.label  label for the show-boundaries checkbox
    #        home.zoom       the mode's overview zoom (for the switch carry test)
    #        view            list(lng, lat, zoom) -- where the map opens
+   #        layer/display/basemap/opacity/boundaries  control state carried
+   #           across a switch (decision 7); NULL when not carried
    # B. Compton, 20-22 May 2026
 
 
@@ -46,12 +47,22 @@
       is.finite(lng) && is.finite(lat) && is.finite(zm))
       view <- list(lng = lng, lat = lat, zoom = zm)
 
+   # control state carried across a switch; NULL when absent. layer/display/
+   # basemap are validated in make.ui against their valid choice sets.
+   op <- suppressWarnings(as.numeric(q[['opacity']]))
+
    list(
       regional       = regional,
       title          = if(regional) 'EcoAssess' else 'Massachusetts EcoAssess',
       switch.label   = if(regional) 'Regional EcoAssess' else 'Massachusetts EcoAssess',
       boundary.label = if(regional) 'Show states and counties' else 'Show counties and towns',
       home.zoom      = if(regional) zoom.regional else zoom.ma,
-      view           = view
+      view           = view,
+      layer          = q[['layer']],
+      display        = q[['display']],
+      basemap        = q[['basemap']],
+      opacity        = if(length(op) == 1L && is.finite(op)) op else NULL,
+      boundaries     = if(is.null(q[['boundaries']])) NULL
+                       else identical(tolower(q[['boundaries']]), 'true')
    )
 }

@@ -269,8 +269,31 @@
     at something specific = carry; at the overview = reset to the other
     version's home (avoids dumping a useless panned overview into the other
     mode).
-- **Next**: BC smoke-tests the switch (regional <-> MA, from overview and
-  from zoomed-in). Then back to WS 5 — 5b (click-to-select) and 5c
-  (hand-off to getReport). WS 6 (boundary overlay) now unblocked too:
-  counties/towns are on GeoServer as `boundaries:mass_counties` /
+- **Switch view-preservation verified** by BC, who then noted the switch
+  resets layer/opacity/basemap — the rest of decision 7.
+- **Decision 7 completed** — the switch now carries control state too:
+  - `switch.url`: generalized to take a `carry` named list; URL-encodes
+    values, drops NULL/empty entries.
+  - `make.server` switch observer: builds `carry` with layer (from
+    `session$userData$show.layer`), ecoConnect display, basemap, opacity,
+    show-boundaries — always — plus lng/lat/zoom when zoomed in past the
+    overview.
+  - `resolve.cfg`: parses `layer` / `display` / `basemap` / `opacity` /
+    `boundaries` back out (NULL when absent).
+  - `make.ui`: each control's initial value comes from cfg when carried,
+    else its default; carried `layer`/`display`/`basemap` are validated
+    against their choice sets.
+  - `make.server`: a carried "layers off" (`cfg$layer == 'none'`) is
+    restored explicitly (presets `show.layer`, disables the display/opacity
+    sliders) since no layer-radio observer fires to do it.
+  - Deliberately NOT carried: "Show user basemap" (needs an upload that
+    can't round-trip a reload) and the MA-only POS/parcel toggles (the
+    switch always flips the mode, so there's no same-mode target).
+- **Plan note**: the cfg-list section in implementation-plan.md was trimmed
+  back to 4 fields by BC; cfg actually has 11 now. Left it for BC to decide
+  whether to re-sync or keep lean.
+- **Next**: BC smoke-tests the full switch (layer + basemap + opacity +
+  boundaries all stick; view carried when zoomed in). Then WS 5 — 5b
+  (click-to-select) and 5c (hand-off to getReport). WS 6 unblocked:
+  counties/towns on GeoServer as `boundaries:mass_counties` /
   `boundaries:mass_tow`.

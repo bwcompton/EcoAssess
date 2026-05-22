@@ -15,6 +15,12 @@
                                                                                  # and we want it once.
    cfg <- session$userData$cfg
 
+   if(identical(cfg$layer, 'none')) {                 # decision 7: restore the "layers off"
+      session$userData$show.layer <- 'none'           #   state carried across a switch (no
+      shinyjs::disable('ecoConnectDisplay')           #   layer radio is set, so no observer
+      shinyjs::disable('opacity')                     #   fires to do this)
+   }
+
    shinyjs::disable('restart')
    shinyjs::disable('getReport')
    shinyjs::disable('show.usermap')
@@ -77,15 +83,18 @@
    })
 
    observeEvent(input$switch.mode, {                         # ----- switch regional <-> MA
+      carry <- list(layer      = session$userData$show.layer,   # decision 7: carry control
+                    display    = input$ecoConnectDisplay,       #   state across the switch
+                    basemap    = input$show.basemap,
+                    opacity    = input$opacity,
+                    boundaries = input$show.boundaries)
       if(isTRUE(input$map_zoom > cfg$home.zoom)) {            #   zoomed in past the overview:
-         b <- input$map_bounds                               #   carry the current view across
-         url <- switch.url(cfg, list(lng = (b$west + b$east) / 2,
-                                     lat = (b$south + b$north) / 2,
-                                     zoom = input$map_zoom))
+         b <- input$map_bounds                               #   also carry the current view
+         carry$lng  <- (b$west + b$east) / 2
+         carry$lat  <- (b$south + b$north) / 2
+         carry$zoom <- input$map_zoom
       }
-      else                                                   #   at the overview: land on the
-         url <- switch.url(cfg)                               #   other version's home
-      shinyjs::runjs(sprintf("window.location.href = '%s';", url))
+      shinyjs::runjs(sprintf("window.location.href = '%s';", switch.url(cfg, carry)))
    })
 
    observeEvent(input$fullscreen,
