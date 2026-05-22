@@ -65,7 +65,7 @@
                span(                                           # ----- regional <-> MA switch field
                   tipped(cfg$switch.label, if(cfg$regional) regionalVersionTooltip else massachusettsVersionTooltip),
                   HTML('&nbsp;'),
-                  tags$a(id = 'switch.mode', 'switch', href = switch.url(cfg))
+                  actionLink('switch.mode', 'switch')          # server builds the URL (make.server)
                ),
                span('Version 1.1.3', actionLink('whatsNew', label = 'What\'s new?')),
                br(),

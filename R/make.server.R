@@ -73,7 +73,19 @@
               options = leafletOptions(maxZoom = 16)) |>
          addScaleBar(position = 'bottomleft') |>
          osmGeocoder(position = 'bottomright', email = osm_email) |>
-         setView(lng = home[1], lat = home[2], zoom = zoom)
+         setView(lng = cfg$view$lng, lat = cfg$view$lat, zoom = cfg$view$zoom)
+   })
+
+   observeEvent(input$switch.mode, {                         # ----- switch regional <-> MA
+      if(isTRUE(input$map_zoom > cfg$home.zoom)) {            #   zoomed in past the overview:
+         b <- input$map_bounds                               #   carry the current view across
+         url <- switch.url(cfg, list(lng = (b$west + b$east) / 2,
+                                     lat = (b$south + b$north) / 2,
+                                     zoom = input$map_zoom))
+      }
+      else                                                   #   at the overview: land on the
+         url <- switch.url(cfg)                               #   other version's home
+      shinyjs::runjs(sprintf("window.location.href = '%s';", url))
    })
 
    observeEvent(input$fullscreen,

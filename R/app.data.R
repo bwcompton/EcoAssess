@@ -5,8 +5,13 @@
 
 
 
-home <- c(-75, 42)            # center of NER (approx)
-zoom <- 6
+# Map home views: regional = 13-state Northeast; ma = Massachusetts framed.
+# resolve.cfg picks the pair for the session's mode (and may override with a
+# view carried across a regional <-> MA switch).
+home.regional <- c(-75, 42)            # center of NER (approx)
+zoom.regional <- 6
+home.ma       <- c(-72.0546, 41.5818)  # Massachusetts, framed in the map pane
+zoom.ma       <- 7                     # zoom 8 clips the state at common screen sizes
 
 # Layers on GeoServer (4 ecoConnect layers, 4 IEI layers, and the state-HuC index)
 layers <- data.frame(

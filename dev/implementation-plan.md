@@ -39,6 +39,10 @@ Current fields (house dot-style naming):
 - `cfg$title` — "EcoAssess" / "Massachusetts EcoAssess"
 - `cfg$switch.label` — current version name shown by the switch field
 - `cfg$boundary.label` — "Show states and counties" / "Show counties and towns"
+- `cfg$home.zoom` — the mode's overview zoom (6 regional / 7 MA); the switch
+  carry test compares the current zoom against it
+- `cfg$view` — `list(lng, lat, zoom)`, where the map opens: the mode home,
+  or a view carried across a switch (decision 7)
 
 Deliberately *not* cfg fields:
 

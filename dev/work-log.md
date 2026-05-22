@@ -245,6 +245,32 @@
   band is too tight, options are lower `parcels.zoom` or raise `maxZoom` —
   but USGS basemaps top out near 16, so raising it degrades those tiles.
   Tuning call for BC after test-driving.
-- **Next**: BC smoke-tests 5a (`?regional=false`, check Show parcel data,
-  zoom into a town — parcels draw; pan-back is instant). Select parcel(s) is
-  still inert (5b). Then 5b (click-to-select) and 5c (hand-off to getReport).
+- **5a verified** by BC — parcel display works well. Checkbox-spacing CSS
+  re-scoped to `:has(.checkbox)` so it no longer squeezes the Full screen
+  `materialSwitch`; BC tuned the margin to -0.75rem.
+- **Mode-specific home + switch view-preservation (decision 7) — built.**
+  - `app.data.R`: `home.regional`/`zoom.regional` (c(-75,42), 6) and
+    `home.ma`/`zoom.ma` (c(-72.0546, 41.5818), 7). MA home dialed in with a
+    temporary console monitor (since removed); zoom 7 — zoom 8 clips the
+    state at common screen sizes.
+  - `resolve.cfg`: now also returns `home.zoom` (mode overview zoom) and
+    `view` = list(lng,lat,zoom). `view` is the mode home unless the URL
+    carries valid lng/lat/zoom params, in which case the carried view wins.
+  - `switch.url`: gained a `view` arg — appends `&lng=&lat=&zoom=` when a
+    view is carried, bare `?regional=...` otherwise.
+  - `make.ui`: switch is now an `actionLink('switch.mode')` instead of a
+    static `<a href>`.
+  - `make.server`: `renderLeaflet` opens at `cfg$view`; new
+    `observeEvent(input$switch.mode)` — if the user has zoomed in past the
+    mode's overview zoom it carries the current view (center from
+    `map_bounds`, zoom from `map_zoom`), else lands on the other version's
+    home; navigates via `shinyjs::runjs`. Temp monitor removed.
+  - Carry heuristic: `input$map_zoom > cfg$home.zoom`. Zoomed in = looking
+    at something specific = carry; at the overview = reset to the other
+    version's home (avoids dumping a useless panned overview into the other
+    mode).
+- **Next**: BC smoke-tests the switch (regional <-> MA, from overview and
+  from zoomed-in). Then back to WS 5 — 5b (click-to-select) and 5c
+  (hand-off to getReport). WS 6 (boundary overlay) now unblocked too:
+  counties/towns are on GeoServer as `boundaries:mass_counties` /
+  `boundaries:mass_tow`.
