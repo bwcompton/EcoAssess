@@ -289,11 +289,34 @@
   - Deliberately NOT carried: "Show user basemap" (needs an upload that
     can't round-trip a reload) and the MA-only POS/parcel toggles (the
     switch always flips the mode, so there's no same-mode target).
-- **Plan note**: the cfg-list section in implementation-plan.md was trimmed
-  back to 4 fields by BC; cfg actually has 11 now. Left it for BC to decide
-  whether to re-sync or keep lean.
-- **Next**: BC smoke-tests the full switch (layer + basemap + opacity +
-  boundaries all stick; view carried when zoomed in). Then WS 5 — 5b
-  (click-to-select) and 5c (hand-off to getReport). WS 6 unblocked:
-  counties/towns on GeoServer as `boundaries:mass_counties` /
-  `boundaries:mass_tow`.
+- **Plan cfg-list collision** — an editing collision (a stale MarkText buffer,
+  not RStudio, saved over the file) had dropped the `cfg$home.zoom`/`cfg$view`
+  bullets while keeping BC's new WS #11. Recovered: bullets restored, cfg
+  section completed to all 11 fields, WS #11 kept. BC will keep MarkText
+  closed during Claude work and fresh-load before editing.
+- **Full switch verified** by BC.
+
+- **WS 5b + 5c — parcel selection → project area (complete).** They merged
+  into one increment: dissolving the selection on every click keeps
+  `session$userData$poly` current, so getReport consumes it through its
+  existing uploaded-shapefile path with **no `make.server` change** — all
+  logic is in `parcel.server`.
+  - `selectParcels` observer: enters selection mode — `selecting <- TRUE`,
+    turns `show.parcels` on and locks it, disables Draw/Upload/selectParcels,
+    enables Restart (mutual exclusion, like the Draw tools).
+  - `map_shape_click` observer: only acts in selection mode (passive display
+    ignores clicks, per the design fork); toggles the clicked parcel via the
+    PoC's base-id / `sel_`-prefix scheme; geometry comes from `parcel.store`.
+  - `refresh.selection`: redraws the purple highlight group and dissolves the
+    selection (st_make_valid + st_union + buffer-0 fallback) into
+    `session$userData$poly` (4326), `drawn = FALSE`; toggles getReport.
+  - `observeEvent(drawPolys / shapefile)`: disable selectParcels (mutual
+    exclusion, other direction). Restart observer clears the selection and
+    leaves selection mode.
+  - getReport: untouched — `drawn = FALSE` + `poly` set means its existing
+    else-branch runs the report on the dissolved parcels; area limits etc.
+    apply automatically (decision 12).
+- **Next**: BC smoke-tests parcel selection end to end (Select parcel(s) →
+  click parcels → Get report → PDF; Restart; Draw/Upload mutual exclusion).
+  Then WS 6 (POS overlay + boundary swap — counties/towns layer is on
+  GeoServer).
