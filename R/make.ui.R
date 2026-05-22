@@ -3,16 +3,19 @@
    # make.ui
    # Build the Shiny UI tree for this session. Branches on cfg (resolved by
    # resolve.cfg from the URL query string) to render either the regional or
-   # the Massachusetts version of the app. For workstream 2 only the page
-   # title varies; the rest of the UI deltas (switch field, boundary label,
-   # parcel + POS controls, etc.) land in workstream 4.
+   # the Massachusetts version of the app. The Massachusetts version adds a
+   # mode-switch field, "Show protected open space" and "Show parcel data"
+   # checkboxes, and a "Select parcel(s)" button, and relabels the boundary
+   # checkbox. The switch field itself appears in both versions.
    #
    # Arguments:
    #     cfg            current session's cfg list (from resolve.cfg)
    # Result:
    #     a bslib page_sidebar UI tree
-   # B. Compton, 20 May 2026
+   # B. Compton, 20-21 May 2026
 
+
+   ma <- !cfg$regional         # Massachusetts mode -- gates the MA-only UI deltas
 
    page_sidebar(
       theme = bs_theme(bootswatch = 'cerulean', version = 5),   # bslib version defense. Use version_default() to update
@@ -41,6 +44,11 @@
                   tipped(actionButton('uploadShapefile', 'Upload'), uploadTooltip),
                ),
 
+               if(ma) span(                                    # ----- MA: Select parcel(s)
+                  HTML('or&nbsp;'),
+                  tipped(actionButton('selectParcels', 'Select parcel(s)'), selectParcelsTooltip)
+               ),
+
                span(
                   tipped(actionButton('getReport', 'Get report'), getReportTooltip),
                   tipped(actionButton('restart', 'Restart'), restartTooltip)
@@ -52,6 +60,12 @@
                actionLink('aboutecoConnect', label = 'About ecoConnect'),
                actionLink('aboutIEI', label = 'About the Index of Ecological Integrity'),
                p(HTML('<a href="https://umassdsl.org/" target="_blank" rel="noopener">UMass DSL home page</a>')),
+               br(),
+               span(                                           # ----- regional <-> MA switch field
+                  tipped(cfg$switch.label, if(cfg$regional) regionalVersionTooltip else massachusettsVersionTooltip),
+                  HTML('&nbsp;'),
+                  tags$a(id = 'switch.mode', 'switch', href = switch.url(cfg))
+               ),
                br(),
                span('Version 1.1.3', actionLink('whatsNew', label = 'What\'s new?')),
                br(),
@@ -95,7 +109,9 @@
                             choiceNames = c('Simple map', 'Open Street Map', 'Topo map', 'Imagery'),
                             choiceValues = c('Stadia.StamenTonerLite', 'OpenStreetMap.Mapnik', 'USGS.USTopo', 'USGS.USImagery')),
                hr(),
-               checkboxInput('show.boundaries', label = 'Show states and counties', value = FALSE),
+               checkboxInput('show.boundaries', label = cfg$boundary.label, value = FALSE),
+               if(ma) checkboxInput('show.pos', label = tipped('Show protected open space', showPOSTooltip), value = FALSE),
+               if(ma) checkboxInput('show.parcels', label = tipped('Show parcel data', showParcelsTooltip), value = FALSE),
                checkboxInput('show.usermap', label = 'Show user basemap', value = FALSE),
                tipped(actionButton('upload.usermap', 'Upload user basemap'), usermapTooltip)
 

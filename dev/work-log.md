@@ -195,3 +195,33 @@
 - **Next**: BC re-runs and smoke-tests this; if the regional default still
   looks right and `?regional=false` flips the title, on to WS 4 (switch
   field, boundary label, parcel + POS UI controls).
+
+## 2026-05-22
+
+- **Fixed two refactor follow-on bugs.** `server <- make.server` (bare alias)
+  swapped for a `function(input, output, session)` wrapper — the alias tripped
+  Shiny's session-output wiring and the Get-report downloadHandler 404'd.
+  Also dropped a now-broken `source('annotation-scale.R')` inside
+  `make.report.maps.R` (the file is autoloaded from `R/` now). Report flow
+  verified working end to end.
+- **WS 4 — MA-mode UI shell built.** Decisions (via AskUserQuestion): switch
+  field goes in the left sidebar above Version; compact wording ("Regional
+  EcoAssess (i) switch"). Built:
+  - `resolve.cfg` expanded: `regional`, `title`, `switch.label`,
+    `boundary.label`. MA-only gating stays as `!regional` (no redundant
+    cfg fields).
+  - `make.ui`: switch field (both modes, wired to `switch.url` — basic
+    flag-flip, no state encoding yet); MA-only "Show protected open space"
+    + "Show parcel data" checkboxes; MA-only "or Select parcel(s)" button;
+    `boundary.label` swap on the show-boundaries checkbox.
+  - 5 new tooltips: `tooltipRegionalVersion`, `tooltipMassachusettsVersion`
+    (text verbatim from roadmap), plus `tooltipShowPOS`, `tooltipShowParcels`,
+    `tooltipSelectParcels` (first-draft wording — BC to review).
+  - New controls are inert — `show.pos` / `show.parcels` / `selectParcels`
+    have no server handlers yet; that's WS 5/6.
+- **Note**: in MA mode the boundary checkbox now reads "Show counties and
+  towns" but still draws the regional states+counties WMS until the
+  counties/towns layer is published to GeoServer (WS 6).
+- **Next**: BC smoke-tests MA mode (`?regional=false`) — switch field,
+  checkboxes, button all present and the switch link round-trips. Then WS 5
+  (parcel selection → project area) or WS 6 (overlays).

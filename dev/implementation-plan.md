@@ -31,17 +31,27 @@ in addition to the existing draw-polygon and upload-shapefile paths.
 | 12  | Multi-parcel selection treated like a multi-feature shapefile: dissolve into one project area. Bounding-box size limit applies; scattered/disjunct parcels that bust the bbox are out of scope (clear error message).                                                                                                                       |
 | 13  | **Daily monitor**: GitHub Actions scheduled workflow checks GeoServer + parcels + POS + shinyapps.io, emails on failure. Separate deliverable, not app code; **after the app is in good shape**. Useful side effect: the morning ping warms the shinyapps.io instance, so the first real user each day skips the cold start. **Confirmed.** |
 
-## `cfg` list (resolved at UI build from `request`)
+## `cfg` list (resolved per session by `resolve.cfg`)
+
+Current fields (house dot-style naming):
 
 - `cfg$regional` — TRUE/FALSE
 - `cfg$title` — "EcoAssess" / "Massachusetts EcoAssess"
-- `cfg$switch_label` / `cfg$switch_tooltip` — the "(i) switch" field text
-- `cfg$boundary_label` — "Show states and counties" / "Show counties and towns"
-- `cfg$boundary_layers` — GeoServer WMS layer list for `addBoundaries()`
-- `cfg$show_parcels` — enable parcel UI + behavior
-- `cfg$show_pos` — enable protected-open-space overlay
-- `cfg$matomo_dimension` — per-mode analytics tag
-- (data endpoint constants live separately, see Data sources)
+- `cfg$switch.label` — current version name shown by the switch field
+- `cfg$boundary.label` — "Show states and counties" / "Show counties and towns"
+
+Deliberately *not* cfg fields:
+
+- MA-only UI gating (`show.pos`, `show.parcels`, select-parcels button) is
+  just `!cfg$regional` — `make.ui` uses a local `ma <- !cfg$regional` rather
+  than redundant cfg fields. Add real fields only if a mode ever needs
+  parcels-without-POS etc.
+- Switch tooltip: mode-specific markdown, picked in `make.ui` from the
+  autoloaded `regionalVersionTooltip` / `massachusettsVersionTooltip` globals.
+- `boundary.layers` (GeoServer WMS list) — lands in WS 6 with the
+  counties/towns layer.
+- Matomo per-mode dimension — lands when the Matomo JS is touched.
+- Data endpoint constants live separately (see Data sources).
 
 ## Workstreams / phases
 
@@ -58,9 +68,12 @@ in addition to the existing draw-polygon and upload-shapefile paths.
    Matomo per-mode dimension (when we touch the Matomo JS).
 3. **Data layer**: config constants; startup checks for parcels + POS modeled
    on the GeoServer ping; graceful degradation paths.
-4. **MA-mode UI deltas**: title; switch field + tooltip; `cfg$boundary_label`
-   swap; "Show protected open space" checkbox; "Show parcel data" checkbox;
-   "or [Select parcel(s)]" button under Draw/Upload.
+4. **MA-mode UI deltas** — **shell built 2026-05-21**: switch field (sidebar,
+   above Version; compact wording; wired to `switch.url`), `boundary.label`
+   swap, "Show protected open space" + "Show parcel data" checkboxes,
+   "or [Select parcel(s)]" button, 5 new tooltips. Controls exist but are
+   inert — their behavior is WS 5/6. Remaining: switch view-state
+   preservation (decision 7), and the WS 5/6 behaviors.
 5. **Parcel selection → project area**: assemble selected parcels into an sf
    object → `session$userData$poly`, `drawn = FALSE`. Existing `getReport`
    machinery (validate / transform / area limits / report) then applies

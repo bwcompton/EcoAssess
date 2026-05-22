@@ -18,8 +18,12 @@
    #     query_string   the URL query string after `?` (may be NULL or empty
    #                    for the base URL)
    # Result:
-   #     a list of config fields
-   # B. Compton, 20 May 2026
+   #     a list:
+   #        regional        TRUE for the 13-state regional app, FALSE for MA
+   #        title           page title
+   #        switch.label    name of the current version, shown by the switch field
+   #        boundary.label  label for the show-boundaries checkbox
+   # B. Compton, 20-21 May 2026
 
 
    q <- if(is.null(query_string) || !nzchar(query_string)) list()
@@ -28,9 +32,9 @@
    regional <- !identical(tolower(as.character(q[['regional']])), 'false')
 
    list(
-      regional = regional,
-      title    = if(regional) 'EcoAssess' else 'Massachusetts EcoAssess'
-      # workstream 4 will land more here: switch_label, switch_tooltip,
-      # boundary_label, boundary_layers, show_parcels, show_pos, etc.
+      regional       = regional,
+      title          = if(regional) 'EcoAssess' else 'Massachusetts EcoAssess',
+      switch.label   = if(regional) 'Regional EcoAssess' else 'Massachusetts EcoAssess',
+      boundary.label = if(regional) 'Show states and counties' else 'Show counties and towns'
    )
 }
