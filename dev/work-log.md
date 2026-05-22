@@ -340,7 +340,15 @@
   2. The fetch should **time out fast** (~15 s) and degrade, not spin.
   3. The daily monitor (WS 8) would have flagged this — value now concrete.
 - httr2 was rolled back to 1.2.1 mid-diagnosis (wrong lead) → restore 1.2.2.
-- **Next**: retry parcel selection once the ESRI endpoint is back (smoke-test
-  Select parcel(s) → Get report → PDF, Restart, Draw/Upload exclusion). Then
-  the timeout / non-blocking-startup robustness work, and WS 6 (POS overlay +
-  boundary swap — counties/towns layer is on GeoServer).
+- **WS 5 VERIFIED end to end (2026-05-22).** The ESRI endpoint recovered
+  (the `?f=json` browser call returned the layer description). BC reinstalled
+  current httr2 (1.2.2), restarted RStudio, ran the real app, selected
+  parcels, generated a report — the full parcel path works. Outage cause
+  stays ambiguous: ESRI transient/throttle, or a compromised R session.
+  Diagnostic kit for next time: run PoC #2 from a UMass server (different IP
+  → isolates rate-limiting), the `?f=json` call (server up?), restart
+  R / RStudio (session poisoned?).
+- **Next**: the robustness pass (non-blocking startup probe + fast fetch
+  timeout — make ESRI hiccups a shrug, not a hang); then WS 6 (POS overlay +
+  boundary swap, counties/towns layer is on GeoServer), WS 8 (daily monitor),
+  and BC's WS 7 (About page) / WS 11 (AcuGIS counties/towns).
