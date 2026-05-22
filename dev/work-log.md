@@ -316,7 +316,31 @@
   - getReport: untouched — `drawn = FALSE` + `poly` set means its existing
     else-branch runs the report on the dissolved parcels; area limits etc.
     apply automatically (decision 12).
-- **Next**: BC smoke-tests parcel selection end to end (Select parcel(s) →
-  click parcels → Get report → PDF; Restart; Draw/Upload mutual exclusion).
-  Then WS 6 (POS overlay + boundary swap — counties/towns layer is on
-  GeoServer).
+- **Parcel fetch crash — diagnosed as an ESRI endpoint outage.** First run
+  of parcel display crashed in `arcgislayers::arc_select` → `arcpbf`
+  ("subscript out of bounds"). Diagnosis:
+  - PoC #2 (known-good) failed identically → not our code.
+  - BC had been panning parcels successfully ~2 h earlier with the *same*
+    package versions (httr2 1.2.2, arcgislayers 0.6.0, arcgisutils 0.5.0,
+    arcpbf 0.2.0), no updates since → not a package regression.
+  - Requests hang "an extraordinarily long time"; the error varies by httr2
+    version (subscript-out-of-bounds on 1.2.2, can't-determine-count on
+    1.2.1) — same root, different `arc_select` stage. → the MassGIS
+    `Massachusetts_Property_Tax_Parcels` FeatureServer is degraded right now
+    (transient outage, or throttling after BC's burst of pan-queries).
+  - Committed `1caea5d`: `tryCatch` around the fetch + bbox/zoom/count
+    logging — the app degrades instead of crashing.
+- **WS 5 status**: parcel selection is **code-complete** and was working
+  ~2 h ago — the code is sound; just untestable until the endpoint recovers.
+- **Robustness gaps this exposed (next focused task):**
+  1. MA mode **hangs at startup** when the endpoint is slow — the
+     `make.server` parcels startup-check calls `arc_open`, which blocks the
+     whole session. Make that probe non-blocking / time-limited; draw/upload
+     don't need parcels.
+  2. The fetch should **time out fast** (~15 s) and degrade, not spin.
+  3. The daily monitor (WS 8) would have flagged this — value now concrete.
+- httr2 was rolled back to 1.2.1 mid-diagnosis (wrong lead) → restore 1.2.2.
+- **Next**: retry parcel selection once the ESRI endpoint is back (smoke-test
+  Select parcel(s) → Get report → PDF, Restart, Draw/Upload exclusion). Then
+  the timeout / non-blocking-startup robustness work, and WS 6 (POS overlay +
+  boundary swap — counties/towns layer is on GeoServer).
