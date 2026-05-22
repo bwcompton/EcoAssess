@@ -81,9 +81,15 @@ Deliberately *not* cfg fields:
 6. **Overlays**: `addProtectedOpenSpace()` helper (filter `LEV_PROT == 'P'`);
    parametrize `addBoundaries()` by `cfg$boundary_layers`; prep + publish
    counties/towns layer on both GeoServers.
-7. **Daily monitor**: GitHub Actions workflow.
-8. **Tooltips** for every new control.
-9. **Test + deploy** (single instance).
+7. **Update About this site**: include info on Massachusetts version. I'm leaning towards two separate versions that are identical, with the new Massachusetts stuff added in the Mass version. A bit of a pain to keep updated, but it'll be pretty stable and alternatives seem overly-complicated. I think this is cleaner than having a separate tab for About Massachusetts version or some such. I need to add the following text to aboutTool.md:
+   - Title: About this site (Massachusetts version | Regional version)
+   
+   - Include a note about switching + explain the two versions (both versions)
+   
+   - Include the Massachusetts stuff where appropriate (Mass version)
+8. **Daily monitor**: GitHub Actions workflow.
+9. **Tooltips** for every new control.
+10. **Test + deploy** (single instance).
 
 ## Parcel display/selection design (from readMVT precedent)
 
@@ -164,11 +170,13 @@ Pattern lifted from `DEPMEP.app.R` + `readMVT::read.viewport.tiles`, minus MVT:
   production app). `st_union` on certain combinations of REST-fetched
   parcels throws GEOS's "unable to assign free hole to a shell". Defensive
   recipe applied in the PoC dump and **required at the real-app union point**:
+  
   ```r
   geoms <- st_make_valid(rbind_of_selected_parcels)
   poly  <- tryCatch(st_union(geoms),
                     error = function(e) st_union(st_buffer(geoms, 0)))
   ```
+  
   Buffer-by-zero re-traces through GEOS's polygon builder and snaps the
   slivers out. Single-parcel selections don't trigger it (no shared
   boundary to slip on). **Future spike**: investigate whether `arc_select`
