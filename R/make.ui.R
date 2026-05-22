@@ -22,6 +22,7 @@
       useShinyjs(),
       extendShinyjs(script = 'fullscreen.js', functions = c('fullscreen', 'normalscreen', 'is_iOS')),
       tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "fullscreen.css")),      # turn off dark background for fullscreen
+      tags$head(tags$style(HTML('.shiny-input-container:has(input[type=checkbox]) {margin-bottom: 0.25rem;}'))),   # tighten vertical spacing between checkboxes
 
       tags$head(tags$script(src = 'matomo.js')),               # add Matomo tracking JS
       tags$head(tags$script(src = 'matomo_heartbeat.js')),     # turn on heartbeat timer
