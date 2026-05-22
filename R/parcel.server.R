@@ -70,8 +70,18 @@
          mc  <- cells[miss, ]
          ixr <- range(mc$ix)
          iyr <- range(mc$iy)
-         p <- get.parcels.C(ixr[1] * parcels.grid, iyr[1] * parcels.grid,
-                            (ixr[2] + 1L) * parcels.grid, (iyr[2] + 1L) * parcels.grid)
+         bb  <- c(ixr[1] * parcels.grid, iyr[1] * parcels.grid,
+                  (ixr[2] + 1L) * parcels.grid, (iyr[2] + 1L) * parcels.grid)
+         message(sprintf('parcels: fetching bbox [%s] at zoom %s',
+                         paste(round(bb, 4), collapse = ', '), v$zoom))
+         # tryCatch so an arc_select / arcpbf failure degrades gracefully
+         # instead of crashing the observer (decision 10 spirit)
+         p <- tryCatch(get.parcels.C(bb[1], bb[2], bb[3], bb[4]),
+                       error = function(e) {
+                          message('parcels: fetch FAILED -- ', conditionMessage(e))
+                          NULL
+                       })
+         message(sprintf('parcels: got %s feature(s)', if(is.null(p)) 0 else nrow(p)))
          session$userData$parcels.fetched <- union(session$userData$parcels.fetched, keys[miss])
          draw.parcels(m, p)
       }
