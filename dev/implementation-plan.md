@@ -43,6 +43,9 @@ Current fields (house dot-style naming):
   carry test compares the current zoom against it
 - `cfg$view` — `list(lng, lat, zoom)`, where the map opens: the mode home,
   or a view carried across a switch (decision 7)
+- `cfg$layer` / `cfg$display` / `cfg$basemap` / `cfg$opacity` /
+  `cfg$boundaries` — control state carried across a switch (decision 7);
+  `NULL` on a fresh load; `make.ui` validates and falls back to defaults
 
 Deliberately *not* cfg fields:
 
@@ -94,6 +97,7 @@ Deliberately *not* cfg fields:
 8. **Daily monitor**: GitHub Actions workflow.
 9. **Tooltips** for every new control.
 10. **Test + deploy** (single instance).
+11. **Deploy mass_counties and mass_towns on AcuGIS** if those fuckers ever get our server back up. It's currently down.
 
 ## Parcel display/selection design (from readMVT precedent)
 

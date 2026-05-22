@@ -14,6 +14,7 @@
    if(selected) 
       map <- addWMSTiles(map, paste0(geoserver, 'wms'), 
                          layers = list('boundaries:counties', 'boundaries:states'), 
+                   #      layers = list('boundaries:mass_towns', 'boundaries:mass_counties'), 
                          layerId = 'boundaries',
                          options = WMSTileOptions(transparent = TRUE, format = 'image/png'))
    else 
