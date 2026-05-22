@@ -26,3 +26,12 @@ geoserver <- list(
 )
 
 osm_email <- readChar(f <- 'www/osm_email.txt', file.info(f)$size)
+
+
+# Massachusetts parcels (MA mode only) -- MassGIS L3 assessor parcels, served
+# from the ArcGIS FeatureServer. See R/get.parcels.R and R/parcel.server.R.
+parcels.url      <- 'https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0'
+parcels.id       <- 'LOC_ID'   # MassGIS statewide unique parcel id (a string)
+parcels.zoom     <- 15         # show/fetch parcels at this Leaflet zoom or closer
+parcels.grid     <- 0.01       # viewport-fetch grid cell size, degrees (~0.8 km E-W in MA)
+parcels.debounce <- 300        # ms to collapse rapid pan/zoom before fetching

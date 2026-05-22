@@ -13,6 +13,7 @@
                                                                                  # because url_search
                                                                                  # is a reactive value
                                                                                  # and we want it once.
+   cfg <- session$userData$cfg
 
    shinyjs::disable('restart')
    shinyjs::disable('getReport')
@@ -44,6 +45,17 @@
 
 
    message('Using ', session$userData$geoserver)
+
+
+   if(!cfg$regional) {                                # ----- Massachusetts mode: parcels
+      if(is.null(parcels.layer())) {                  #      endpoint unreachable: degrade
+         message('Parcels unavailable')               #      to draw/upload only
+         shinyjs::disable('show.parcels')
+         shinyjs::disable('selectParcels')
+      }
+      else
+         parcel.server(input, output, session)
+   }
 
 
    observeEvent(input$aboutTool, {

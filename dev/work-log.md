@@ -222,6 +222,29 @@
 - **Note**: in MA mode the boundary checkbox now reads "Show counties and
   towns" but still draws the regional states+counties WMS until the
   counties/towns layer is published to GeoServer (WS 6).
-- **Next**: BC smoke-tests MA mode (`?regional=false`) — switch field,
-  checkboxes, button all present and the switch link round-trips. Then WS 5
-  (parcel selection → project area) or WS 6 (overlays).
+- **WS 5 started — increment 5a (parcel display).** Design fork settled (via
+  AskUserQuestion): displayed parcels are a passive overlay; clicking selects
+  only after Select parcel(s) is pressed. Built:
+  - `app.data.R` — `parcels.url`, `parcels.id` (`LOC_ID`), `parcels.zoom`
+    (15), `parcels.grid` (0.01°), `parcels.debounce` (300 ms) constants.
+  - `R/get.parcels.R` — `parcels.layer()` lazy process-global handle
+    (one `arc_open`, NULL on failure, regional mode never calls it);
+    `get.parcels()` viewport fetch returning native EPSG:26986, memoised
+    globally as `get.parcels.C`; grid helpers `parcel.cells` /
+    `parcel.cell.key`. arcgislayers + memoise referenced via `::` so they
+    load on demand — no `library()` call, no autoload-timing risk.
+  - `R/parcel.server.R` — `parcel.server(input, output, session)`, a
+    self-contained MA-parcels module. 5a: the viewport-display observer
+    (smart-hybrid grid, zoom-gated on `parcels.zoom`, gated on the
+    `show.parcels` checkbox). Stashes native geoms in `parcel.store` for 5b.
+  - `make.server.R` — MA mode calls `parcel.server`; if `parcels.layer()`
+    is NULL the parcels endpoint is down → disable show.parcels +
+    selectParcels (decision 10 graceful degradation; user-facing error
+    modal still a TODO — only a console message for now).
+- **Note**: parcels show only at zoom 15-16 (app `maxZoom` is 16). If that
+  band is too tight, options are lower `parcels.zoom` or raise `maxZoom` —
+  but USGS basemaps top out near 16, so raising it degrades those tiles.
+  Tuning call for BC after test-driving.
+- **Next**: BC smoke-tests 5a (`?regional=false`, check Show parcel data,
+  zoom into a town — parcels draw; pan-back is instant). Select parcel(s) is
+  still inert (5b). Then 5b (click-to-select) and 5c (hand-off to getReport).
