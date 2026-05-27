@@ -53,14 +53,15 @@
    message('Using ', session$userData$geoserver)
 
 
-   if(!cfg$regional) {                                # ----- Massachusetts mode: parcels
-      if(is.null(parcels.layer())) {                  #      endpoint unreachable: degrade
-         message('Parcels unavailable')               #      to draw/upload only
+   if(!cfg$regional) {                                # ----- Massachusetts mode: ESRI probe
+      if(esri.probe()) {                             #      both endpoints reachable: full MA mode
+         parcel.server(input, output, session)
+      } else {                                       #      either endpoint down: degrade to
+         message('ESRI endpoints unavailable')       #      draw/upload, show explanatory modal
+         error.message('ESRI')
          shinyjs::disable('show.parcels')
          shinyjs::disable('selectParcels')
       }
-      else
-         parcel.server(input, output, session)
    }
 
 

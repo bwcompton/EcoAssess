@@ -1,7 +1,7 @@
-# get.parcels.R - fetch MassGIS parcels for a viewport, plus the lazy layer
-# handle they're fetched through and the viewport grid helpers. Auto-loaded
-# from R/. arcgislayers / memoise are referenced with `::` so they load on
-# demand -- no library() call, and regional-mode sessions never touch them.
+# get.parcels.R - ESRI startup probe, MassGIS parcel fetch, the lazy layer
+# handle they're fetched through, and viewport grid helpers. Auto-loaded from
+# R/. arcgislayers / memoise are referenced with `::` so they load on demand --
+# no library() call, and regional-mode sessions never touch them.
 # B. Compton, 22 May 2026
 
 
@@ -12,10 +12,12 @@
    # Lazy, process-global handle to the MassGIS parcels FeatureServer. Opened
    # (one arc_open) on first call and cached for the life of the R process;
    # regional-mode sessions never call it, so they pay nothing. Returns NULL
-   # if the endpoint can't be opened -- callers (the make.server startup check,
-   # get.parcels) treat NULL as "parcels unavailable" and degrade gracefully.
-   # Note: opened once per process, so a mid-day endpoint recovery isn't picked
-   # up until the next process; the daily monitor (Extras) is the backstop.
+   # if the endpoint can't be opened -- get.parcels treats NULL as "parcels
+   # unavailable" and returns NULL. esri.probe() is the startup gatekeeper;
+   # by the time parcels.layer() is first called (on the initial viewport
+   # fetch), the server is known to be up.
+   # Note: opened once per process, so a mid-session endpoint recovery isn't
+   # picked up until the next process; the daily monitor (WS 8) is the backstop.
 
    layer  <- NULL
    opened <- FALSE
@@ -27,6 +29,38 @@
       layer
    }
 })
+
+
+'esri.probe' <- function() {
+
+   # esri.probe
+   # Ping the MassGIS parcels and protected open space FeatureServer endpoints
+   # at MA-mode session startup to confirm ESRI is reachable. Uses httr::GET
+   # with explicit timeouts -- the same pattern as the GeoServer probe.
+   # Parcels gets 6 s. POS gets 6 s if parcels responded (it may be
+   # independently down) or 2 s if parcels already failed (outage is already
+   # confirmed; no need to linger). Returns TRUE only when both respond with
+   # HTTP 200. Called from make.server.
+   # B. Compton, 27 May 2026
+
+   parcels.ok <- tryCatch({
+      GET(parcels.url, timeout(6))$status_code == 200
+   }, error = function(e) {
+      message('ESRI parcels probe failed: ', conditionMessage(e))
+      FALSE
+   })
+   message('ESRI parcels probe: ', if(parcels.ok) 'OK' else 'FAILED')
+
+   pos.ok <- tryCatch({
+      GET(pos.url, timeout(if(parcels.ok) 6 else 2))$status_code == 200
+   }, error = function(e) {
+      message('ESRI POS probe failed: ', conditionMessage(e))
+      FALSE
+   })
+   message('ESRI POS probe: ', if(pos.ok) 'OK' else 'FAILED')
+
+   parcels.ok && pos.ok
+}
 
 
 'get.parcels' <- function(xmin, ymin, xmax, ymax) {

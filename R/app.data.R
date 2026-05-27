@@ -40,3 +40,6 @@ parcels.id       <- 'LOC_ID'   # MassGIS statewide unique parcel id (a string)
 parcels.zoom     <- 15         # show/fetch parcels at this Leaflet zoom or closer
 parcels.grid     <- 0.01       # viewport-fetch grid cell size, degrees (~0.8 km E-W in MA)
 parcels.debounce <- 300        # ms to collapse rapid pan/zoom before fetching
+
+# Massachusetts protected open space (MA mode only, WS 6) -- MassGIS POS layer.
+pos.url <- 'https://arcgisserver.digital.mass.gov/arcgisserver/rest/services/AGOL/openspace/FeatureServer/0'
