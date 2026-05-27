@@ -352,3 +352,12 @@
   timeout — make ESRI hiccups a shrug, not a hang); then WS 6 (POS overlay +
   boundary swap, counties/towns layer is on GeoServer), WS 8 (daily monitor),
   and BC's WS 7 (About page) / WS 11 (AcuGIS counties/towns).
+
+## 2026-05-27
+
+- **Switched to CLI Claude Code** (API key) from Desktop Claude Code (Pro account) to manage token costs after a heavy previous session.
+- **Robustness pass — ESRI startup probe (complete).** Replaced the blocking `parcels.layer()` / `arc_open` startup check with `esri.probe()`, which pings both the parcels and POS FeatureServer endpoints using `httr::GET` with explicit timeouts (same pattern as the GeoServer probe). Parcels gets 6 s; POS gets 6 s if parcels responded or 2 s if parcels already failed (outage confirmed, no need to linger). If either is unreachable: `error.message('ESRI')` shows a modal, `show.parcels` and `selectParcels` are disabled, session falls back to draw/upload — mirrors the GeoServer outage path exactly.
+- **Mid-session fetch timeout** — decided not to add one. `arc_select`'s `...` pass into the ESRI query params, not the httr2 request, so there's no clean injection point. On Windows, `setTimeLimit(elapsed=)` doesn't reliably interrupt C-level I/O. The `tryCatch` in `parcel.server` already handles error responses; a true silent hang (server accepts connection but never replies) is a narrow edge case acceptable given the startup probe covers the main outage scenario.
+- `pos.url` added to `app.data.R` now (needed by the probe; also ready for WS 6).
+- `inst/errorESRI.md` stub created; BC to fill in final text.
+- **Next**: WS 6 — POS overlay + boundary swap to counties/towns. Confirm towns layer name (`mass_towns` vs `mass_tow`) with BC before wiring.
