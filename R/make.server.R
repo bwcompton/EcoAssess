@@ -59,6 +59,7 @@
       } else {                                       #      either endpoint down: degrade to
          message('ESRI endpoints unavailable')       #      draw/upload, show explanatory modal
          error.message('ESRI')
+         shinyjs::disable('show.pos')
          shinyjs::disable('show.parcels')
          shinyjs::disable('selectParcels')
       }
