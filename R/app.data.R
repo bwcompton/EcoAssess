@@ -42,5 +42,7 @@ parcels.grid     <- 0.01       # viewport-fetch grid cell size, degrees (~0.8 km
 parcels.debounce <- 300        # ms to collapse rapid pan/zoom before fetching
 
 # Massachusetts protected open space (MA mode only) -- MassGIS POS layer.
-pos.url  <- 'https://arcgisserver.digital.mass.gov/arcgisserver/rest/services/AGOL/openspace/FeatureServer/0'
-pos.zoom <- 12         # show POS at this Leaflet zoom or closer (tune in app with zoom monitor)
+pos.url      <- 'https://arcgisserver.digital.mass.gov/arcgisserver/rest/services/AGOL/openspace/FeatureServer/0'
+pos.zoom     <- 12         # show/fetch POS at this Leaflet zoom or closer (tune with zoom monitor)
+pos.grid     <- 0.1        # viewport-fetch grid cell size, degrees (~8 km E-W in MA at zoom 12)
+pos.debounce <- 300        # ms to collapse rapid pan/zoom before fetching
