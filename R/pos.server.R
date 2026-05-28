@@ -51,7 +51,7 @@
          session$userData$pos.fetched <- union(session$userData$pos.fetched, keys[miss])
          if(!is.null(p))
             addPolygons(m, data = sf::st_transform(p, 4326), group = 'pos',
-                        color = '#00FF00', weight = 5, opacity = 1, fillOpacity = 0.10,
+                        color = '#00DD00', weight = 5, opacity = 1, fillOpacity = 0.10,
                         options = pathOptions(pane = 'pos-pane'))
       }
 

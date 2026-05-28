@@ -65,10 +65,6 @@
          shinyjs::disable('selectParcels')
       }
 
-      output$zoom.level <- renderText({
-         req(input$map_zoom)
-         sprintf('zoom: %.1f', input$map_zoom)
-      })
    }
 
 

@@ -56,7 +56,7 @@
       regional       = regional,
       title          = if(regional) 'EcoAssess' else 'Massachusetts EcoAssess',
       switch.label   = if(regional) 'Regional EcoAssess' else 'Massachusetts EcoAssess',
-      boundary.label  = if(regional) 'Show states and counties' else 'Show counties and towns',
+      boundary.label  = if(regional) 'States and counties' else 'Counties and towns',
       boundary.layers = if(regional) list('boundaries:counties', 'boundaries:states')
                         else         list('boundaries:mass_towns', 'boundaries:mass_counties'),
       home.zoom      = if(regional) zoom.regional else zoom.ma,

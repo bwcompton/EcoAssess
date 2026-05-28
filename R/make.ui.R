@@ -4,7 +4,7 @@
    # Build the Shiny UI tree for this session. Branches on cfg (resolved by
    # resolve.cfg from the URL query string) to render either the regional or
    # the Massachusetts version of the app. The Massachusetts version adds a
-   # mode-switch field, "Show protected land" and "Show parcel data"
+   # mode-switch field, "Protected open space" and "Parcel boundaries"
    # checkboxes, and a "Select parcel(s)" button, and relabels the boundary
    # checkbox. The switch field itself appears in both versions.
    #
@@ -85,7 +85,6 @@
                   actionLink('switch.mode', 'switch')          # server builds the URL (make.server)
                ),
                span('Version 1.1.3', actionLink('whatsNew', label = 'What\'s new?')),
-               if(ma) textOutput('zoom.level'),
                br(),
                tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
             ),
@@ -130,9 +129,9 @@
                             selected = basemap.sel),
                hr(),
                checkboxInput('show.boundaries', label = cfg$boundary.label, value = isTRUE(cfg$boundaries)),
-               if(ma) checkboxInput('show.pos', label = tipped('Show protected land', showPOSTooltip), value = FALSE),
-               if(ma) checkboxInput('show.parcels', label = tipped('Show parcel data', showParcelsTooltip), value = FALSE),
-               checkboxInput('show.usermap', label = 'Show user basemap', value = FALSE),
+               if(ma) checkboxInput('show.pos', label = tipped('Protected open space', showPOSTooltip), value = FALSE),
+               if(ma) checkboxInput('show.parcels', label = tipped('Parcel boundaries', showParcelsTooltip), value = FALSE),
+               checkboxInput('show.usermap', label = 'User basemap', value = FALSE),
                tipped(actionButton('upload.usermap', 'Upload user basemap'), usermapTooltip)
 
             ),
