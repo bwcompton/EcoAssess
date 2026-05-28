@@ -94,7 +94,7 @@ Deliberately *not* cfg fields:
    parametrize `addBoundaries()` by `cfg$boundary_layers`; prep + publish
    counties/towns layer on both GeoServers.
 
-7. **Update About this site**: include info on Massachusetts version. I'm leaning towards two separate versions that are identical, with the new Massachusetts stuff added in the Mass version. A bit of a pain to keep updated, but it'll be pretty stable and alternatives seem overly-complicated. I think this is cleaner than having a separate tab for About Massachusetts version or some such. I need to add the following text to aboutTool.md:
+7. **Update About this site -- done 2026-05-28**: include info on Massachusetts version. I'm leaning towards two separate versions that are identical, with the new Massachusetts stuff added in the Mass version. A bit of a pain to keep updated, but it'll be pretty stable and alternatives seem overly-complicated. I think this is cleaner than having a separate tab for About Massachusetts version or some such. I need to add the following text to aboutTool.md:
    
    - Title: About this site (Massachusetts version | Regional version)
    

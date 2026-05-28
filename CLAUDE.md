@@ -83,13 +83,20 @@ Users: local land trusts (often no GIS), state/federal agencies, NGOs (TNC), con
 - **PoC #2** at `inst/scripts/MA_EcoAssess_poc2_parcel_select.R` is the proven reference for parcel viewport-fetch + click-select mechanics. If real-app behavior diverges, compare against this — it's the known-good baseline.
 - **The `cfg` list** (in `resolve.cfg`) is the single source of every mode difference. Eleven fields, documented in the plan. Don't add redundant cfg fields — `make.ui` uses a local `ma <- !cfg$regional` for MA-only UI gating.
 
-## Open at the time of this handoff (2026-05-22)
+## Open at the time of this handoff (2026-05-28)
 
-WS 5 (parcel selection — the funded core feature) is **verified end-to-end**: Select parcel(s) → click parcels → Get report → PDF. Next-session candidates:
+All major workstreams are complete. App is in draft-release shape.
 
-1. **Robustness pass** — MA mode currently hangs at startup when the parcels endpoint is slow (the startup `arc_open` blocks). Make that probe non-blocking; add a ~15 s timeout to the fetch so ESRI hiccups become a shrug, not a hang.
-2. **WS 6** — protected-open-space overlay; boundary swap to `boundaries:mass_counties` / counties-and-towns. The towns layer's exact name has a minor discrepancy (`mass_towns` in BC's test line vs `mass_tow` he said verbally) — **confirm with BC before wiring**.
-3. **WS 8** — daily GitHub Actions monitor (pings GeoServers + parcels + POS endpoints, emails on failure). Worth doing after the app is otherwise in good shape; would've caught the 2026-05-22 outage.
-4. BC owns: **WS 7** (rewrite "About this site" to cover both versions), **WS 11** (deploy counties/towns to AcuGIS when that GeoServer is back up).
+**Completed this session (2026-05-28):**
+- **Robustness pass** — `esri.probe()` replaces the blocking `arc_open` startup check; pings both MassGIS endpoints with short timeouts; ESRI outage → modal + graceful degradation. Done.
+- **WS 6** — POS overlay (viewport-driven, coarse grid, pane z-order) + boundary swap to `boundaries:mass_towns` / `boundaries:mass_counties` via `cfg$boundary.layers`. Done.
+- **WS 7** — About page forked into `aboutRegional.md` / `aboutMassachusetts.md`; modal title says which version. BC edited the MA text. Done.
+- **WS 8** — `.github/workflows/health-monitor.yml` pings 5 endpoints daily at noon UTC; `workflow_dispatch` for manual trigger. Cherry-picked to `main` as `86a4ee6`. **Pending BC**: push `main`, then trigger manually via Actions → EcoAssess Health Monitor → Run workflow.
+
+**Remaining:**
+1. **BC to push `main`** so the health monitor workflow activates (scheduled + workflow_dispatch only fire from the default branch).
+2. **WS 9 (tooltips)** — `load.tooltips.R` already loads `showPOSTooltip`, `showParcelsTooltip`, `selectParcelsTooltip`; quality of the markdown content in `inst/` is unknown — BC to review.
+3. **WS 11 (BC-owned)** — deploy `mass_counties` and `mass_towns` to AcuGIS (primary GeoServer is back up; currently only on marsh01 fallback).
+4. **Final QA + deploy** — BC to do a full end-to-end smoke test of the MA app, then deploy.
 
 The plan + work log have the full detail.

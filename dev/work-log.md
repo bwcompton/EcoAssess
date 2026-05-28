@@ -361,3 +361,26 @@
 - `pos.url` added to `app.data.R` now (needed by the probe; also ready for WS 6).
 - `inst/errorESRI.md` stub created; BC to fill in final text.
 - **Next**: WS 6 — POS overlay + boundary swap to counties/towns. Confirm towns layer name (`mass_towns` vs `mass_tow`) with BC before wiring.
+
+## 2026-05-28
+
+- **WS 6 — POS overlay + boundary swap (complete).** BC confirmed towns layer is `boundaries:mass_towns`. Built viewport-driven POS overlay using the same smart-hybrid grid pattern as parcels, with coarser `pos.grid = 0.1°` (vs parcels' 0.01°) to match the lower zoom at which open space parcels appear useful.
+  - `app.data.R` — added `pos.url` (MassGIS openspace FeatureServer/0), `pos.zoom = 12`, `pos.grid = 0.1`, `pos.debounce = 300`.
+  - `R/get.pos.R` — `pos.layer()` lazy process-global handle; `get.pos(xmin, ymin, xmax, ymax)` bbox-parameterized fetch with `where = "LEV_PROT = 'P'"` (permanently protected only, BC confirmed LEV_PROT is a character string), `suppressMessages` around `arc_select` to swallow cli "Iterating..." toasts; `get.pos.C` memoised globally; grid helpers `pos.cells` / `pos.cell.key`.
+  - `R/pos.server.R` — `pos.server(input, output, session)`, coverage ledger in `session$userData$pos.fetched`. `addPolygons` uses `color = '#00DD00'`, `weight = 5`, `opacity = 1`, `fillOpacity = 0.10`, `pane = 'pos-pane'`. BC iterated on color/weight/opacity interactively.
+  - `R/addBoundaries.R` — added `layers` parameter; regional passes `boundaries:states,boundaries:counties`, MA passes `boundaries:mass_towns,boundaries:mass_counties`.
+  - `resolve.cfg.R` — added `boundary.layers` field to cfg list.
+  - `make.server.R` — `pos.server()` called alongside `parcel.server()`; `addMapPane('pos-pane', zIndex = 410)` and `addMapPane('parcels-pane', zIndex = 420)` in `renderLeaflet` MA branch (guarantees z-order regardless of toggle sequence); `addBoundaries` now receives `cfg$boundary.layers`.
+  - `parcel.server.R` — both `addPolygons` calls (display + selection highlight) gained `pathOptions(pane = 'parcels-pane')`.
+  - Disable path on ESRI outage updated to include `shinyjs::disable('show.pos')` (initially missed; BC caught it).
+- **Initial POS approach (statewide fetch) rejected.** First attempt fetched all POS state-wide at startup: 1m17s initial load, 32s to redraw on toggle. Massachusetts has 51,745 protected-land parcels. Reverted immediately; rewrote to viewport-driven.
+- **Layer z-order issue.** POS sometimes rendered above parcels when toggled in certain sequences. Fixed with Leaflet panes created at map init — deterministic order regardless of draw sequence.
+- **Stroke opacity artifact.** Shared parcel/POS borders appeared darker (stroke stacking). Fixed by setting `opacity = 1` in all `addPolygons` calls (not the default 0.5).
+- **"Iterating..." toast.** arcgislayers cli messages routing through Shiny's message handler caused unsightly toasts. Suppressed with `suppressMessages()` around `arc_select`.
+- **Primary GeoServer outage.** Counties/towns didn't show because the primary GeoServer had been down for 3+ weeks; layers were on marsh01 (fallback) only. BC brought the primary back up and deployed the layers there — no code change needed.
+- **Duplicate `view = view,` in resolve.cfg.R.** BC's edit introduced a duplicate key. Fixed.
+- **Zoom monitor** added temporarily (to pick `pos.zoom = 12`) then removed once the zoom level was settled.
+- **BC edits in `make.ui.R`**: checkbox labels changed from "Show protected open space" / "Show parcel data" / "Show user basemap" to "Protected open space" / "Parcel boundaries" / "User basemap" (dropped redundant "Show").
+- **WS 7 — About page fork (complete).** `aboutTool.md` was a single document serving both modes. Forked it into `inst/aboutRegional.md` and `inst/aboutMassachusetts.md` (both copied from `aboutTool.md` as the starting point). `load.tooltips.R` updated to load both; `make.server.R` `aboutTool` observer now picks `aboutRegional` vs `aboutMassachusetts` by `cfg$regional`, with version-specific modal title suffix ("(regional version)" / "(Massachusetts version)"). BC edited `aboutMassachusetts.md` to final form. `aboutTool.md` left in place, orphaned.
+- **WS 8 — GitHub Actions health monitor (complete).** `.github/workflows/health-monitor.yml` pings 5 endpoints with `curl -L --max-time 15`: GeoServer primary, GeoServer fallback, MassGIS parcels, MassGIS POS, EcoAssess shinyapps.io. Fails the job (GitHub emails repo owner) if any return non-200. Schedule: daily noon UTC (7 AM EST / 8 AM EDT); `workflow_dispatch` for manual trigger. Endpoint list matches what `esri.probe()` and the GeoServer probe already check at app startup, plus the app itself. **Note**: scheduled workflows and `workflow_dispatch` only fire from the default branch (`main`). Workflow was committed on `Massachusetts` (commit `7fd7ab4`) and cherry-picked to `main` as `86a4ee6`. BC must push `main`, then the workflow appears in GitHub Actions → EcoAssess Health Monitor → Run workflow for manual testing.
+- **Next**: push `main` (BC to ask explicitly), trigger workflow_dispatch to verify; then final QA of the MA app before a draft release.
