@@ -6,7 +6,8 @@
 
 # tool tips
 ecoConnectDisplayTooltip <- includeMarkdown('inst/tooltipEcoConnectDisplay.md')
-projectAreaToolTip <- includeMarkdown('inst/tooltipProjectArea.md')
+projectAreaToolTipRegional      <- includeMarkdown('inst/tooltipProjectAreaRegional.md')
+projectAreaToolTipMassachusetts <- includeMarkdown('inst/tooltipProjectAreaMassachusetts.md')
 drawTooltip <- includeMarkdown('inst/tooltipDraw.md')
 uploadTooltip <- includeMarkdown('inst/tooltipUpload.md')
 restartTooltip <- includeMarkdown('inst/tooltipRestart.md')

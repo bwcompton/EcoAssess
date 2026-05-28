@@ -9,7 +9,7 @@
    # viewport, zoom-gated, via the smart-hybrid grid (one fetch per uncovered
    # strip; instant when panning back over covered ground).
    #
-   # Selection: the Select parcel(s) button enters selection mode -- clicking
+   # Selection: the Select parcels button enters selection mode -- clicking
    # parcels toggles them in/out of the project area (purple highlight). The
    # dissolved selection is kept current in session$userData$poly, so getReport
    # consumes it through its existing "uploaded shapefile" path with no change.
@@ -113,7 +113,7 @@
       shinyjs::enable('getReport')
    }
 
-   # ----- Select parcel(s): enter selection mode
+   # ----- Select parcels: enter selection mode
    observeEvent(input$selectParcels, {
       session$userData$selecting <- TRUE
       session$userData$drawn     <- FALSE

@@ -1,3 +1,31 @@
+**Version 2.0.0 beta (May 28, 2026)**
+
+- Add new Massachusetts version of EcoAssess
+
+- Regional version changes:
+  
+  - A new link to switch to the Massachusetts version
+  
+  - Under-the-hood changes to accomodate the Massachusetts version
+
+- New Massachusetts EcoAssess, with the following features
+  
+  - A Select parcels button, allowing you to select one or more Massachusetts parcels as the project area. Parcel data are updated frequently by MassGIS.
+  
+  - New text in About this site
+  
+  - A link to switch to the regional version
+  
+  - Basemap data:
+    
+    - instead of States and counties, you can display Counties and towns
+    
+    - Display permanently-protected open space (updated approximately semi-annually by MassGIS)
+    
+    - Display parcel data (updated frequently by MassGIS)
+
+- both the regional and Massachusetts versions use the same underlying data and give the same results for identical project areas
+
 **Version 1.1.3 (May 20, 2026)**
 
 - Modernize coordinate refernce system handling. May have minor effect on scores in rare cases.
@@ -30,31 +58,33 @@
 **Beta version 0.3.0 (November 8, 2024)**
 
 ##### New features
+
 - Zipped shapefiles may now be uploaded as an alternative to component files
 - Added an additional basemap layer, Open Street Map. It's got a lot of detail.
 - Added two new basemap overlays,
-   + State and county boundaries
-   + User basemap. You can now upload a shapefile as an additional basemap overlay. This allows
-uploading open space or parcels in the vicinity of project areas. These files can't be huge, but
-open space for a county or parcels for a town generally work fine. Open space for an entire state 
-is definitely too much.
+  + State and county boundaries
+  + User basemap. You can now upload a shapefile as an additional basemap overlay. This allows
+    uploading open space or parcels in the vicinity of project areas. These files can't be huge, but
+    open space for a county or parcels for a town generally work fine. Open space for an entire state 
+    is definitely too much.
 
 ##### Report changes
+
 - ecoConnect percentiles are now reported relative to the entire region, the state, and the HUC 8 watershed
 - Percentiles for ecoConnect are now based on sampling of random squares of varying sizes (1, 10, ... 1,000,000 
-acres) across the region, and reported percentiles are interpolated from the two nearest sizes. This removes 
-the confounding effect of project area size.
+  acres) across the region, and reported percentiles are interpolated from the two nearest sizes. This removes 
+  the confounding effect of project area size.
 - "All" and "best" are now in a field called "focus," and best for IEI is now based on the top 50% of cells
-while best for ecoConnect is for the top 25%
+  while best for ecoConnect is for the top 25%
 - Changed the layout of the table, rearranged sections of the report, and improved descriptions
 - Included state name and HUC 8 watershed id in report
 - Added a footnote for project areas that cross state or watershed boundaries
 - Added scalebars to maps in report
 
-
 ##### Other changes
+
 - The full screen toggle has been moved to the bottom of the right panel, to make more space
-on small screens for layers
+  on small screens for layers
 - "ecoConnect scaling" is now called "ecoConnect display"
 - ecoConnect display and Layer opacity are now disabled when corresponding layers aren't selected
 - Tooltips and "About this site" have been updated for clarity and to describe new features
@@ -62,17 +92,17 @@ on small screens for layers
 - The project name (if supplied) is now used as the report filename, after scrubbing illegal characters
 - The app has been renamed to "EcoAssess"
 - We've added a new 
-<a href="https://umassdsl.org/index-of-ecological-integrity/" target="_blank" rel="noopener 
-noreferrer">IEI home page</a>
-to the DSL website
+  <a href="https://umassdsl.org/index-of-ecological-integrity/" target="_blank" rel="noopener 
+  noreferrer">IEI home page</a>
+  to the DSL website
 
 ##### Bug fixes and robustness
+
 - Polygon clipping failure gave incorrect scores; fixed
 - Crashed when project area was too small; introduced minimum of 1 acre
 - Some project area polygons were distorted; fixed
 - Polygon with crossing lines caused a crash; fixed
 - Now catches errors caused by project area outside of Northeast, or in the ocean or estuarine rivers
-
 
 **Beta version 0.2.0 (July 17, 2024)**
 

@@ -5,7 +5,7 @@
    # resolve.cfg from the URL query string) to render either the regional or
    # the Massachusetts version of the app. The Massachusetts version adds a
    # mode-switch field, "Protected open space" and "Parcel boundaries"
-   # checkboxes, and a "Select parcel(s)" button, and relabels the boundary
+   # checkboxes, and a "Select parcels" button, and relabels the boundary
    # checkbox. The switch field itself appears in both versions.
    #
    # Initial control state (layer, ecoConnect display, basemap, opacity,
@@ -54,7 +54,7 @@
             use_busy_spinner(spin = 'fading-circle', position = 'bottom-left'),
 
             card(
-               tipped(HTML('<h5 style="display: inline-block;">Project area report</h5>'), projectAreaToolTip),
+               tipped(HTML('<h5 style="display: inline-block;">Project area report</h5>'), if(ma) projectAreaToolTipMassachusetts else projectAreaToolTipRegional),
 
                span(
                   tipped(actionButton('drawPolys', 'Draw'), drawTooltip),
@@ -62,9 +62,9 @@
                   tipped(actionButton('uploadShapefile', 'Upload'), uploadTooltip),
                ),
 
-               if(ma) span(                                    # ----- MA: Select parcel(s)
+               if(ma) span(                                    # ----- MA: Select parcels
                   HTML('or&nbsp;'),
-                  tipped(actionButton('selectParcels', 'Select parcel(s)'), selectParcelsTooltip)
+                  tipped(actionButton('selectParcels', 'Select parcels'), selectParcelsTooltip)
                ),
 
                span(
@@ -81,10 +81,9 @@
                br(),
                span(                                           # ----- regional <-> MA switch field
                   tipped(cfg$switch.label, if(cfg$regional) regionalVersionTooltip else massachusettsVersionTooltip),
-                  HTML('&nbsp;'),
                   actionLink('switch.mode', 'switch')          # server builds the URL (make.server)
                ),
-               span('Version 1.1.3', actionLink('whatsNew', label = 'What\'s new?')),
+               span('Version 2.0.0 beta', actionLink('whatsNew', label = 'What\'s new?')),
                br(),
                tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
             ),
