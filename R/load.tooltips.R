@@ -26,8 +26,9 @@ showParcelsTooltip <- includeMarkdown('inst/tooltipShowParcels.md')
 selectParcelsTooltip <- includeMarkdown('inst/tooltipSelectParcels.md')
 
 
-# help docs
-aboutTool <- includeMarkdown('inst/aboutTool.md')
+# help docs -- two About versions; make.server picks by cfg$regional
+aboutRegional      <- includeMarkdown('inst/aboutRegional.md')
+aboutMassachusetts <- includeMarkdown('inst/aboutMassachusetts.md')
 aboutecoConnect <- includeMarkdown('inst/aboutEcoConnect.md')
 aboutIEI <- includeMarkdown('inst/aboutIEI.md')
 aboutWhatsNew <- includeMarkdown('inst/aboutWhatsnew.md')
