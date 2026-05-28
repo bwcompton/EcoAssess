@@ -1,0 +1,56 @@
+name: EcoAssess Health Monitor
+
+# Runs daily at 7 AM EST (noon UTC). Also warms the shinyapps.io instance so
+# the first real user each morning skips the cold start.
+# Trigger manually via Actions > Health Monitor > Run workflow.
+#
+# On failure GitHub emails the repository owner automatically. Check the
+# Actions log for which endpoint(s) were down.
+#
+# NOTE: scheduled workflows only fire from the default branch (main).
+# This file must be in main -- either merged or cherry-picked -- for the
+# daily schedule to activate. workflow_dispatch works from any branch.
+
+on:
+  schedule:
+    - cron: '0 12 * * *'   # noon UTC = 7 AM EST / 8 AM EDT
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check all endpoints
+        run: |
+          failures=""
+
+          check() {
+            local name="$1"
+            local url="$2"
+            local code
+            code=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 "$url" 2>/dev/null)
+            if [ "$code" = "200" ]; then
+              echo "OK   [$code] $name"
+            else
+              echo "FAIL [$code] $name -- $url"
+              failures="${failures}  - ${name}: HTTP ${code}\n"
+            fi
+          }
+
+          check "GeoServer primary"  "https://umassdsl.webgis1.com/geoserver/"
+          check "GeoServer fallback" "https://marsh01.ecs.umass.edu/geoserver/"
+          check "MassGIS parcels"    "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0?f=json"
+          check "MassGIS POS"        "https://arcgisserver.digital.mass.gov/arcgisserver/rest/services/AGOL/openspace/FeatureServer/0?f=json"
+          check "EcoAssess app"      "https://umassdsl.shinyapps.io/EcoAssess/"
+
+          if [ -n "$failures" ]; then
+            echo ""
+            echo "FAILURES:"
+            printf "$failures"
+            echo "::error::One or more EcoAssess endpoints are unreachable -- see log above"
+            exit 1
+          fi
+
+          echo ""
+          echo "All endpoints healthy."
