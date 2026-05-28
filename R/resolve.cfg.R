@@ -24,6 +24,7 @@
    #        title           page title
    #        switch.label    current version name, shown by the switch field
    #        boundary.label  label for the show-boundaries checkbox
+   #        boundary.layers WMS layer list passed to addBoundaries
    #        home.zoom       the mode's overview zoom (for the switch carry test)
    #        view            list(lng, lat, zoom) -- where the map opens
    #        layer/display/basemap/opacity/boundaries  control state carried
@@ -55,7 +56,9 @@
       regional       = regional,
       title          = if(regional) 'EcoAssess' else 'Massachusetts EcoAssess',
       switch.label   = if(regional) 'Regional EcoAssess' else 'Massachusetts EcoAssess',
-      boundary.label = if(regional) 'Show states and counties' else 'Show counties and towns',
+      boundary.label  = if(regional) 'Show states and counties' else 'Show counties and towns',
+      boundary.layers = if(regional) list('boundaries:counties', 'boundaries:states')
+                        else         list('boundaries:mass_towns', 'boundaries:mass_counties'),
       home.zoom      = if(regional) zoom.regional else zoom.ma,
       view           = view,
       layer          = q[['layer']],

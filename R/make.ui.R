@@ -85,6 +85,7 @@
                   actionLink('switch.mode', 'switch')          # server builds the URL (make.server)
                ),
                span('Version 1.1.3', actionLink('whatsNew', label = 'What\'s new?')),
+               if(ma) textOutput('zoom.level', inline = TRUE),
                br(),
                tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
             ),

@@ -56,6 +56,7 @@
    if(!cfg$regional) {                                # ----- Massachusetts mode: ESRI probe
       if(esri.probe()) {                             #      both endpoints reachable: full MA mode
          parcel.server(input, output, session)
+         pos.server(input, output, session)
       } else {                                       #      either endpoint down: degrade to
          message('ESRI endpoints unavailable')       #      draw/upload, show explanatory modal
          error.message('ESRI')
@@ -63,6 +64,8 @@
          shinyjs::disable('show.parcels')
          shinyjs::disable('selectParcels')
       }
+
+      output$zoom.level <- renderText(sprintf('zoom: %s', input$map_zoom))   # dev: tune pos.zoom
    }
 
 
@@ -134,7 +137,7 @@
                            addProviderTiles(provider = input$show.basemap, layerId = 'basemap') |>
                            removeTiles(layerId = 'dsl.layers') |>
                            addUserBasemap(input$show.usermap, session$userData$userPoly) |>
-                           addBoundaries(input$show.boundaries, session$userData$geoserver)
+                           addBoundaries(input$show.boundaries, session$userData$geoserver, cfg$boundary.layers)
                         else {
                            if(sub(':.*', '', session$userData$show.layer) == 'ecoConnect')                 # if ecoConnect, use scaled style
                               style <- paste0(sub('.*:', '', session$userData$show.layer),
@@ -148,7 +151,7 @@
                                           options = WMSTileOptions(opacity = input$opacity / 100, styles = style),
                                           attribution = session$userData$using) |>
                               addUserBasemap(input$show.usermap, session$userData$userPoly) |>
-                              addBoundaries(input$show.boundaries, session$userData$geoserver)
+                              addBoundaries(input$show.boundaries, session$userData$geoserver, cfg$boundary.layers)
                         }
                      })
 
