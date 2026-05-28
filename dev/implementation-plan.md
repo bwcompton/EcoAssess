@@ -64,6 +64,7 @@ Deliberately *not* cfg fields:
 
 1. **Expanded PoC** — **complete 2026-05-20** (smart-hybrid grid, local-store
    selection, native-CRS dump, st_union topology defense; all verified by BC).
+
 2. **Mode infrastructure** — **scaffolded 2026-05-20, restructured 2026-05-21**:
    `ui <- function(request)`, `resolve.cfg.R` (URL → cfg), `switch.url.R` (URL
    builder, not yet wired into UI), `make.ui.R` (UI tree, branches on cfg —
@@ -73,31 +74,51 @@ Deliberately *not* cfg fields:
    scoping issue is structurally gone — every helper can see every other.
    Remaining: switch *link* in the UI + state-encoding URL params (WS 4),
    Matomo per-mode dimension (when we touch the Matomo JS).
+
 3. **Data layer**: config constants; startup checks for parcels + POS modeled
    on the GeoServer ping; graceful degradation paths.
+
 4. **MA-mode UI deltas** — **shell built 2026-05-21**: switch field (sidebar,
    above Version; compact wording; wired to `switch.url`), `boundary.label`
    swap, "Show protected open space" + "Show parcel data" checkboxes,
    "or [Select parcel(s)]" button, 5 new tooltips. Controls exist but are
    inert — their behavior is WS 5/6. Remaining: switch view-state
    preservation (decision 7), and the WS 5/6 behaviors.
+
 5. **Parcel selection → project area**: assemble selected parcels into an sf
    object → `session$userData$poly`, `drawn = FALSE`. Existing `getReport`
    machinery (validate / transform / area limits / report) then applies
    unchanged.
+
 6. **Overlays**: `addProtectedOpenSpace()` helper (filter `LEV_PROT == 'P'`);
    parametrize `addBoundaries()` by `cfg$boundary_layers`; prep + publish
    counties/towns layer on both GeoServers.
+
 7. **Update About this site**: include info on Massachusetts version. I'm leaning towards two separate versions that are identical, with the new Massachusetts stuff added in the Mass version. A bit of a pain to keep updated, but it'll be pretty stable and alternatives seem overly-complicated. I think this is cleaner than having a separate tab for About Massachusetts version or some such. I need to add the following text to aboutTool.md:
+   
    - Title: About this site (Massachusetts version | Regional version)
    
    - Include a note about switching + explain the two versions (both versions)
    
    - Include the Massachusetts stuff where appropriate (Mass version)
+   
+   - Mass version: "Open space and parcel boundaries often differ. This is a data issue from MassGIS. Although we believe the parcel boundaries are generally more accurate, both layers are inexact."
+
 8. **Daily monitor**: GitHub Actions workflow.
+
 9. **Tooltips** for every new control.
+
 10. **Test + deploy** (single instance).
-11. **Deploy mass_counties and mass_towns on AcuGIS** if those fuckers ever get our server back up. It's currently down.
+
+11. **Deploy mass_counties and mass_towns on AcuGIS -- 2026-05-28 done** if those fuckers ever get our server back up. It's currently down.
+
+12. **Use Category = 6 for Hesk for Massachusetts version -- 2026-05-28 done**
+
+13. **Try adding PAD-US to regional version**. These data are kind of crappy, but they're the only comprehensive open space data out there. I tried adding this in July 2024, and it was too crappy to keep. It's on an ESRI server, and I was using leaflet.esri. From my notes:
+    
+    1- It is slow and kind of ugly--they seem to have 2 copies of every poly, so it doesn't work to mess with opacity, and they include entire states as polys, so it doesn't work to fill the polys. It loads an entire state, so it's super-sluggish.
+    
+    I'd like to give it a quick try with our current approach to loading ESRI data to see if it's worth including.
 
 ## Parcel display/selection design (from readMVT precedent)
 
@@ -170,6 +191,7 @@ Pattern lifted from `DEPMEP.app.R` + `readMVT::read.viewport.tiles`, minus MVT:
   click-to-toggle is enough; users expect to pick only a handful of parcels.
   Shift-drag is free (boxZoom disabled) if revisited. Easy to add later via
   rubber-band box → `st_intersects`.
+
 - **Parcel-union topology** (discovered 2026-05-20). Parcels fetched via the
   **ArcGIS REST FeatureServer** (`arc_select`) carry sub-mm slivers along
   shared boundaries — almost certainly a side effect of REST geometry

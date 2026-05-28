@@ -69,7 +69,9 @@
 
 
    observeEvent(input$aboutTool, {
-      modalHelp(if(cfg$regional) aboutRegional else aboutMassachusetts, 'About this site', size = 'l')})
+      modalHelp(if(cfg$regional) aboutRegional else aboutMassachusetts, 
+                paste('About this site', if(cfg$regional) '(regional version)' 
+                      else '(Massachusetts version)'), size = 'l')})
    observeEvent(input$aboutecoConnect, {
       modalHelp(aboutecoConnect, 'About ecoConnect', size = 'l')})
    observeEvent(input$aboutIEI, {
