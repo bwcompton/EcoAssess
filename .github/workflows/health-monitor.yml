@@ -43,7 +43,8 @@ jobs:
           check "MassGIS parcels"    "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0?f=json"
           check "MassGIS POS"        "https://arcgisserver.digital.mass.gov/arcgisserver/rest/services/AGOL/openspace/FeatureServer/0?f=json"
           check "EcoAssess app"      "https://umassdsl.shinyapps.io/EcoAssess/"
-
+          check "MA-EcoAssess app"      "https://umassdsl.shinyapps.io/MA-EcoAssess/"
+          
           if [ -n "$failures" ]; then
             echo ""
             echo "FAILURES:"
