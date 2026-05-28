@@ -1,31 +1,18 @@
 **Version 2.0.0 beta (May 28, 2026)**
 
 - Add new Massachusetts version of EcoAssess
-
 - Regional version changes:
-  
   - A new link to switch to the Massachusetts version
-  
   - Under-the-hood changes to accomodate the Massachusetts version
-
 - New Massachusetts EcoAssess, with the following features
-  
   - A Select parcels button, allowing you to select one or more Massachusetts parcels as the project area. Parcel data are updated frequently by MassGIS.
-  
   - New text in About this site
-  
   - A link to switch to the regional version
-  
   - Basemap data:
-    
     - instead of States and counties, you can display Counties and towns
-    
     - Display permanently-protected open space (updated approximately semi-annually by MassGIS)
-    
     - Display parcel data (updated frequently by MassGIS)
-
 - Regional and Massachusetts versions both use the same underlying data and give the same results for identical project areas
-
 - Added a health monitor to check every morning that servers are online (checks Shiny server, GeoServer, and MassGIS servers), so we should be the first to know when something breaks
 
 **Version 1.1.3 (May 20, 2026)**
