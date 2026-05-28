@@ -24,7 +24,9 @@
     
     - Display parcel data (updated frequently by MassGIS)
 
-- both the regional and Massachusetts versions use the same underlying data and give the same results for identical project areas
+- Regional and Massachusetts versions both use the same underlying data and give the same results for identical project areas
+
+- Added a health monitor to check every morning that servers are online (checks Shiny server, GeoServer, and MassGIS servers), so we should be the first to know when something breaks
 
 **Version 1.1.3 (May 20, 2026)**
 
