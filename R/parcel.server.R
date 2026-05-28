@@ -43,7 +43,8 @@
       for(i in seq_len(nrow(pk)))
          session$userData$parcel.store[[idk[i]]] <- pk[i, ]            # native
       addPolygons(m, data = sf::st_transform(pk, 4326), group = 'parcels',
-                  layerId = idk, color = 'purple', weight = 1, fillOpacity = 0)
+                  layerId = idk, color = 'purple', weight = 1, fillOpacity = 0,
+                  options = pathOptions(pane = 'parcels-pane'))
       session$userData$parcels.drawn <- c(session$userData$parcels.drawn, idk)
    }
 
@@ -100,7 +101,8 @@
       hl <- do.call(rbind, unname(sel))                            # native CRS
       addPolygons(m, data = sf::st_transform(hl, 4326), group = 'selected',
                   layerId = paste0('sel_', names(sel)),
-                  color = 'purple', weight = 2, fillOpacity = 0.35)
+                  color = 'purple', weight = 2, fillOpacity = 0.35,
+                  options = pathOptions(pane = 'parcels-pane'))
       # dissolve to the project-area polygon. MassGIS parcels carry sub-mm
       # slivers along shared boundaries -> st_make_valid + buffer-0 fallback.
       geoms <- sf::st_make_valid(hl)

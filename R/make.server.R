@@ -83,11 +83,16 @@
 
 
    output$map <- renderLeaflet({                                                    # ----- Draw static parts of Leaflet map
-      leaflet('map',
+      m <- leaflet('map',
               options = leafletOptions(maxZoom = 16)) |>
          addScaleBar(position = 'bottomleft') |>
          osmGeocoder(position = 'bottomright', email = osm_email) |>
          setView(lng = cfg$view$lng, lat = cfg$view$lat, zoom = cfg$view$zoom)
+      if(!cfg$regional)                                                             # MA: panes keep POS below parcels
+         m <- m |>
+            addMapPane('pos-pane',     zIndex = 410) |>
+            addMapPane('parcels-pane', zIndex = 420)
+      m
    })
 
    observeEvent(input$switch.mode, {                         # ----- switch regional <-> MA
