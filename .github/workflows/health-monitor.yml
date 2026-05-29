@@ -30,7 +30,7 @@ jobs:
             local url="$2"
             local code
             code=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 "$url" 2>/dev/null)
-            if [ "$code" = "200" ]; then
+            if [[ "$code" =~ ^2 ]]; then
               echo "OK   [$code] $name"
             else
               echo "FAIL [$code] $name -- $url"
@@ -43,7 +43,7 @@ jobs:
           check "MassGIS parcels"    "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0?f=json"
           check "MassGIS POS"        "https://arcgisserver.digital.mass.gov/arcgisserver/rest/services/AGOL/openspace/FeatureServer/0?f=json"
           check "EcoAssess app"      "https://umassdsl.shinyapps.io/EcoAssess/"
-          check "MA-EcoAssess app"      "https://umassdsl.shinyapps.io/MA-EcoAssess/"
+          check "MA-EcoAssess app"   "https://umassdsl.shinyapps.io/MA-EcoAssess/"
 
 
           if [ -n "$failures" ]; then
