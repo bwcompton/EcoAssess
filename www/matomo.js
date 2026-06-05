@@ -2,7 +2,7 @@ var _paq = window._paq = window._paq || [];/* tracker methods like "setCustomDim
     _paq.push(['trackPageView']);
     _paq.push(['enableLinkTracking']);
     (function() {
-        var u="//umassdsl.webgis1.com/piwik/";
+        var u="//marsh01.ecs.umass.edu/matomo/";
         // accurately measure the time spent in the visit
         _paq.push(['setTrackerUrl', u+'matomo.php']);
         _paq.push(['setSiteId', '10']);
