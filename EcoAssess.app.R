@@ -70,7 +70,7 @@ layers <- data.frame(
 full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)       # we'll need these for addWMSTiles
 
 geoserver <- list(
-   primary = 'https://umassdsl.webgis1.com/geoserver/',                       # AcuGIS WMS (add 'wms') and WCS server
+   primary = 'https://marsh01.ecs.umass.edu/geoserver/',                       # AcuGIS WMS (add 'wms') and WCS server
    fallback = 'https://marsh01.ecs.umass.edu/geoserver/'                      # MassMarsh WMS (add 'wms') and WCS server (currently fallback, as it's slow without SSD RAID)
 )
 
