@@ -47,4 +47,4 @@ team at the University of Massachsetts Amherst. Funding was provided by USGS Nor
 Center and the intramural research program of the U.S. Department of Agriculture, National Institute of Food and 
 Agriculture, McIntire-Stennis and Renewable Resources Extension Act (RREA) programs.
 
-**Questions**, bugs, problems, suggestions? <a href="https://umassdsl.webgis1.com/hesk/index.php?a=add&category=5" target="_blank" rel="noopener noreferrer">Let us know</a>
+**Questions**, bugs, problems, suggestions? <a href="https://marsh01.ecs.umass.edu/hesk/index.php?a=add&category=5" target="_blank" rel="noopener noreferrer">Let us know</a>
