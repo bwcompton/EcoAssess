@@ -1,12 +1,12 @@
 This web tool provides access to landscape ecological models that estimate ecological integrity and the contribution to regional connectivity of every location in the northeastern United States. It is intended to help conservation practitioners strategically conserve land that supports viable ecosystems and wildlife populations. You can view Indices of Ecological Integrity (IEI) and ecoConnect across the Northeast or produce reports for designated project areas (e.g., parcels) summarizing IEI and ecoConnect. 
 
-**There are two versions** of this app: the **regional** version that applies to 13 states in the Northeast, and the new **Massachusetts** version with MassGIS parcel and protected open space data. Both versions use the same underlying data, and will give the same results for the same project areas. Pick <u>switch</u> to switch between versions.
+**There are two versions** of this app: the **regional** version that applies to 13 states in the Northeast, and the new **Massachusetts** version with MassGIS parcel and protected open space data. Both versions use the same IEI and ecoConnect data, and will give the same results for the same project areas. Pick <u>switch</u> to switch between versions.
 
 The **center** pane displays maps of IEI and ecoConnect and provides tools for navigation
 
 - drag the map to pan
 - click **+** and **&#x2212;** to zoom, or use your mouse's scroll wheel
-- type an address or location in the locate bar at the bottom right. This can be a full street address, the name of a town (for example "spruce creek pa"), or a latitude and longitude (for example, "42.3923, -72.3448")
+- type an address or location in the locate bar at the bottom right. This can be a full street address, the name of a town (for example "whately ma"), or a latitude and longitude (for example, "42.3923, -72.3448")
 
 The **right** pane provides tools that select layers to display and control how they are displayed
 
@@ -20,9 +20,9 @@ The **right** pane provides tools that select layers to display and control how 
 - select one of the four choices of basemap: *Simple map* - a plain map of roads and place names (best for
   display with layers),
   *Open Street Map* - a crowdsourced map with more detail, *Topo* - USGS topographic maps, or *Imagery* - aerial orthophotos from USGS
-- turn on Massachusetts county and town boundaries
-- turn on MassGIS permanently-protected open space (open space won't show until you've zoomed in far enough)
-- turn on MassGIS parcel boundaries (these won't show until you've zoomed in far enough; closer than for protected open space)
+- turn on Massachusetts county and town boundaries to help with navigation
+- turn on MassGIS permanently-protected open space so you can see what's already protected (open space won't show until you've zoomed in far enough)
+- turn on MassGIS parcel boundaries so you can tell where parcels fall (these won't show until you've zoomed in far enough; closer than for protected open space)
 - upload a polygon shapefile to use as an additional basemap of, for instance, parcels or protected land. This shapefile can't be huge---not more than parcels for a town or protected land for a county.
 - toggle display to use your full screen
 
@@ -38,7 +38,7 @@ The **left** pane includes a tool for producing reports for specific sites (e.g.
 - click Restart to clear drawn polygons or uploaded shapefiles and start over
 - click <u>switch</u> to switch to the regional version
 
-**Your data**. No data are retained on our servers. We use secure https, so data are encrypted between your computer and our servers. Reports you request may be saved on your computer, depending on your browser settings. When you close your browser, all user data, including drawn polygons, uploaded shapefiles, and reports are immediately deleted from our servers. 
+**Your data**. We use secure https, so data are encrypted between your computer and our servers. No data are retained on our servers. When you close your browser, all user data, including drawn polygons, uploaded shapefiles, and reports are immediately deleted from our servers. Reports you request may be saved on your computer, depending on your browser settings. 
 We use <a href="https://matomo.org/" target="_blank" rel="noopener noreferrer">Matomo</a>, a privacy-focused site analytic
 tool to collect general information on site visits. We do not use cookies.
 
