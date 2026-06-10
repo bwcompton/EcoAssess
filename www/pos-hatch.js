@@ -18,8 +18,8 @@ Shiny.addCustomMessageHandler('applyPosHatch', function(message) {
       var ns   = 'http://www.w3.org/2000/svg';
       var defs = document.createElementNS(ns, 'defs');
       defs.innerHTML =
-         '<pattern id="posHatch" patternUnits="userSpaceOnUse" width="40" height="40">' +
-            '<line x1="0" y1="40" x2="40" y2="0" stroke="#00DD00" stroke-width="0.7"/>' +
+         '<pattern id="posHatch" patternUnits="userSpaceOnUse" width="20" height="20">' +
+            '<line x1="0" y1="20" x2="20" y2="0" stroke="#00DD00" stroke-width="1"/>' +
          '</pattern>';
       svg.insertBefore(defs, svg.firstChild);
    }
