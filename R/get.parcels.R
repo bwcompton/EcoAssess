@@ -83,7 +83,8 @@
 
    env <- sf::st_as_sfc(sf::st_bbox(c(xmin = xmin, ymin = ymin, xmax = xmax, ymax = ymax),
                                     crs = 4326))
-   p <- arcgislayers::arc_select(layer, fields = parcels.id, filter_geom = env)
+   p <- suppressMessages(
+      arcgislayers::arc_select(layer, fields = parcels.id, filter_geom = env))
    if(is.null(p) || nrow(p) == 0) return(NULL)
    p
 }

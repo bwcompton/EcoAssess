@@ -41,6 +41,8 @@
       tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "fullscreen.css")),      # turn off dark background for fullscreen
       tags$head(tags$style(HTML('.shiny-input-container:has(.checkbox) {margin-bottom: -0.75rem;}'))),   # tighten checkbox spacing (.checkbox excludes the Full screen materialSwitch)
 
+      tags$script(src = 'pos-hatch.js'),                        # POS SVG crosshatch handler
+
       tags$head(tags$script(src = 'matomo.js')),               # add Matomo tracking JS
       tags$head(tags$script(src = 'matomo_heartbeat.js')),     # turn on heartbeat timer
       tags$script(src = 'matomo_events.js'),                   # track popups and help text
@@ -83,7 +85,7 @@
                   tipped(cfg$switch.label, if(cfg$regional) regionalVersionTooltip else massachusettsVersionTooltip),
                   actionLink('switch.mode', 'switch')          # server builds the URL (make.server)
                ),
-               span('Version 2.0.0 beta', actionLink('whatsNew', label = 'What\'s new?')),
+               span('Version 2.1.0', actionLink('whatsNew', label = 'What\'s new?')),
                br(),
                tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
             ),
@@ -127,7 +129,7 @@
                             choiceValues = basemap.vals,
                             selected = basemap.sel),
                hr(),
-               checkboxInput('show.boundaries', label = cfg$boundary.label, value = isTRUE(cfg$boundaries)),
+               checkboxInput('show.boundaries', label = cfg$boundary.label, value = if(is.null(cfg$boundaries)) ma else isTRUE(cfg$boundaries)),
                if(ma) checkboxInput('show.pos', label = tipped('Protected open space', showPOSTooltip), value = FALSE),
                if(ma) checkboxInput('show.parcels', label = tipped('Parcel boundaries', showParcelsTooltip), value = FALSE),
                checkboxInput('show.usermap', label = 'User basemap', value = FALSE),

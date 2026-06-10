@@ -28,6 +28,13 @@
    session$userData$parcels.selected <- list()         # id -> sf row, native CRS
    session$userData$selecting        <- FALSE          # TRUE while in selection mode
 
+   # yellow when imagery basemap + no layers; purple otherwise
+   parcel.color <- reactive({
+      if(isTRUE(input$show.basemap == 'USGS.USImagery') &&
+         length(input$connect.layer) == 0 && length(input$iei.layer) == 0)
+         'yellow' else 'purple'
+   })
+
    # debounce the pan/zoom firehose
    parcel.view <- reactive(list(zoom = input$map_zoom, b = input$map_bounds)) |>
       debounce(parcels.debounce)
@@ -43,10 +50,24 @@
       for(i in seq_len(nrow(pk)))
          session$userData$parcel.store[[idk[i]]] <- pk[i, ]            # native
       addPolygons(m, data = sf::st_transform(pk, 4326), group = 'parcels',
-                  layerId = idk, color = 'purple', weight = 1, fillOpacity = 0,
+                  layerId = idk, color = isolate(parcel.color()), weight = 1, fillOpacity = 0,
                   options = pathOptions(pane = 'parcels-pane'))
       session$userData$parcels.drawn <- c(session$userData$parcels.drawn, idk)
    }
+
+   # redraw all drawn parcels when color changes (e.g. basemap or layer toggle)
+   observeEvent(parcel.color(), {
+      if(!isTRUE(input$show.parcels)) return()
+      ids <- session$userData$parcels.drawn
+      if(!length(ids)) return()
+      m <- leafletProxy('map')
+      clearGroup(m, 'parcels')
+      geoms <- do.call(rbind, session$userData$parcel.store[ids])
+      addPolygons(m, data = sf::st_transform(geoms, 4326), group = 'parcels',
+                  layerId = ids, color = parcel.color(), weight = 1, fillOpacity = 0,
+                  options = pathOptions(pane = 'parcels-pane'))
+      groupOptions(m, 'parcels', zoomLevels = parcels.zoom:16)
+   }, ignoreInit = TRUE)
 
    # ----- viewport-driven parcel display
    observe({

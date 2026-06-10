@@ -21,8 +21,8 @@ The **right** pane provides tools that select layers to display and control how 
   display with layers),
   *Open Street Map* - a crowdsourced map with more detail, *Topo* - USGS topographic maps, or *Imagery* - aerial orthophotos from USGS
 - turn on Massachusetts county and town boundaries to help with navigation
-- turn on MassGIS permanently-protected open space so you can see what's already protected (open space won't show until you've zoomed in far enough)
-- turn on MassGIS parcel boundaries so you can tell where parcels fall (these won't show until you've zoomed in far enough; closer than for protected open space)
+- turn on <a href="https://www.mass.gov/info-details/massgis-data-protected-and-recreational-openspace" target="_blank" rel="noopener">MassGIS permanently-protected open space</a> so you can see what's already protected (open space won't show until you've zoomed in far enough)
+- turn on <a href="https://www.mass.gov/info-details/massgis-data-property-tax-parcels" target="_blank" rel="noopener">MassGIS parcel boundaries</a> so you can tell where parcels fall (these won't show until you've zoomed in far enough; closer than for protected open space)
 - upload a polygon shapefile to use as an additional basemap of, for instance, parcels or protected land. This shapefile can't be huge---not more than parcels for a town or protected land for a county.
 - toggle display to use your full screen
 

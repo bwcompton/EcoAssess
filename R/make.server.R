@@ -65,6 +65,16 @@
          shinyjs::disable('selectParcels')
       }
 
+      observeEvent(input$map_zoom, {                 # ----- red label when zoomed out too far
+         req(input$map_zoom)
+         pos.col     <- if(input$map_zoom < pos.zoom)     'red' else ''
+         parcels.col <- if(input$map_zoom < parcels.zoom) 'red' else ''
+         shinyjs::runjs(sprintf(
+            "var e = document.getElementById('show.pos');     if(e) e.closest('label').style.color='%s';
+             e     = document.getElementById('show.parcels'); if(e) e.closest('label').style.color='%s';",
+            pos.col, parcels.col))
+      })
+
    }
 
 
@@ -94,11 +104,11 @@
    })
 
    observeEvent(input$switch.mode, {                         # ----- switch regional <-> MA
-      carry <- list(layer      = session$userData$show.layer,   # decision 7: carry control
-                    display    = input$ecoConnectDisplay,       #   state across the switch
-                    basemap    = input$show.basemap,
-                    opacity    = input$opacity,
-                    boundaries = input$show.boundaries)
+      carry <- list(layer   = session$userData$show.layer,   # decision 7: carry control
+                    display = input$ecoConnectDisplay,       #   state across the switch
+                    basemap = input$show.basemap,
+                    opacity = input$opacity)                 # boundaries not carried: each mode
+                                                             #   defaults independently
       if(isTRUE(input$map_zoom > cfg$home.zoom)) {            #   zoomed in past the overview:
          b <- input$map_bounds                               #   also carry the current view
          carry$lng  <- (b$west + b$east) / 2

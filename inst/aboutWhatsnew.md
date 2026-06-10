@@ -1,3 +1,11 @@
+**Version 2.1.0 (June 10, 2026)**
+- Improvements to Massachusetts version
+  - Start with counties and towns displayed
+  - Protected open space now uses cross-hatching instead of light green, which was difficult to see on some monitors
+  - Protected open space and parcel boundaries are now show in red if you're zoomed out too far
+  - Parcel boundaries change to yellow when the basemap is imagery and layers are turned off
+  - Wording changes in About this site; links to MassGIS open space and parcels
+
 **Version 2.0.0 beta (May 28, 2026)**
 
 - Add new Massachusetts version of EcoAssess
@@ -17,7 +25,7 @@
 
 **Version 1.1.3 (May 20, 2026)**
 
-- Modernize coordinate refernce system handling. May have minor effect on scores in rare cases.
+- Modernize coordinate reference system handling. May have minor effect on scores in rare cases.
 
 **Version 1.1.2 (February 17, 2026)**
 
