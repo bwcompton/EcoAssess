@@ -26,8 +26,8 @@ layers <- data.frame(
 full.layer.names <- paste0(layers$workspaces, ':', layers$server.names)       # we'll need these for addWMSTiles
 
 geoserver <- list(
-   primary = 'https://marsh01.ecs.umass.edu/geoserver/',                       # AcuGIS WMS (add 'wms') and WCS server
-   fallback = 'https://marsh01.ecs.umass.edu/geoserver/'                      # MassMarsh WMS (add 'wms') and WCS server (currently fallback, as it's slow without SSD RAID)
+   primary = 'https://marsh01.ecs.umass.edu/geoserver/',                      # MassMarsh marsh01 WMS (add 'wms') and WCS server
+   fallback = 'https://marsh02.ecs.umass.edu:8443/geoserver/'                 # marsh02 fallback WMS (add 'wms') and WCS server
 )
 
 osm_email <- readChar(f <- 'www/osm_email.txt', file.info(f)$size)
