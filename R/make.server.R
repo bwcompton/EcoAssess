@@ -29,28 +29,23 @@
    #  print(getDefaultReactiveDomain())
 
 
-   tryCatch({
-      if(GET(geoserver$primary)$status_code != 200) stop()                          # ----- Ping our GeoServer
-      session$userData$geoserver <- geoserver$primary
-      session$userData$using <- 'GeoServer 1'
-   },
-   error = function(e) {
-      message('Primary failed')
-      tryCatch({
-         if(GET(geoserver$fallback)$status_code != 200) stop()
-         session$userData$geoserver <- geoserver$fallback
-         session$userData$using <- 'GeoServer 2'
-      },
-      error = function(e) {                                                         #      if fallback fails too, throw an error
-         message('Fallback failed')
-         error.message('GeoServer')
-         shinyjs::disable('drawPolys')
-         shinyjs::disable('uploadShapefile')
-      })
-   })
+   if(geoserver.probe(geoserver$primary)) {           # ----- Ping our GeoServers, taking the first that
+      session$userData$geoserver <- geoserver$primary #      answers. geoserver.probe logs why it rejected
+      session$userData$using <- 'GeoServer 1'         #      a server, so a failover test says what happened
+   } else if(geoserver.probe(geoserver$fallback)) {
+      session$userData$geoserver <- geoserver$fallback
+      session$userData$using <- 'GeoServer 2'
+   } else {                                           #      both down: no data and no reports
+      error.message('GeoServer')
+      shinyjs::disable('drawPolys')
+      shinyjs::disable('uploadShapefile')
+   }
 
 
-   message('Using ', session$userData$geoserver)
+   if(is.null(session$userData$using))
+      message('No GeoServer available -- both are down')
+   else
+      message('Using ', session$userData$using, ': ', session$userData$geoserver)
 
 
    if(!cfg$regional) {                                # ----- Massachusetts mode: ESRI probe
@@ -276,6 +271,11 @@
       sf::sf_use_s2(FALSE)                                                 # need to turn off s2 before fixing shapefiles to avoid crashes on intersections
       session$userData$poly <- sf::st_make_valid(session$userData$poly)    # attempt to fix bad shapefiles
       sf::sf_use_s2(TRUE)
+
+      box <- as.list(sf::st_bbox(session$userData$poly))                   # ----- Zoom to the entire project area. A selection
+      leafletProxy('map') |>                                              #      scattered across the state (or an accidentally
+         fitBounds(lat1 = box$ymin, lat2 = box$ymax,                      #      huge one) is then obvious before we complain
+                   lng1 = box$xmin, lng2 = box$xmax)                      #      that it's too big
 
       session$userData$poly.proj <- sf::st_transform(session$userData$poly, 3857) # project to match downloaded rasters
       session$userData$bbox <- as.list(sf::st_bbox(session$userData$poly.proj))
