@@ -1,6 +1,6 @@
 This web tool provides access to landscape ecological models that estimate ecological integrity and the contribution to regional connectivity of every location in the northeastern United States. It is intended to help conservation practitioners strategically conserve land that supports viable ecosystems and wildlife populations. You can view Indices of Ecological Integrity (IEI) and ecoConnect across the Northeast or produce reports for designated project areas (e.g., parcels) summarizing IEI and ecoConnect. 
 
-**There are two versions** of this app: the **regional** version that applies to 13 states in the Northeast, and the new **Massachusetts** version with MassGIS parcel and protected open space data. Both versions use the same IEI and ecoConnect data, and will give the same results for the same project areas. Pick <u>switch</u> to switch between versions.
+**There are two versions** of this app: the **regional** version that applies to 13 states in the Northeast, and the new **Massachusetts** version with MassGIS parcel and protected open space data. Both versions use the same IEI and ecoConnect data, and will give the same results for the same project areas. Click "switch" on the left pane to switch between versions.
 
 The **center** pane displays maps of IEI and ecoConnect and provides tools for navigation
 
@@ -35,7 +35,7 @@ The **left** pane includes a tool for producing reports for specific sites (e.g.
 - click Upload to upload a shapefile (or a zipped shapefile) of your project area, or
 - click Select parcels to select one or more parcels representing your project area (click once to select, and again to deselect), and then
 - click Get report. You'll have an opportunity to provide a project name and description, and then download a PDF report. All drawn, uploaded, or selected polygons are merged and assessed as a single project. 
-- click Restart to clear drawn polygons or uploaded shapefiles and start over
+- click Restart to clear drawn polygons or uploaded shapefiles and start over. Restart if you're moving on to a new project area.
 - click <u>switch</u> to switch to the regional version
 
 **Your data**. We use secure https, so data are encrypted between your computer and our servers. No data are retained on our servers. When you close your browser, all user data, including drawn polygons, uploaded shapefiles, and reports are immediately deleted from our servers. Reports you request may be saved on your computer, depending on your browser settings. 
@@ -45,7 +45,7 @@ tool to collect general information on site visits. We do not use cookies.
 This website and the underlying models were developed by the 
 <a href="https://umassdsl.org" target="_blank" rel="noopener">Designing Sustainable Landscapes</a> 
 team at the University of Massachsetts Amherst. Funding was provided by the Massachusetts Division of Conservation Services, USGS Northeast Climate Adaptation Science 
-Center and the intramural research program of the U.S. Department of Agriculture, National Institute of Food and 
-Agriculture, McIntire-Stennis and Renewable Resources Extension Act (RREA) programs.
+Center, the intramural research program of the U.S. Department of Agriculture National Institute of Food and 
+Agriculture, McIntire-Stennis, and Renewable Resources Extension Act (RREA) programs.
 
 **Questions**, bugs, problems, suggestions? <a href="https://marsh01.ecs.umass.edu/hesk/index.php?a=add&category=6" target="_blank" rel="noopener noreferrer">Let us know</a>
