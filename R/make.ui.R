@@ -85,7 +85,7 @@
                   tipped(cfg$switch.label, if(cfg$regional) regionalVersionTooltip else massachusettsVersionTooltip),
                   actionLink('switch.mode', 'switch')          # server builds the URL (make.server)
                ),
-               span('Version 2.1.0', actionLink('whatsNew', label = 'What\'s new?')),
+               span('Version 2.2.0', actionLink('whatsNew', label = 'What\'s new?')),
                br(),
                tags$img(height = 60, width = 199, src = 'UMass_DSL_logo_v2.png')
             ),

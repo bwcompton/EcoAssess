@@ -1,3 +1,7 @@
+**Version 2.2.0 (September 10, 2026)**
+- Zoom to the full project extent when selecting Get report
+- Improved error reporting when a GeoServer is unavailable
+
 **Version 2.1.0 (June 10, 2026)**
 - Improvements to Massachusetts version
   - Start with counties and towns displayed
