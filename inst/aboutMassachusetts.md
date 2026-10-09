@@ -44,7 +44,7 @@ tool to collect general information on site visits. We do not use cookies.
 
 This website and the underlying models were developed by the 
 <a href="https://umassdsl.org" target="_blank" rel="noopener">Designing Sustainable Landscapes</a> 
-team at the University of Massachsetts Amherst. Funding was provided by the Massachusetts Division of Conservation Services, USGS Northeast Climate Adaptation Science 
+team at the University of Massachusetts Amherst. Funding was provided by the Massachusetts Division of Conservation Services, USGS Northeast Climate Adaptation Science 
 Center, the intramural research program of the U.S. Department of Agriculture National Institute of Food and 
 Agriculture, McIntire-Stennis, and Renewable Resources Extension Act (RREA) programs.
 
