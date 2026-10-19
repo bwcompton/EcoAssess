@@ -30,6 +30,8 @@
    #        view            list(lng, lat, zoom) -- where the map opens
    #        layer/display/basemap/opacity/boundaries  control state carried
    #           across a switch (decision 7); NULL when not carried
+   #        switched        TRUE when this load came from the in-app switch
+   #                        (switched=1); gates Matomo's entry dimension
    # B. Compton, 20-22 May 2026
 
 
@@ -70,6 +72,7 @@
       basemap        = q[['basemap']],
       opacity        = if(length(op) == 1L && is.finite(op)) op else NULL,
       boundaries     = if(is.null(q[['boundaries']])) NULL
-                       else identical(tolower(q[['boundaries']]), 'true')
+                       else identical(tolower(q[['boundaries']]), 'true'),
+      switched       = !is.null(q[['switched']])
    )
 }

@@ -30,6 +30,11 @@ geoserver <- list(
    fallback = 'https://marsh02.ecs.umass.edu:8443/geoserver/'                 # marsh02 fallback WMS (add 'wms') and WCS server
 )
 
+# Matomo custom dimension IDs (site 10). make.ui tags each page load with the
+# active version (action scope) and, on a visit's entry page, the version the
+# visit started in (visit scope).
+matomo.dim <- list(version = 1, entry = 2)
+
 osm_email <- readChar(f <- 'www/osm_email.txt', file.info(f)$size)
 
 

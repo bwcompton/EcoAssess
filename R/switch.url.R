@@ -5,7 +5,8 @@
    # `regional` flag and appends whatever session state make.server hands over
    # in `carry` (display layer, basemap, opacity, map view, ... -- decision 7),
    # so the other version comes up in the same state. With an empty `carry`,
-   # the other version opens fresh at its own home.
+   # the other version opens fresh at its own home. Always adds switched=1 so
+   # make.ui can tell a switch from an entry (for Matomo's entry dimension).
    #
    # Arguments:
    #     cfg     current session's cfg list (from resolve.cfg)
@@ -16,7 +17,7 @@
    # B. Compton, 20-22 May 2026
 
 
-   flag  <- if(cfg$regional) 'regional=false' else 'regional=true'
+   flag  <- paste0(if(cfg$regional) 'regional=false' else 'regional=true', '&switched=1')
    carry <- carry[lengths(carry) == 1L]                 # drop NULL / empty entries
    if(!length(carry))
       return(paste0('?', flag))

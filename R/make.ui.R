@@ -34,6 +34,13 @@
                    else basemap.vals[1]
    opacity.val  <- if(is.null(cfg$opacity)) 60 else max(0, min(100, cfg$opacity))
 
+   # Matomo custom dimensions: app version on every hit; entry version only on
+   # a fresh load (not one arriving via the in-app switch)
+   version     <- if(ma) 'massachusetts' else 'regional'
+   matomo.dims <- paste0("var _paq = window._paq = window._paq || [];",
+                         sprintf(" _paq.push(['setCustomDimension', %d, '%s']);", matomo.dim$version, version),
+                         if(!cfg$switched) sprintf(" _paq.push(['setCustomDimension', %d, '%s']);", matomo.dim$entry, version))
+
    page_sidebar(
       theme = bs_theme(bootswatch = 'cerulean', version = 5),   # bslib version defense. Use version_default() to update
       useShinyjs(),
@@ -43,6 +50,7 @@
 
       tags$script(src = 'pos-hatch.js'),                        # POS SVG crosshatch handler
 
+      tags$head(tags$script(HTML(matomo.dims))),               # tag hits with app version (must precede matomo.js)
       tags$head(tags$script(src = 'matomo.js')),               # add Matomo tracking JS
       tags$head(tags$script(src = 'matomo_heartbeat.js')),     # turn on heartbeat timer
       tags$script(src = 'matomo_events.js'),                   # track popups and help text
