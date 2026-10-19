@@ -8,6 +8,14 @@
 
 
 
+# Default version for this deployment: TRUE = regional, FALSE = Massachusetts.
+# Set per copy when deploying the two apps to shinyapps.io. An explicit
+# ?regional=true|false in the URL still overrides (the in-app switch uses it).
+# An option rather than a variable, because R/ code can't see this file's env.
+options(ecoassess.regional = FALSE)
+
+
+
 library(shiny)
 library(bslib)
 library(bsicons)
@@ -36,8 +44,8 @@ plan('multisession')
 
 # All app data, tooltips, helpers, and the make.ui / make.server entry points
 # are auto-loaded from R/ at app start (Shiny >= 1.5). The cfg list resolved
-# from the URL query string (?regional=true|false) drives the regional vs.
-# Massachusetts mode -- see R/resolve.cfg.R, R/make.ui.R, R/make.server.R.
+# from the URL query string (?regional=true|false, else the ecoassess.regional option)
+# drives the regional vs. Massachusetts mode -- see R/resolve.cfg.R, R/make.ui.R, R/make.server.R.
 
 
 ui     <- function(request) make.ui(resolve.cfg(request$QUERY_STRING))

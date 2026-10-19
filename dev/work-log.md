@@ -397,3 +397,10 @@
   - `www/pos-hatch.js` — new Shiny custom message handler `applyPosHatch`: injects a 10×10px `<pattern id="posHatch">` into the Leaflet SVG overlay (once; survives pan/zoom), then iterates `widget.layerManager._byGroup['pos']` and sets `fill="url(#posHatch)" fill-opacity="1"` on each `layer._path`. 150ms setTimeout gives Leaflet time to finish rendering before we touch the paths.
   - `make.ui.R` — loads `pos-hatch.js` via `tags$script(src='pos-hatch.js')`.
   - `pos.server.R` — `fillOpacity` changed from 0.10 to 0 (pattern provides the visual; avoids green-flash before JS fires); `weight` reduced from 5 to 2 per Ethan's thinner-border request; `session$sendCustomMessage('applyPosHatch', list())` called after each `addPolygons`.
+
+## 2026-10-19
+
+- **Per-deployment default mode.** To run two shinyapps.io copies (regional and MA), each with a plain URL, `EcoAssess.app.R` now sets `options(ecoassess.regional = TRUE|FALSE)` at the top. `resolve.cfg` uses it when the URL has no `?regional=true|false`; an explicit param still wins, so the in-app switch keeps working within either deployment (by design it doesn't jump to the other app's URL).
+- **Why an option, not a variable.** Shiny sources `R/` into a shared env and the app file into a *child* of it, so `resolve.cfg` (and `make.server`) can't see variables defined in `EcoAssess.app.R`. Options are process-global; each shinyapps.io app is its own process.
+- **Rejected: reading the app path from the URL.** `session$clientData$url_pathname` would work in the server, but the `ui` function's `request` path isn't reliable behind the shinyapps.io proxy, and it would hard-code app names.
+- **Stale-session scare.** BC's first test showed a split (UI said MA, server came up regional). It didn't reproduce under `testServer` in a fresh process, and it went away after an RStudio restart (a Windows firewall prompt for R had also come up, probably from the multisession workers in my test run).

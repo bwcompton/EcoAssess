@@ -5,8 +5,9 @@
    # Called from both ui (request$QUERY_STRING) and server
    # (session$clientData$url_search) so both see the same cfg.
    #
-   # Mode is selected by the `regional` query param; defaults TRUE. Only an
-   # explicit `?regional=false` flips to the Massachusetts version.
+   # Mode is selected by the `regional` query param (true/false). When absent
+   # or unrecognized, falls back on option ecoassess.regional (default TRUE),
+   # set per deployment at the top of EcoAssess.app.R.
    #
    # The in-app switch link may also carry session state (see switch.url):
    # lng/lat/zoom (the map view) and layer/display/basemap/opacity/boundaries
@@ -35,7 +36,10 @@
    q <- if(is.null(query_string) || !nzchar(query_string)) list()
         else shiny::parseQueryString(query_string)
 
-   regional <- !identical(tolower(as.character(q[['regional']])), 'false')
+   flag     <- tolower(as.character(q[['regional']]))
+   regional <- if(identical(flag, 'true')) TRUE
+               else if(identical(flag, 'false')) FALSE
+               else isTRUE(getOption('ecoassess.regional', TRUE))
 
    # opening view: the mode's home, unless the switch carried a valid view
    view <- if(regional) list(lng = home.regional[1], lat = home.regional[2], zoom = zoom.regional)
