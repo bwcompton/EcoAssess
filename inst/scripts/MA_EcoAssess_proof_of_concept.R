@@ -12,7 +12,7 @@ library(arcgislayers)
 
 
 
-wick <- st_read('C:/GIS/GIS/Warwick/warwick.shp')           # read Warwick boundaries to get bounding box
+#wick <- st_read('C:/GIS/GIS/Warwick/warwick.shp')           # read Warwick boundaries to get bounding box
 bbox <- st_bbox(wick)
 
 
