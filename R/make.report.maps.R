@@ -20,8 +20,9 @@
    
    
    
-   source('annotation-scale.R')        # Ethan's new version. Delete this line and local function when PR https://github.com/paleolimbot/ggspatial/pull/129 is accepted
-   
+   # annotation-scale.R (Ethan's new version) is auto-loaded from R/ at app start.
+   # Delete R/annotation-scale.R when PR https://github.com/paleolimbot/ggspatial/pull/129 is accepted.
+
    ggmap::register_stadiamaps(x <- readChar(f <- 'www/stadia_api.txt', file.info(f)$size))# register Stadia API key
    
    bb <- sf::st_bbox(poly)                                                                # bounding box in degrees 
