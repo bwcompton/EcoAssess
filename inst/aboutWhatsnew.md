@@ -1,3 +1,7 @@
+**Version 2.2.1 (October 20, 2026)**
+- Integrated regional and Massachusetts versions
+  - Click "switch" to switch between versions
+
 **Version 2.2.0 (September 10, 2026)**
 - Zoom to the full project extent when selecting Get report
 - Improved error reporting when a GeoServer is unavailable
@@ -14,7 +18,6 @@
 
 - Add new Massachusetts version of EcoAssess
 - Regional version changes:
-  - A new link to switch to the Massachusetts version
   - Under-the-hood changes to accomodate the Massachusetts version
 - New Massachusetts EcoAssess, with the following features
   - A Select parcels button, allowing you to select one or more Massachusetts parcels as the project area. Parcel data are updated frequently by MassGIS.

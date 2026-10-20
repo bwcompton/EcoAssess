@@ -11,8 +11,9 @@
 # Default version for this deployment: TRUE = regional, FALSE = Massachusetts.
 # Set per copy when deploying the two apps to shinyapps.io. An explicit
 # ?regional=true|false in the URL still overrides (the in-app switch uses it).
-# An option rather than a variable, because R/ code can't see this file's env.
-options(ecoassess.regional = TRUE)
+
+options(ecoassess.regional = TRUE)              # for EcoAssess (regional version)
+# options(ecoassess.regional = FALSE)             # for MA-EcoAssess (Massachusetts version)
 
 
 
